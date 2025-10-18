@@ -8,7 +8,7 @@ module.exports = Behavior({
 	 * 页面的初始数据
 	 */
 	data: {
-
+		isLoading: false
 	},
 
 	methods: {
@@ -20,14 +20,24 @@ module.exports = Behavior({
 		},
 
 		_loadList: async function () { 
-			let opts = {
-				title: 'bar'
-			}
-			await cloudHelper.callCloudSumbit('news/home_list', {}, opts).then(res => {
-				this.setData({
-					dataList: res.data
+			// 防止重复加载
+			if (this.data.isLoading) return;
+			
+			this.setData({ isLoading: true });
+			try {
+				let opts = {
+					title: 'bar'
+				}
+				await cloudHelper.callCloudSumbit('news/home_list', {}, opts).then(res => {
+					this.setData({
+						dataList: res.data
+					});
 				});
-			})
+			} catch (err) {
+				console.error('加载数据失败:', err);
+			} finally {
+				this.setData({ isLoading: false });
+			}
 		},
 
 		/**
@@ -39,7 +49,7 @@ module.exports = Behavior({
 		 * 生命周期函数--监听页面显示
 		 */
 		onShow: async function () {
-			this._loadList(); 
+			await this._loadList(); 
 		},
 
 		onPullDownRefresh: async function () {

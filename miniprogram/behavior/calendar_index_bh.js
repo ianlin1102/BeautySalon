@@ -77,10 +77,9 @@ module.exports = Behavior({
 		onShow: async function () {
 			this.setData({
 				day: timeHelper.time('Y-M-D')
-			}, async () => {
-				await this._loadHasList();
-				await this._loadList();
 			});
+			await this._loadHasList();
+			await this._loadList();
 		},
 
 		/**
@@ -119,8 +118,7 @@ module.exports = Behavior({
 				day
 			}, async () => {
 				await this._loadList();
-			})
-
+			});
 		},
 
 		bindMonthChangeCmpt: function (e) {

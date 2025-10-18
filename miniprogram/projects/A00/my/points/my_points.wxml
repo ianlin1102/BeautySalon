@@ -1,0 +1,51 @@
+<view class="main">
+    <!-- 积分概览 -->
+    <view class="points-overview card-project shadow-project" style="background: linear-gradient(135deg, {{pointsInfo.currentLevel.color}}88 0%, {{pointsInfo.currentLevel.color}} 50%, {{pointsInfo.currentLevel.color}}dd 100%)">
+        <view class="points-header">
+            <view class="points-total">{{pointsInfo.totalPoints || 0}}</view>
+            <view class="points-label">我的积分</view>
+        </view>
+        <view class="level-info">
+            <view class="current-level" style="color: {{pointsInfo.currentLevel.color}}">
+                {{pointsInfo.currentLevel.name}}
+            </view>
+            <view wx:if="{{pointsInfo.nextLevel}}" class="next-level">
+                距离{{pointsInfo.nextLevel.name}}还需 {{pointsInfo.needPoints}} 积分
+            </view>
+        </view>
+        <view class="progress-container">
+            <view class="progress-bar">
+                <view class="progress-fill" style="width: {{pointsInfo.progressPercent}}%; background: {{pointsInfo.currentLevel.color}}"></view>
+            </view>
+        </view>
+    </view>
+
+    <!-- 时间测试按钮 -->
+    <view class="test-section">
+        <button class="test-btn" bindtap="testServerTime">测试云函数时间</button>
+    </view>
+
+    <!-- 积分历史 -->
+    <view class="points-history">
+        <view class="section-title">积分明细</view>
+        <view class="history-list">
+            <view wx:for="{{pointsHistory}}" wx:key="_id" class="history-item card-project">
+                <view class="item-left">
+                    <view class="action-desc">{{item.actionDesc}}</view>
+                    <view class="time-desc">{{item.addTimeDesc}}</view>
+                    <view wx:if="{{item.POINTS_DESCRIPTION}}" class="description">{{item.POINTS_DESCRIPTION}}</view>
+                </view>
+                <view class="item-right">
+                    <view class="points-amount {{item.POINTS_AMOUNT > 0 ? 'positive' : 'negative'}}">
+                        {{item.amountDesc}}
+                    </view>
+                </view>
+            </view>
+        </view>
+        
+        <!-- 加载状态 -->
+        <view wx:if="{{loading}}" class="loading-more">加载中...</view>
+        <view wx:elif="{{!hasMore && pointsHistory.length > 0}}" class="no-more">没有更多了</view>
+        <view wx:elif="{{pointsHistory.length === 0}}" class="empty-state">暂无积分记录</view>
+    </view>
+</view>

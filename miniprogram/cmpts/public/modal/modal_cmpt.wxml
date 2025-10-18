@@ -42,8 +42,8 @@
 			<slot />
 		</view>
 		<view class="modal-bar"> 
-			<view class="" bindtap="bindHideModalTap">{{cancelText}}</view>
-			<view wx:if="{{showConfirm}}" class="modal-bar-comfirm" bindtap="bindComfirmTap">{{confirmText}}</view> 
+			<view class="modal-btn" bindtap="bindHideModalTap">{{cancelText}}</view>
+			<view wx:if="{{showConfirm}}" class="modal-btn modal-bar-comfirm" bindtap="bindComfirmTap">{{confirmText}}</view> 
 		</view>
 	</view>
 </view>
@@ -62,8 +62,8 @@
 			<slot />
 		</view>
 		<view class="modal-bar"> 
-			<view class="" bindtap="bindHideModalTap">{{cancelText}}</view>
-			<view wx:if="{{showConfirm}}" class="modal-bar-comfirm" bindtap="bindComfirmTap">{{confirmText}}</view> 
+			<view class="modal-btn" bindtap="bindHideModalTap">{{cancelText}}</view>
+			<view wx:if="{{showConfirm}}" class="modal-btn modal-bar-comfirm" bindtap="bindComfirmTap">{{confirmText}}</view> 
 		</view>
 	</view>
 </view>

@@ -6,12 +6,20 @@
 			<image wx:if="{{upImg}}" mode="aspectFill" lazy-load class="upImg loading" src="{{upImg}}" />
 			<view class="user-bar">
 				<view class="avatar">
-					<image mode="aspectFit" src="../../skin/images/tabbar/my_cur.png" />
+					<image mode="aspectFill" src="{{user.USER_AVATAR || '../../skin/images/tabbar/my_cur.png'}}" />
 				</view>
 				<view class="detail" bindtap="url" data-url="../edit/my_edit">
 					<view class="name text-cut">{{user?user.USER_NAME:'欢迎回来~~~'}}</view>
-					<view class="desc">
-						<view class="text-cut">{{user?'修改个人资料':'马上注册，使用更多功能'}}</view>
+					<!-- 积分信息集成到用户详情区域 -->
+					<view class="points-inline">
+						<view class="points-level-badge">{{pointsInfo.currentLevel.name || '新手会员'}}</view>
+						<view class="points-amount">{{pointsInfo.totalPoints || 0}}积分</view>
+					</view>
+					<view class="progress-inline">
+						<view class="progress-bar-inline">
+							<view class="progress-fill-inline" style="width: {{pointsInfo.progressPercent || 0}}%; background-color: {{pointsInfo.currentLevel.color || '#95a5a6'}}"></view>
+						</view>
+						<view class="progress-text-inline">{{pointsInfo.nextLevel ? '距离' + pointsInfo.nextLevel.name + '还需' + pointsInfo.needPoints + '积分' : '已达最高等级'}}</view>
 					</view>
 				</view> 
 			</view>
@@ -22,15 +30,18 @@
 		<view class="down padding-project">
 			<view class="comm-list menu today-card card-project shadow-project">
 				<view class="today">
-					<view class="title">我的今日{{skin.MEET_NAME}}</view>
+					<view class="title">我的{{skin.MEET_NAME || '预约'}}状态</view>
 					<view class="list">
-						<view class="item" wx:if="{{myTodayList===null}}">
+						<view class="item" wx:if="{{joinDisplayInfo===null || joinDisplayInfo===undefined}}">
 							<view class="load loading text-s text-project" style="line-height:1!important"></view>
 						</view>
-						<view wx:elif="{{myTodayList.length==0}}" class="item">
-							<view class="text-normal text-grey" style="line-height:1!important">您今天没有{{skin.MEET_NAME}}哦~ </view>
+						<view wx:else class="item">
+							<view class="appointment-status">
+								<text class="{{joinDisplayInfo === '暂无预约' ? 'text-grey' : 'text-project'}}">{{joinDisplayInfo}}</text>
+							</view>
 						</view>
-						<view class="item" bindtap="url" data-url="../join_detail/my_join_detail?id={{item._id}}" wx:for="{{myTodayList}}" wx:key="key">
+						<!-- 保留今日预约的详细显示 -->
+						<view class="item" bindtap="url" data-url="../join_detail/my_join_detail?id={{item._id}}" wx:for="{{myTodayList}}" wx:key="key" wx:if="{{myTodayList && myTodayList.length > 0}}">
 							<view class="time">
 								<text>{{item.JOIN_MEET_TIME_START}}~{{item.JOIN_MEET_TIME_END}}</text>
 
@@ -53,9 +64,21 @@
 				<view class="item arrow" bindtap="url" data-url="../join/my_join">
 					<view class="content">
 						<text class="icon-activityfill my-icon-project text-project"></text>
-						<text class="text-black">我的所有{{skin.MEET_NAME}}</text>
+						<text class="text-black">我的所有{{skin.MEET_NAME || '预约'}}</text>
 					</view>
 				</view>
+				
+				<!-- 新增：积分系统 -->
+				<view class="item arrow" bindtap="url" data-url="../points/my_points">
+					<view class="content">
+						<text class="icon-coin my-icon-project text-orange"></text>
+						<text class="text-black">我的积分</text>
+					</view>
+					<view class="extra">
+						<text class="text-grey">{{pointsInfo.totalPoints || 0}}分</text>
+					</view>
+				</view>
+				
 				<view class="item arrow" bindtap="url" data-url="../edit/my_edit">
 					<view class="content">
 						<text class="icon-edit my-icon-project text-green"></text>
@@ -68,26 +91,13 @@
 			<!--sys begin -->
 			<view class="comm-list menu card-project shadow-project">
 
-				<view class="item arrow" bindtap="url" data-url="../../about/index/about_index">
+				<!-- 临时测试按钮 -->
+				<view class="item arrow" bindtap="testPointsAPI">
 					<view class="content">
-						<text class="icon-friend my-icon-project text-purple"></text>
-						<text class="text-black">关于我们</text>
-					</view>
-				</view> 
-				
-				<view wx:if="{{!skin.IS_SUB}}" class="item arrow" bindtap="url" data-url="../../about/contact/about_contact">
-					<view class="content">
-						<text class="icon-phone my-icon-project  text-cyan"></text>
-						<text class="text-black">联系我们</text>
+						<text class="icon-settings my-icon-project text-orange"></text>
+						<text class="text-black">初始化积分系统</text>
 					</view>
 				</view>
-				<view wx:else class="item arrow" bindtap="url" data-type="relaunch" data-url="../../../../pages/home/service/home_service">
-					<view class="content">
-						<text class="icon-phone my-icon-project text-cyan"></text>
-						<text class="text-black">联系作者了解更多详情</text>
-					</view>
-				</view>
-
 
 				<view class="item arrow" bindtap="bindSetTap">
 					<view class="content">
@@ -105,10 +115,5 @@
 
 	</view> 
 
-
-	<block wx:if="{{skin.IS_SUB}}">
-		<import src="../../tpls/public/menu_tpl.wxml" />
-		<template is="menuTpl" data="{{skin, curMenu:'my_index', returnHome}}" />
-	</block>
 
 </template>

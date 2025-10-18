@@ -62,7 +62,7 @@ Component({
 		},
 		multiDoDay: { // 多选模式>正在操作的天 arrary[]
 			type: Array,
-			value: null,
+			value: [],
 		},
 		multiOnlyOne: { //多选模式>只能选一个
 			type: Boolean,

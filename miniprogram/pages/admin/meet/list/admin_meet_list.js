@@ -30,7 +30,12 @@ Page({
 	/**
 	 * 生命周期函数--监听页面显示
 	 */
-	onShow: async function () {},
+	onShow: async function () {
+		// 页面显示时刷新列表数据
+		if (this.data.dataList) {
+			this.selectComponent('#comm-list')._refresh();
+		}
+	},
 
 	/**
 	 * 生命周期函数--监听页面隐藏

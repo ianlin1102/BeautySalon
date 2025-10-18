@@ -2,7 +2,7 @@
 	<view wx:if="{{isLoad===null}}" class="margin-top load notexist text-l load-project"></view>
 	<view wx:if="{{isLoad===false}}" class="margin-top load loading text-l load-project"></view>
 
-	<view class="main {{skin.IS_SUB?'sub-margin-bottom':''}}" wx:if="{{isLoad}}">
+	<view class="main {{skin && skin.IS_SUB?'sub-margin-bottom':''}}" wx:if="{{isLoad}}">
 		<view class="plan-date">
 			<cmpt-calendar mode="one" hasDays="{{hasDays}}" bind:click="bindClickCmpt" bind:monthChange="bindMonthChangeCmpt" />
 		</view>
@@ -25,8 +25,4 @@
 		</view>
 	</view>
 
-	<block wx:if="{{skin.IS_SUB}}">
-		<import src="../../tpls/public/menu_tpl.wxml" />
-		<template is="menuTpl" data="{{skin,curMenu:'calendar_index'}}" />
-	</block>
 </template>

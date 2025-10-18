@@ -39,15 +39,24 @@
 
 				<view wx:if="{{meet.MEET_DAYS_SET && meet.MEET_DAYS_SET.length > 0}}" class="vertical-box">
 					<!-- left begin -->
-					<scroll-view class="vertical-nav nav" scroll-y scroll-with-animation scroll-top="{{verticalNavTop}}" style="height:calc(100vh - 193rpx);">
+					<scroll-view class="vertical-nav nav" scroll-y scroll-with-animation scroll-top="{{verticalNavTop}}" style="height:calc(100vh - 293rpx);">
 						<view class="item text-cut  {{index==tabCur?'cur text-project':''}}" wx:for="{{meet.MEET_DAYS_SET}}" wx:key="key" bindtap='bindTabSelectTap' data-idx="{{index}}" wx:if="{{item.times.length>0||canNullTime}}">
-							{{item.day}}
+							<view class="date-section">
+								<view class="date-text">{{item.day}}</view>
+								<view class="status-section">
+									<view class="status-text" wx:if="{{item.times.length > 0}}">
+										<view wx:for="{{item.times}}" wx:key="key" wx:for-item="timeItem">
+											<text wx:if="{{timeItem.userJoined}}" class="joined-status">✓ 已预约</text>
+										</view>
+									</view>
+								</view>
+							</view>
 						</view>
 					</scroll-view>
 					<!-- left END -->
 
 					<!-- right begin -->
-					<scroll-view class="vertical-main" scroll-y scroll-with-animation style="height:calc(100vh - 193rpx)" scroll-into-view="main-{{mainCur}}" bindscroll="bindVerticalMainScroll">
+					<scroll-view class="vertical-main" scroll-y scroll-with-animation style="height:calc(100vh - 293rpx)" scroll-into-view="main-{{mainCur}}" bindscroll="bindVerticalMainScroll">
 
 
 						<view class="vertical-main-box" wx:for="{{meet.MEET_DAYS_SET}}" wx:if="{{item.times.length>0||canNullTime}}" wx:key="key" id="main-{{index}}">
@@ -63,9 +72,12 @@
 								<view class="item text-grey" wx:if="{{item.times.length==0&&canNullTime}}">暂无可预约时段</view>
 
 								<view class="item" bindtap="bindJoinTap" data-dayidx="{{index}}" data-timeidx="{{idx}}" wx:for="{{item.times}}" wx:key="key" wx:for-item="itm" wx:for-index="idx">
-									<view class="time-text limit {{itm.error?'error':''}}">
+									<view class="time-text limit {{itm.error?'error':''}} {{itm.userJoined?'user-joined':''}}">
 										<text>{{itm.start}}～{{itm.end}}</text>
-										<block wx:if="{{!itm.error}}">
+										<block wx:if="{{itm.userJoined}}">
+											<text class="limit-text joined-text">✓ 您已预约</text>
+										</block>
+										<block wx:elif="{{!itm.error}}">
 											<text wx:if="{{meet.MEET_IS_SHOW_LIMIT==1&&itm.isLimit}}" class="limit-text">({{itm.stat.succCnt}}<text style="margin:0 5rpx">/</text>{{itm.limit}})</text>
 											<text wx:if="{{meet.MEET_IS_SHOW_LIMIT==1&&!itm.isLimit}}" class='limit-text'>(人数不限)</text>
 											<text wx:if="{{meet.MEET_IS_SHOW_LIMIT==0}}" class='limit-text'>(可预约)</text>

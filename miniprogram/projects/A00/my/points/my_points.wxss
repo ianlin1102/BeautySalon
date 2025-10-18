@@ -1,0 +1,193 @@
+@import "../../../../style/project/base/project.wxss";
+
+.main {
+    background: #f5f5f5;
+    min-height: 100vh;
+    padding: 20rpx;
+}
+
+/* 积分概览卡片 */
+.points-overview {
+    color: white;
+    padding: 40rpx;
+    border-radius: 20rpx;
+    margin-bottom: 30rpx;
+    box-shadow: 0 8rpx 25rpx rgba(0, 0, 0, 0.15);
+}
+
+.points-header {
+    text-align: center;
+    margin-bottom: 30rpx;
+}
+
+.points-total {
+    font-size: 80rpx;
+    font-weight: bold;
+    line-height: 1;
+    color: #fff;
+    text-shadow: 0 3px 6px rgba(0, 0, 0, 0.5);
+}
+
+.points-label {
+    font-size: 28rpx;
+    color: rgba(255, 255, 255, 0.95);
+    margin-top: 10rpx;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+}
+
+.level-info {
+    text-align: center;
+    margin-bottom: 30rpx;
+}
+
+.current-level {
+    font-size: 32rpx;
+    font-weight: bold;
+    margin-bottom: 10rpx;
+    color: #fff !important;
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.4);
+}
+
+.next-level {
+    font-size: 24rpx;
+    opacity: 0.95;
+    color: rgba(255, 255, 255, 0.95);
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+}
+
+.max-level {
+    font-size: 24rpx;
+    color: #fff;
+    font-weight: bold;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.4);
+}
+
+.progress-container {
+    margin-top: 20rpx;
+}
+
+.progress-bar {
+    width: 100%;
+    height: 10rpx;
+    background: rgba(255, 255, 255, 0.3);
+    border-radius: 5rpx;
+    overflow: hidden;
+}
+
+.progress-fill {
+    height: 100%;
+    background: rgba(255, 255, 255, 0.9);
+    border-radius: 5rpx;
+    transition: width 0.3s ease;
+}
+
+/* 积分历史部分 */
+.points-history {
+    background: white;
+    border-radius: 20rpx;
+    overflow: hidden;
+}
+
+.section-title {
+    padding: 30rpx;
+    font-size: 32rpx;
+    font-weight: bold;
+    color: #333;
+    border-bottom: 1px solid #f0f0f0;
+}
+
+.history-list {
+    padding: 0 30rpx;
+}
+
+.history-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 30rpx 0;
+    border-bottom: 1px solid #f8f8f8;
+}
+
+.history-item:last-child {
+    border-bottom: none;
+}
+
+.item-left {
+    flex: 1;
+}
+
+.action-desc {
+    font-size: 30rpx;
+    color: #333;
+    font-weight: 500;
+    margin-bottom: 8rpx;
+}
+
+.time-desc {
+    font-size: 24rpx;
+    color: #999;
+    margin-bottom: 5rpx;
+}
+
+.description {
+    font-size: 24rpx;
+    color: #666;
+}
+
+.item-right {
+    text-align: right;
+}
+
+.points-amount {
+    font-size: 32rpx;
+    font-weight: bold;
+}
+
+.points-amount.positive {
+    color: #52c41a;
+}
+
+.points-amount.positive::before {
+    content: '+';
+}
+
+.points-amount.negative {
+    color: #ff4d4f;
+}
+
+/* 状态提示 */
+.loading-more,
+.no-more,
+.empty-state {
+    text-align: center;
+    padding: 40rpx;
+    color: #999;
+    font-size: 28rpx;
+}
+
+.empty-state {
+    padding: 80rpx 40rpx;
+}
+
+/* 测试按钮样式 */
+.test-section {
+    margin: 20rpx 0;
+    text-align: center;
+}
+
+.test-btn {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    border: none;
+    border-radius: 50rpx;
+    padding: 20rpx 40rpx;
+    font-size: 28rpx;
+    font-weight: 500;
+    box-shadow: 0 4rpx 15rpx rgba(102, 126, 234, 0.4);
+    transition: all 0.3s ease;
+}
+
+.test-btn:active {
+    transform: translateY(2rpx);
+    box-shadow: 0 2rpx 8rpx rgba(102, 126, 234, 0.3);
+}

@@ -60,8 +60,11 @@ Page({
 	/**
 	 * 生命周期函数--监听页面显示
 	 */
-	onShow: function () {
-
+	onShow: async function () {
+		// 页面显示时重新加载数据，确保数据最新
+		if (this.data.isLoad) {
+			await this._loadDetail();
+		}
 	},
 
 	/**

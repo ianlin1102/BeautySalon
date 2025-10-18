@@ -176,6 +176,23 @@ module.exports = Behavior({
 				}
 				await cloudHelper.callCloudSumbit('passport/edit_base', data, opts).then(res => {
 					let callback = () => {
+						// 获取页面栈，通知上一页刷新数据
+						let pages = getCurrentPages();
+						let prevPage = pages[pages.length - 2]; // 上一页
+						
+						if (prevPage) {
+							// 如果上一页有刷新用户信息的方法，调用它
+							if (prevPage._loadUser && typeof prevPage._loadUser === 'function') {
+								console.log('通知上一页刷新用户信息');
+								prevPage._loadUser();
+							}
+							// 如果上一页有刷新积分信息的方法，也调用它
+							if (prevPage.getPointsInfo && typeof prevPage.getPointsInfo === 'function') {
+								console.log('通知上一页刷新积分信息');
+								prevPage.getPointsInfo();
+							}
+						}
+						
 						wx.navigateBack();
 					}
 					pageHelper.showSuccToast('提交成功', 1500, callback);

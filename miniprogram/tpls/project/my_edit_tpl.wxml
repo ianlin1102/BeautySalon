@@ -40,4 +40,5 @@
 
 		<button bindtap="bindSubmitTap" class="btn-base btn-project">提交</button>
 	</view>
+
 </template>

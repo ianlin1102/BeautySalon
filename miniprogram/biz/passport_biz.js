@@ -91,6 +91,72 @@ class PassportBiz extends BaseBiz {
 
 	}
 
+	// 新增：获取积分信息
+	static async getPointsInfo() {
+		try {
+			let res = await cloudHelper.callCloudSumbit('points/my_info', {});
+			console.log('PassportBiz 收到的积分信息:', res);
+			
+			// 检查返回数据格式，可能是 { code: 200, data: {...} } 或直接是数据
+			let pointsData = res;
+			if (res && res.data) {
+				pointsData = res.data;
+			}
+			
+			// 确保返回数据格式正确
+			if (pointsData && pointsData.totalPoints !== undefined) {
+				console.log('PassportBiz 返回积分数据:', pointsData);
+				return pointsData;
+			} else {
+				console.log('PassportBiz 数据格式不正确，使用默认值. 原始数据:', res);
+				// 如果返回数据格式不正确，使用默认值
+				return {
+					totalPoints: 0,
+					currentLevel: { name: '新手会员', color: '#95a5a6' },
+					needPoints: 100,
+					progressPercent: 0,
+					recentHistory: []
+				};
+			}
+		} catch (e) {
+			console.error('获取积分信息失败:', e);
+			// 云函数不可用时返回默认值
+			return {
+				totalPoints: 0,
+				currentLevel: { name: '新手会员', color: '#95a5a6' },
+				needPoints: 100,
+				progressPercent: 0,
+				recentHistory: []
+			};
+		}
+	}
+
+	// 新增：获取积分历史
+	static async getPointsHistory(page = 1, size = 20) {
+		try {
+			let res = await cloudHelper.callCloudSumbit('points/my_history', {
+				page: page,
+				size: size
+			});
+			return res;
+		} catch (e) {
+			console.error('获取积分历史失败:', e);
+			return { list: [], total: 0 };
+		}
+	}
+
+	// 新增：测试云函数时间
+	static async testServerTime() {
+		try {
+			let res = await cloudHelper.callCloudSumbit('points/test', {});
+			console.log('云函数时间测试结果:', res);
+			return res;
+		} catch (e) {
+			console.error('测试云函数时间失败:', e);
+			throw e;
+		}
+	}
+
 }
 
 module.exports = PassportBiz;

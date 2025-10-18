@@ -19,7 +19,7 @@
 
 .meet-no-time {
 	width: 100%;
-	height: 100vh;
+	height: calc(100vh - 293rpx);
 	background-color: #fff;
 	padding: 80rpx 30rpx 30rpx;
 	display: flex;
@@ -317,4 +317,16 @@
 	width: 100%;
 	font-size: 24rpx;
 	color: #999;
+}
+
+/* 用户已预约的时间段样式 */
+.vertical-main .text-list .item .time-text.user-joined {
+	background-color: #e8f5e8;
+	border-color: #4caf50;
+	color: #2e7d32;
+}
+
+.vertical-main .text-list .item .time-text .joined-text {
+	color: #2e7d32;
+	font-weight: bold;
 }

@@ -12,13 +12,14 @@ page{
 
 .main .upside {
 	background-color: var(--projectColor);
-	height: 220rpx;
+	height: 280rpx;
 	width: 100%;
 	display: flex;
 	align-items: center;
 	justify-content: center;
 	position: relative;
 	overflow: hidden;
+	padding-top: 20rpx;
 }
 
 .main .upside .upImg {
@@ -33,8 +34,8 @@ page{
 	width: 100%;
 	display: flex;
 	justify-content: flex-start;
-	align-items: flex-start;
-	padding-left: 40rpx;
+	align-items: center;
+	padding: 0 40rpx;
 	z-index: 9999;
 }
 
@@ -56,11 +57,11 @@ page{
 }
 
 .main .upside .user-bar .detail {
-	width: 500rpx;
+	flex: 1;
 	margin-left: 40rpx;
 	display: flex;
 	flex-direction: column;
-	justify-content: flex-start;
+	justify-content: center;
 	align-items: flex-start;
 	color: #fff;
 	box-sizing: border-box;
@@ -79,14 +80,65 @@ page{
 	color: var(--projectCompareColor)
 }
 
+/* 内联积分信息样式 */
+.points-inline {
+	display: flex;
+	align-items: center;
+	margin-top: 15rpx;
+	gap: 20rpx;
+}
+
+.points-level-badge {
+	background: rgba(255, 255, 255, 0.9);
+	color: var(--projectColor);
+	font-size: 24rpx;
+	padding: 8rpx 16rpx;
+	border-radius: 15rpx;
+	font-weight: bold;
+	box-shadow: 0 2rpx 8rpx rgba(0, 0, 0, 0.1);
+}
+
+.points-amount {
+	color: rgba(255, 255, 255, 0.95);
+	font-size: 26rpx;
+	font-weight: bold;
+}
+
+.progress-inline {
+	width: 100%;
+	margin-top: 15rpx;
+}
+
+.progress-bar-inline {
+	width: 100%;
+	height: 8rpx;
+	background: rgba(255, 255, 255, 0.3);
+	border-radius: 4rpx;
+	overflow: hidden;
+	margin-bottom: 8rpx;
+}
+
+.progress-fill-inline {
+	height: 100%;
+	background: rgba(255, 255, 255, 0.9);
+	border-radius: 4rpx;
+	transition: width 0.3s ease;
+}
+
+.progress-text-inline {
+	font-size: 22rpx;
+	color: rgba(255, 255, 255, 0.85);
+	line-height: 1.3;
+}
+
 .main .down {
 	box-sizing: border-box;
 	width: 100%;
 	display: flex;
 	flex-direction: column;
 	justify-content: center;
-	padding: 20rpx 20rpx;
-	margin-top: 20rpx;
+	padding: 30rpx 20rpx;
+	margin-top: 30rpx;
 }
 
 .main .down .data {
@@ -189,4 +241,98 @@ page{
 .main .site-footer {
 	width: 100%;
 	align-self: flex-end;
+}
+
+/* 积分条样式 */
+.points-bar {
+	background: #fff;
+	padding: 30rpx;
+	margin: 20rpx 0;
+	border-radius: 20rpx;
+}
+
+.points-header {
+	display: flex;
+	align-items: center;
+}
+
+.points-avatar {
+	width: 80rpx;
+	height: 80rpx;
+	border-radius: 50%;
+	overflow: hidden;
+	margin-right: 20rpx;
+}
+
+.points-avatar image {
+	width: 100%;
+	height: 100%;
+}
+
+.points-info {
+	flex: 1;
+}
+
+.points-title {
+	font-size: 30rpx;
+	font-weight: bold;
+	color: #333;
+	margin-bottom: 10rpx;
+}
+
+.points-level {
+	font-size: 26rpx;
+	color: #666;
+	margin-bottom: 15rpx;
+}
+
+.points-progress {
+	display: flex;
+	flex-direction: column;
+}
+
+.progress-bar {
+	width: 100%;
+	height: 8rpx;
+	background: #f0f0f0;
+	border-radius: 4rpx;
+	overflow: hidden;
+	margin-bottom: 8rpx;
+}
+
+.progress-fill {
+	height: 100%;
+	border-radius: 4rpx;
+	transition: width 0.3s ease;
+}
+
+.progress-text {
+	font-size: 24rpx;
+	color: #666;
+}
+
+/* 积分选项样式 */
+.item .extra {
+	color: #FF6B6B;
+	font-weight: bold;
+	font-size: 28rpx;
+}
+
+/* 积分图标颜色 */
+.icon-coin {
+	color: #FFD700 !important;
+}
+
+/* 预约状态显示样式 */
+.appointment-status {
+	padding: 20rpx 0;
+	text-align: center;
+	font-size: 28rpx;
+	line-height: 1.4;
+}
+
+.appointment-status text {
+	display: block;
+	word-wrap: break-word;
+	word-break: break-all;
 }

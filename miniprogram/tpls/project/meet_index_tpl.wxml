@@ -1,5 +1,5 @@
 <template name="meetIndexTpl">
-	<cmpt-comm-list type="meet" _params="{{_params}}" search="{{search}}" _menus="{{}}" _items="{{}}" route="meet/list" topBottom="120" isTotalMenu="{{isTotalMenu}}" placeholder="搜索" bind:list="bindCommListCmpt">
+	<cmpt-comm-list type="meet" _params="{{_params}}" search="{{search||''}}" _menus="{{[]}}" _items="{{[]}}" route="meet/list" topBottom="120" isTotalMenu="{{isTotalMenu}}" placeholder="搜索" bind:list="bindCommListCmpt">
 		<view class="up-project" wx:if="{{showUp}}">
 			<image wx:if="{{upImg}}" mode="widthFix" lazy-load src="{{upImg}}" />
 		</view>
@@ -14,10 +14,5 @@
 		<!--load end-->
  
 	</cmpt-comm-list>
-
-	<block wx:if="{{skin.IS_SUB}}">
-		<import src="../../tpls/public/menu_tpl.wxml" />
-		<template is="menuTpl" data="{{skin,curMenu:'meet_index',returnHome}}" />
-	</block>
 
 </template>

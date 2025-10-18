@@ -66,14 +66,14 @@ function getNowTime(that) {
 	if (that.data.mode == 'one' && that.data.oneDoDay) {
 		year = Number(timeHelper.timestamp2Time(timeHelper.time2Timestamp(that.data.oneDoDay), 'Y'));
 		month = Number(timeHelper.timestamp2Time(timeHelper.time2Timestamp(that.data.oneDoDay), 'M'));
-	} else if (that.data.mode == 'multi' && that.data.multiDoDay && that.data.multiDoDay.length > 0 && that.data.multiDoDay[0]) {
+	} else if (that.data.mode == 'multi' && that.data.multiDoDay && Array.isArray(that.data.multiDoDay) && that.data.multiDoDay.length > 0 && that.data.multiDoDay[0]) {
 		year = Number(timeHelper.timestamp2Time(timeHelper.time2Timestamp(that.data.multiDoDay[0]), 'Y'));
 		month = Number(timeHelper.timestamp2Time(timeHelper.time2Timestamp(that.data.multiDoDay[0]), 'M'));
 	}
 
 	let oneDoDay = that.data.oneDoDay || fullToday; // 正在操作的天完整格式
-	// let multiDoDay = that.data.multiDoDay || [oneDoDay];  // 多选默认选中一天
-	let multiDoDay = that.data.multiDoDay;
+	// 确保multiDoDay始终是数组
+	let multiDoDay = that.data.multiDoDay || [];
 
 	that.setData({
 		year,

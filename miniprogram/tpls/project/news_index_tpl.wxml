@@ -1,6 +1,6 @@
 <template name="newsIndexTpl">
 
-	<cmpt-comm-list type="news" search="{{search}}" _params="{{_params}}" _menus="{{sortMenus}}" _items="{{sortItems}}" isTotalMenu="{{isTotalMenu}}" route="news/list" topBottom="120" placeholder="搜索标题" bind:list="bindCommListCmpt">
+	<cmpt-comm-list type="news" search="{{search||''}}" _params="{{_params}}" _menus="{{sortMenus||[]}}" _items="{{sortItems||[]}}" isTotalMenu="{{isTotalMenu}}" route="news/list" topBottom="120" placeholder="搜索标题" bind:list="bindCommListCmpt">
 		<view class="up-project" wx:if="{{showUp}}">
 			<image wx:if="{{upImg}}" mode="widthFix" lazy-load src="{{upImg}}" />
 		</view>
@@ -16,8 +16,4 @@
 		<!--load end-->
 	</cmpt-comm-list>
 
-	<block wx:if="{{skin.IS_SUB&&curMenu}}">
-		<import src="../../tpls/public/menu_tpl.wxml" />
-		<template is="menuTpl" data="{{skin,curMenu,returnHome}}" />
-	</block>
 </template>

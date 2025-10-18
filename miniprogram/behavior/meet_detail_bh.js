@@ -48,6 +48,50 @@ module.exports = Behavior({
 				return;
 			}
 
+			// 检查用户在这个活动中的预约状态
+			try {
+				let joinParams = {
+					search: '',
+					sortType: '',
+					sortVal: '',
+					orderBy: {},
+					page: 1,
+					size: 100,
+					isTotal: false
+				};
+				let myJoins = await cloudHelper.callCloudData('my/my_join_list', joinParams, {title: ''});
+				
+				// 查找用户在当前活动中的预约
+				let currentMeetJoins = [];
+				if (myJoins && myJoins.list) {
+					currentMeetJoins = myJoins.list.filter(join => 
+						join.JOIN_MEET_ID === id && join.JOIN_STATUS === 1
+					);
+				}
+
+				// 标记已预约的时间段
+				if (meet.MEET_DAYS_SET) {
+					for (let daySet of meet.MEET_DAYS_SET) {
+						if (daySet.times) {
+							for (let timeSlot of daySet.times) {
+								// 检查这个时间段是否已被用户预约
+								let isJoined = currentMeetJoins.some(join => 
+									join.JOIN_MEET_TIME_MARK === timeSlot.mark
+								);
+								if (isJoined) {
+									timeSlot.userJoined = true;
+								}
+							}
+						}
+					}
+				}
+
+				this.setData({
+					userJoins: currentMeetJoins
+				});
+			} catch (e) {
+				console.error('加载用户预约状态失败:', e);
+			}
 
 			this.setData({
 				isLoad: true,

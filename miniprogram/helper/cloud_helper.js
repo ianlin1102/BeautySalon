@@ -303,9 +303,12 @@
 
  		// 是否为临时文件
  		if (filePath.includes('tmp') || filePath.includes('temp') || filePath.includes('wxfile')) {
+ 			// 使用时间戳和随机数确保文件名唯一性
+ 			let timestamp = Date.now();
  			let rd = dataHelper.genRandomNum(100000, 999999);
+ 			let uniqueId = timestamp + '_' + rd;
  			await wx.cloud.uploadFile({
- 				cloudPath: id ? dir + id + '/' + rd + ext : dir + rd + ext,
+ 				cloudPath: id ? dir + id + '/' + uniqueId + ext : dir + uniqueId + ext,
  				filePath: filePath, // 文件路径
  			}).then(res => {
  				imgList[i] = res.fileID;

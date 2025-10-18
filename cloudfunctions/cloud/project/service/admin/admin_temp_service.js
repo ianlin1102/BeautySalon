@@ -14,7 +14,13 @@ class AdminTempService extends BaseAdminService {
 		name,
 		times,
 	}) {
-		this.AppError('此功能暂不开放，如有需要请加作者微信：cclinux0730');
+		let data = {
+			TEMP_NAME: name,
+			TEMP_TIMES: times
+		};
+		
+		let id = await TempModel.insert(data);
+		return { id };
 	}
 
 	/**更新数据 */
@@ -23,13 +29,18 @@ class AdminTempService extends BaseAdminService {
 		limit,
 		isLimit
 	}) {
-		this.AppError('此功能暂不开放，如有需要请加作者微信：cclinux0730');
+		let data = {
+			TEMP_LIMIT: limit,
+			TEMP_IS_LIMIT: isLimit
+		};
+		
+		await TempModel.edit(id, data);
 	}
 
 
 	/**删除数据 */
 	async delTemp(id) {
-		this.AppError('此功能暂不开放，如有需要请加作者微信：cclinux0730');
+		await TempModel.del(id);
 	}
 
 
