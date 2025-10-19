@@ -44,10 +44,15 @@ class PointsLevelModel extends BaseModel {
         }
         
         let nextLevel = this.DEFAULT_LEVELS[nextLevelIndex];
+        // 修复进度条计算逻辑：应该是当前等级内的进度，而不是到达当前等级上限的进度
+        let currentLevelRange = currentLevel.maxPoints - currentLevel.minPoints + 1; // +1 因为包含边界值
+        let currentProgress = points - currentLevel.minPoints;
+        let progressPercent = Math.floor((currentProgress / currentLevelRange) * 100);
+        
         return {
             nextLevel: nextLevel,
             needPoints: nextLevel.minPoints - points,
-            progressPercent: Math.floor((points - currentLevel.minPoints) / (currentLevel.maxPoints - currentLevel.minPoints) * 100) //返回上一层渲染
+            progressPercent: Math.min(progressPercent, 100) // 确保不超过100%
         };
     }
 }

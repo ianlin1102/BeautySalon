@@ -5,10 +5,10 @@
 		<view class="upside upside-shadow">
 			<image wx:if="{{upImg}}" mode="aspectFill" lazy-load class="upImg loading" src="{{upImg}}" />
 			<view class="user-bar">
-				<view class="avatar">
+				<view class="avatar" bindtap="url" data-url="../edit/my_edit">
 					<image mode="aspectFill" src="{{user.USER_AVATAR || '../../skin/images/tabbar/my_cur.png'}}" />
 				</view>
-				<view class="detail" bindtap="url" data-url="../edit/my_edit">
+				<view class="detail" bindtap="url" data-url="../points/my_points">
 					<view class="name text-cut">{{user?user.USER_NAME:'欢迎回来~~~'}}</view>
 					<!-- 积分信息集成到用户详情区域 -->
 					<view class="points-inline">

@@ -49,6 +49,13 @@ page{
 	display: flex;
 	align-items: center;
 	justify-content: center;
+	cursor: pointer;
+	transition: all 0.2s ease;
+}
+
+.main .upside .user-bar .avatar:active {
+	transform: scale(0.95);
+	opacity: 0.8;
 }
 
 .main .upside .user-bar .avatar image {
@@ -65,6 +72,15 @@ page{
 	align-items: flex-start;
 	color: #fff;
 	box-sizing: border-box;
+	cursor: pointer;
+	transition: all 0.2s ease;
+	padding: 10rpx;
+	border-radius: 10rpx;
+}
+
+.main .upside .user-bar .detail:active {
+	transform: scale(0.98);
+	background: rgba(255, 255, 255, 0.1);
 }
 
 .main .upside .user-bar .detail .name {
@@ -107,6 +123,13 @@ page{
 .progress-inline {
 	width: 100%;
 	margin-top: 15rpx;
+	cursor: pointer;
+	transition: all 0.2s ease;
+}
+
+.progress-inline:active {
+	transform: scale(0.98);
+	opacity: 0.8;
 }
 
 .progress-bar-inline {

@@ -33,7 +33,10 @@ Page({
 	onShow: async function () {
 		// 页面显示时刷新列表数据
 		if (this.data.dataList) {
-			this.selectComponent('#comm-list')._refresh();
+			let commListComponent = this.selectComponent('#comm-list');
+			if (commListComponent && commListComponent._refresh) {
+				commListComponent._refresh();
+			}
 		}
 	},
 
