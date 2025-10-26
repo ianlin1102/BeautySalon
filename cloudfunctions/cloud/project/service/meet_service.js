@@ -548,6 +548,12 @@ class MeetService extends BaseService {
 			if (usefulTimes.length == 0) continue;
 
 			let node = {};
+			// 返回完整的时间段数组，供前端显示
+			node.times = usefulTimes.map(t => ({
+				start: t.start,
+				end: t.end
+			}));
+			// 保留兼容性的 timeDesc
 			node.timeDesc = usefulTimes.length > 1 ? usefulTimes.length + '个时段' : usefulTimes[0].start;
 			node.title = list[k].MEET_TITLE;
 			node.pic = list[k].MEET_STYLE_SET.pic;

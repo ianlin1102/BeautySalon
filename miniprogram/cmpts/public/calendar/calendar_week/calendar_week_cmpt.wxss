@@ -1,0 +1,167 @@
+.week-calendar-wrapper {
+	width: 100%;
+	background-color: #fff;
+	padding: 20rpx 0;
+}
+
+/* 头部 */
+.week-header {
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+	padding: 0 30rpx 20rpx;
+}
+
+.week-month {
+	font-size: 32rpx;
+	font-weight: bold;
+	color: #333;
+}
+
+.week-actions {
+	display: flex;
+	gap: 16rpx;
+}
+
+.week-btn {
+	width: 56rpx;
+	height: 56rpx;
+	border-radius: 50%;
+	background-color: #f5f5f5;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	font-size: 28rpx;
+	color: #666;
+}
+
+/* 周日期容器 */
+.week-container {
+	display: flex;
+	align-items: center;
+	padding: 0 10rpx;
+}
+
+.week-nav {
+	width: 60rpx;
+	height: 100rpx;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	font-size: 32rpx;
+	color: #999;
+	flex-shrink: 0;
+}
+
+.week-days {
+	flex: 1;
+	display: flex;
+	gap: 8rpx;
+	padding: 0 10rpx;
+}
+
+.week-day-item {
+	flex: 1;
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	justify-content: center;
+	padding: 12rpx 8rpx;
+	border-radius: 12rpx;
+	background-color: #f8f8f8;
+	position: relative;
+	min-width: 70rpx;
+	transition: all 0.2s;
+}
+
+.week-day-item.is-today {
+	background-color: #e8f0fe;
+}
+
+.week-day-item.selected {
+	background-color: #5271ff;
+	color: #fff;
+	transform: scale(1.05);
+}
+
+.week-label {
+	font-size: 20rpx;
+	color: #999;
+	margin-bottom: 6rpx;
+}
+
+.week-day-item.selected .week-label {
+	color: rgba(255, 255, 255, 0.8);
+}
+
+.day-num {
+	font-size: 32rpx;
+	font-weight: bold;
+	color: #333;
+}
+
+.week-day-item.selected .day-num {
+	color: #fff;
+}
+
+.has-dot {
+	width: 6rpx;
+	height: 6rpx;
+	border-radius: 50%;
+	background-color: #ff6b6b;
+	position: absolute;
+	top: 8rpx;
+	right: 8rpx;
+}
+
+.week-day-item.selected .has-dot {
+	background-color: #fff;
+}
+
+/* 弹窗 */
+.calendar-popup {
+	position: fixed;
+	top: 0;
+	left: 0;
+	right: 0;
+	bottom: 0;
+	background-color: rgba(0, 0, 0, 0.5);
+	z-index: 9999;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	padding: 40rpx;
+}
+
+.popup-content {
+	width: 100%;
+	max-width: 700rpx;
+	background-color: #fff;
+	border-radius: 20rpx;
+	overflow: hidden;
+	max-height: 80vh;
+}
+
+.popup-header {
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+	padding: 30rpx;
+	border-bottom: 1px solid #f0f0f0;
+}
+
+.popup-title {
+	font-size: 32rpx;
+	font-weight: bold;
+	color: #333;
+}
+
+.popup-close {
+	width: 60rpx;
+	height: 60rpx;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	font-size: 32rpx;
+	color: #666;
+}

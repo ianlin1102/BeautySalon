@@ -36,6 +36,12 @@ module.exports = Behavior({
 					list: null
 				});
 				await cloudHelper.callCloudSumbit('meet/list_by_day', params, opts).then(res => {
+					console.log('📅 返回的预约列表数据:', res.data);
+					if (res.data && res.data.length > 0) {
+						console.log('📝 第一个项目数据:', res.data[0]);
+						console.log('🖼️ 图片URL:', res.data[0].pic);
+						console.log('⏰ 时间段数据:', res.data[0].times);
+					}
 					this.setData({
 						list: res.data,
 						isLoad: true

@@ -4,22 +4,60 @@
 
 	<view class="main {{skin && skin.IS_SUB?'sub-margin-bottom':''}}" wx:if="{{isLoad}}">
 		<view class="plan-date">
-			<cmpt-calendar mode="one" hasDays="{{hasDays}}" bind:click="bindClickCmpt" bind:monthChange="bindMonthChangeCmpt" />
+			<!-- 横向滚动日历（未来4个月） -->
+			<cmpt-calendar-scroll hasDays="{{hasDays}}" bind:click="bindClickCmpt" />
+
+			<!-- 周日历模式 - 备选方案 -->
+			<!-- <cmpt-calendar-week hasDays="{{hasDays}}" bind:click="bindClickCmpt" /> -->
+
+			<!-- 原有月日历模式 - 备选方案 -->
+			<!-- <cmpt-calendar mode="one" hasDays="{{hasDays}}" bind:click="bindClickCmpt" bind:monthChange="bindMonthChangeCmpt" /> -->
 		</view>
 
 		<view class="list padding-project">
 			<view wx:if="{{list===null}}" class="load loading text-l text-grey"></view>
 			<text wx:elif="{{list.length==0}}" class="no-project icon-emoji text-l text-grey"> 本日没有可预约的项目哦~</text>
-			<view class="item card-project shadow-project" wx:for="{{list}}" wx:key="key" bindtap="url" data-url="../../meet/detail/meet_detail?id={{item._id}}">
-				<view wx:if="{{index%4==0}}" class="left bg-blue"></view>
-				<view wx:elif="{{index%4==1}}" class="left bg-green"></view>
-				<view wx:elif="{{index%4==2}}" class="left bg-orange"></view>
-				<view wx:else class="left bg-cyan"></view>
-				<block wx:if="{{item.pic}}">
-					<image class="img loading" src="{{item.pic}}" lazy-load="{{true}}" mode="aspectFill" />
-				</block>
-				<view class="title text-cut">{{item.title}}</view>
-				<view class="time"><text class="icon-time margin-right-xxs"></text>{{item.timeDesc}}</view>
+
+			<!-- 新的背景图片卡片样式 -->
+			<view class="meet-card-new" wx:for="{{list}}" wx:key="key">
+				<!-- 背景图片层 -->
+				<view class="card-bg">
+					<image wx:if="{{item.pic}}"
+						   class="bg-img"
+						   src="{{item.pic}}"
+						   mode="aspectFill"
+						   lazy-load="{{true}}" />
+					<view wx:else class="bg-placeholder"></view>
+					<!-- 白色渐变遮罩 - 下半部分 -->
+					<view class="card-gradient-mask"></view>
+				</view>
+
+				<!-- 内容层：左右分割 -->
+				<view class="card-layout">
+					<!-- 左侧：标题和时间段 -->
+					<view class="card-left">
+						<view class="card-title-new">{{item.title}}</view>
+						<!-- 时间段标签（纵向排列） -->
+						<view class="card-time-slots-new" wx:if="{{item.times && item.times.length > 0}}">
+							<view class="time-slot-tag" wx:for="{{item.times}}" wx:for-item="time" wx:key="start">
+								{{time.start}} - {{time.end}}
+							</view>
+						</view>
+						<!-- 兼容旧数据格式 -->
+						<view class="card-time-slots-new" wx:else>
+							<view class="time-slot-tag">
+								{{item.timeDesc}}
+							</view>
+						</view>
+					</view>
+
+					<!-- 右侧：可预约按钮 -->
+					<view class="card-right">
+						<button class="book-btn" bindtap="url" data-url="../../meet/detail/meet_detail?id={{item._id}}">
+							可预约
+						</button>
+					</view>
+				</view>
 			</view>
 
 		</view>
