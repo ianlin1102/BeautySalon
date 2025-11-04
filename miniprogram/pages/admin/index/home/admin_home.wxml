@@ -39,6 +39,8 @@
 		</view>
 		<view class="item" bindtap="url" data-url="../../news/list/admin_news_list"> <text class="icon-newsfill text-darkgreen"></text> <text class="text-black">内容管理</text>
 		</view>
+		<view class="item" bindtap="url" data-url="../../card/list/admin_card_list"> <text class="icon-cart text-red"></text> <text class="text-black">卡项管理</text>
+		</view>
 	</view>
 
 

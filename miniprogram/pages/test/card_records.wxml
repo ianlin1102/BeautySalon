@@ -1,0 +1,97 @@
+<view class="container">
+	<view class="header">
+		<text class="title">使用记录</text>
+	</view>
+
+	<!-- 用户信息 -->
+	<view wx:if="{{userInfo}}" class="section user-info">
+		<view class="info-row">
+			<text class="label">用户</text>
+			<text class="value">{{userInfo.USER_NAME || '未设置'}} ({{userInfo.USER_MOBILE}})</text>
+		</view>
+		<view wx:if="{{cardInfo}}" class="info-row">
+			<text class="label">卡项</text>
+			<text class="value">{{cardInfo.USER_CARD_CARD_NAME}}</text>
+		</view>
+		<view wx:if="{{cardInfo}}" class="info-row">
+			<text class="label">识别码</text>
+			<text class="value">{{cardInfo.USER_CARD_UNIQUE_ID}}</text>
+		</view>
+	</view>
+
+	<!-- 记录列表 -->
+	<view class="section">
+		<view class="section-title">
+			📋 记录列表 (共{{total}}条)
+		</view>
+
+		<view wx:if="{{records.length > 0}}" class="records-list">
+			<view class="record-item" wx:for="{{records}}" wx:key="_id">
+				<view class="record-header">
+					<view class="record-type type-{{item.RECORD_TYPE}}">
+						{{item.RECORD_TYPE_DESC}}
+					</view>
+					<text class="record-time">{{item.RECORD_ADD_TIME}}</text>
+				</view>
+
+				<view class="record-content">
+					<view class="record-change">
+						<text class="change-label">变动:</text>
+						<text class="change-value {{item.RECORD_CHANGE_TIMES < 0 || item.RECORD_CHANGE_AMOUNT < 0 ? 'negative' : 'positive'}}">
+							{{item.changeDesc}}
+						</text>
+					</view>
+
+					<view class="record-balance">
+						<text class="balance-label">变动前:</text>
+						<text class="balance-value">
+							<text wx:if="{{item.RECORD_CHANGE_TIMES !== 0}}">{{item.RECORD_BEFORE_TIMES}}次</text>
+							<text wx:if="{{item.RECORD_CHANGE_AMOUNT !== 0}}">${{item.RECORD_BEFORE_AMOUNT}}</text>
+						</text>
+						<text class="balance-arrow">→</text>
+						<text class="balance-label">变动后:</text>
+						<text class="balance-value">
+							<text wx:if="{{item.RECORD_CHANGE_TIMES !== 0}}">{{item.RECORD_AFTER_TIMES}}次</text>
+							<text wx:if="{{item.RECORD_CHANGE_AMOUNT !== 0}}">${{item.RECORD_AFTER_AMOUNT}}</text>
+						</text>
+					</view>
+
+					<view class="record-reason">
+						<text class="reason-label">原因:</text>
+						<text class="reason-text">{{item.RECORD_REASON}}</text>
+					</view>
+
+					<view wx:if="{{item.ADMIN_NAME}}" class="record-admin">
+						<text class="admin-label">操作人:</text>
+						<text class="admin-name">{{item.ADMIN_NAME}}</text>
+					</view>
+				</view>
+			</view>
+		</view>
+
+		<!-- 空状态 -->
+		<view wx:if="{{records.length === 0 && !loading}}" class="empty-state">
+			<text class="empty-icon">📭</text>
+			<text class="empty-text">暂无使用记录</text>
+		</view>
+
+		<!-- 加载状态 -->
+		<view wx:if="{{loading}}" class="loading">
+			加载中...
+		</view>
+
+		<!-- 加载更多 -->
+		<view wx:if="{{hasMore && !loading}}" class="load-more" bindtap="loadMore">
+			点击加载更多
+		</view>
+
+		<view wx:if="{{!hasMore && records.length > 0}}" class="no-more">
+			没有更多了
+		</view>
+	</view>
+
+	<!-- 返回按钮 -->
+	<view class="footer-nav">
+		<button class="btn-nav" bindtap="goBack">← 返回</button>
+	</view>
+</view>

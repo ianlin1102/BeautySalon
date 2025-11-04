@@ -99,5 +99,36 @@ module.exports = {
 	'admin/points_user_info': 'admin/admin_points_controller@getUserPointsInfo',      // 查看用户积分
 	'admin/points_adjust': 'admin/admin_points_controller@adjustUserPoints#noDemo',   // 调整用户积分
 
+	//***########### CARD SYSTEM ################## */
+	// 前端 - 卡项商城
+	'card/list': 'card_controller@getCardList',                    // 获取卡项列表
+	'card/home_list': 'card_controller@getHomeCardList',           // 首页推荐卡项
+	'card/view': 'card_controller@viewCard',                       // 查看卡项详情
+
+	// 前端 - 用户卡项
+	'card/my_cards': 'card_controller@getMyCards',                 // 我的卡项列表
+	'card/my_card_detail': 'card_controller@getMyCardDetail',      // 我的卡项详情
+	'card/my_card_records': 'card_controller@getMyCardRecords',    // 我的使用记录
+	'card/my_card_summary': 'card_controller@getMyCardSummary',    // 我的卡项汇总
+
+	// 管理后台 - 卡项商品管理
+	'admin/card_list': 'admin/admin_card_controller@getCardList',
+	'admin/card_insert': 'admin/admin_card_controller@insertCard#noDemo',
+	'admin/card_edit': 'admin/admin_card_controller@editCard#noDemo',
+	'admin/card_del': 'admin/admin_card_controller@delCard#noDemo',
+	'admin/card_sort': 'admin/admin_card_controller@sortCard#noDemo',
+	'admin/card_status': 'admin/admin_card_controller@statusCard#noDemo',
+	'admin/card_detail': 'admin/admin_card_controller@getCardDetail',
+	'admin/card_update_pic': 'admin/admin_card_controller@updateCardPic#noDemo',
+	'admin/card_update_content': 'admin/admin_card_controller@updateCardContent#noDemo',
+
+	// 管理后台 - 用户卡项管理
+	'admin/user_card_search': 'admin/admin_user_card_controller@searchUserByPhone',           // 通过手机号搜索用户
+	'admin/user_card_search_by_id': 'admin/admin_user_card_controller@searchByUniqueId',      // 通过卡项识别码搜索
+	'admin/user_card_list': 'admin/admin_user_card_controller@getUserCardList',               // 用户卡项列表
+	'admin/user_card_add': 'admin/admin_user_card_controller@addUserCard#noDemo',             // 给用户充值/添加卡
+	'admin/user_card_adjust': 'admin/admin_user_card_controller@adjustUserCard#noDemo',       // 调整用户卡（扣减/增加）
+	'admin/user_card_records': 'admin/admin_user_card_controller@getUserCardRecords',         // 用户使用记录
+	'admin/user_card_info': 'admin/admin_user_card_controller@getUserInfo',                   // 获取用户信息（含卡项汇总）
 
 }

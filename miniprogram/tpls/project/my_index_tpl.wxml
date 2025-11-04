@@ -78,7 +78,15 @@
 						<text class="text-grey">{{pointsInfo.totalPoints || 0}}分</text>
 					</view>
 				</view>
-				
+
+				<!-- 新增：卡项系统 -->
+				<view class="item arrow" bindtap="url" data-url="../../card/my_cards/my_cards">
+					<view class="content">
+						<text class="icon-favorfill my-icon-project text-purple"></text>
+						<text class="text-black">我的卡项</text>
+					</view>
+				</view>
+
 				<view class="item arrow" bindtap="url" data-url="../edit/my_edit">
 					<view class="content">
 						<text class="icon-edit my-icon-project text-green"></text>

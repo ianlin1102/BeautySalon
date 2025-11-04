@@ -4,7 +4,8 @@
 	width: 100%;
 	box-sizing: border-box;
 	padding: 30rpx 20rpx;
-	padding-bottom: 200rpx;
+	padding-bottom: 150rpx;
+	min-height: 100vh;
 }
 
 .form-group {

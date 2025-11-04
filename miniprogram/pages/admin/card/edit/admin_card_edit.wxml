@@ -1,0 +1,8 @@
+<view wx:if="{{isLoad==null}}" class="margin-top load loading text-l"></view>
+<view wx:if="{{!isLoad}}" class="margin-top load loading text-l text-grey"></view>
+<view class="main-admin" wx:if="{{isAdmin&&isLoad}}">
+	<import src="../admin_card_form_tpl.wxml" />
+
+	<template is="cardForm"
+		data="{{contentDesc,typeOptions,imgMax,imgList,isPicCheck,formDesc,formDescFocus,formOrder,formOrderFocus,formType,formName,formNameFocus,formPrice,formPriceFocus,formTimes,formTimesFocus,formAmount,formAmountFocus,formValidityDays,formValidityDaysFocus,formContent,formContentFocus,formPaymentZelle,formPaymentQr,formPaymentInstructions}}" />
+</view>

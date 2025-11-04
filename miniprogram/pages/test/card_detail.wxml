@@ -1,0 +1,96 @@
+<view wx:if="{{isLoad==null}}" class="margin-top load loading text-l"></view>
+<view wx:if="{{!isLoad}}" class="margin-top load loading text-l text-grey"></view>
+
+<view wx:if="{{isLoad}}" class="main">
+	<!-- 卡项图片 -->
+	<view class="card-cover" wx:if="{{card.CARD_PIC && card.CARD_PIC.length>0}}">
+		<image src="{{card.CARD_PIC[0]}}" mode="widthFix" bindtap="bindViewImage" data-url="{{card.CARD_PIC[0]}}"></image>
+	</view>
+
+	<!-- 卡项基本信息 -->
+	<view class="card-info">
+		<view class="card-title">{{card.CARD_NAME}}</view>
+
+		<view class="card-meta">
+			<view class="meta-item">
+				<text class="label">类型：</text>
+				<text class="value">
+					<text wx:if="{{card.CARD_TYPE==1}}" class="tag blue">次数卡</text>
+					<text wx:elif="{{card.CARD_TYPE==2}}" class="tag green">余额卡</text>
+				</text>
+			</view>
+
+			<view class="meta-item" wx:if="{{card.CARD_TYPE==1}}">
+				<text class="label">包含次数：</text>
+				<text class="value highlight">{{card.CARD_TIMES}} 次</text>
+			</view>
+
+			<view class="meta-item" wx:if="{{card.CARD_TYPE==2}}">
+				<text class="label">充值金额：</text>
+				<text class="value highlight">${{card.CARD_AMOUNT}}</text>
+			</view>
+
+			<view class="meta-item" wx:if="{{card.CARD_VALIDITY_DAYS && card.CARD_VALIDITY_DAYS > 0}}">
+				<text class="label">有效期：</text>
+				<text class="value">{{card.CARD_VALIDITY_DAYS}} 天</text>
+			</view>
+
+			<view class="meta-item" wx:else>
+				<text class="label">有效期：</text>
+				<text class="value text-grey">永久有效</text>
+			</view>
+		</view>
+
+		<view class="card-price">
+			<view class="price-label">售价</view>
+			<view class="price-value">
+				<text class="currency">$</text>
+				<text class="amount">{{card.CARD_PRICE}}</text>
+			</view>
+		</view>
+	</view>
+
+	<!-- 卡项描述 -->
+	<view class="card-desc" wx:if="{{card.CARD_DESC}}">
+		<view class="section-title">卡项介绍</view>
+		<view class="desc-text">{{card.CARD_DESC}}</view>
+	</view>
+
+	<!-- 详细内容 -->
+	<view class="card-content" wx:if="{{card.CARD_CONTENT && card.CARD_CONTENT.length>0}}">
+		<view class="content-title">详细说明</view>
+		<block wx:for="{{card.CARD_CONTENT}}" wx:key="index">
+			<view wx:if="{{item.type=='text'}}" class="content-text">{{item.val}}</view>
+			<image wx:if="{{item.type=='img'}}" src="{{item.val}}" mode="widthFix" class="content-img" bindtap="bindViewImage" data-url="{{item.val}}"></image>
+		</block>
+	</view>
+
+	<!-- 支付信息 -->
+	<view class="payment-info" wx:if="{{card.CARD_PAYMENT_ZELLE || card.CARD_PAYMENT_QR || card.CARD_PAYMENT_INSTRUCTIONS}}">
+		<view class="section-title">支付信息</view>
+
+		<view class="payment-item" wx:if="{{card.CARD_PAYMENT_ZELLE}}">
+			<view class="payment-label">Zelle 账号</view>
+			<view class="payment-value">{{card.CARD_PAYMENT_ZELLE}}</view>
+		</view>
+
+		<view class="payment-item" wx:if="{{card.CARD_PAYMENT_QR}}">
+			<view class="payment-label">支付二维码</view>
+			<image src="{{card.CARD_PAYMENT_QR}}" mode="widthFix" class="payment-qr" bindtap="bindViewImage" data-url="{{card.CARD_PAYMENT_QR}}"></image>
+		</view>
+
+		<view class="payment-item" wx:if="{{card.CARD_PAYMENT_INSTRUCTIONS}}">
+			<view class="payment-label">支付说明</view>
+			<view class="payment-value">{{card.CARD_PAYMENT_INSTRUCTIONS}}</view>
+		</view>
+	</view>
+
+	<!-- 购买按钮 -->
+	<view class="purchase-bar">
+		<view class="purchase-price">
+			<text class="currency">$</text>
+			<text class="amount">{{card.CARD_PRICE}}</text>
+		</view>
+		<button class="purchase-btn" bindtap="bindPurchaseTap">立即购买</button>
+	</view>
+</view>
