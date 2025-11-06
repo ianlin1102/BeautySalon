@@ -45,6 +45,20 @@ JoinModel.DB_STRUCTURE = {
 	   val:
 	*/
 
+	JOIN_CARD_DEDUCT: 'object|false|comment=卡项扣费记录',
+	/* {
+		cardId: 'string',           // 使用的卡项ID
+		cardType: 'times/balance',  // 卡类型：'times'=次数卡, 'balance'=储值卡
+		cardNumber: 'string',       // 卡号（冗余，方便查看）
+		deductAmount: 0,            // 扣除的次数/金额
+		deductTime: 0,              // 扣除时间戳
+		refunded: false,            // 是否已返还
+		refundTime: 0,              // 返还时间戳
+		refundReason: '',           // 返还原因
+		refundBy: ''                // 返还操作人（user=用户取消, admin=管理员取消）
+	}
+	*/
+
 	JOIN_STATUS: 'int|true|default=1|comment=状态 1=预约成功,10=已取消, 99=系统取消',
 
 	JOIN_REASON: 'string|false|comment=审核拒绝或者取消理由',

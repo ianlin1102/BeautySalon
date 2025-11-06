@@ -53,6 +53,55 @@
 			</view>
 			<view wx:if="{{formIsShowLimitFocus}}" class="hint-desc error">{{formIsShowLimitFocus}}</view>
 
+			<!-- 消费设置 -->
+			<view class="form-group">
+				<view class="title">需要卡项消费</view>
+				<switch bindchange="bindCostEnabledChange" checked="{{formCostSet.isEnabled}}" color="#667eea"/>
+			</view>
+
+			<view wx:if="{{formCostSet.isEnabled}}">
+				<view class="form-group">
+					<view class="title must">消费类型</view>
+					<picker bindchange="bindCostTypeChange" value="{{formCostTypeIndex}}" range="{{costTypeOptions}}" range-key="label">
+						<view class="form-text text-admin">
+							<text wx:if="{{formCostSet.costType === 'times'}}">仅次数卡</text>
+							<text wx:elif="{{formCostSet.costType === 'balance'}}">仅储值卡</text>
+							<text wx:elif="{{formCostSet.costType === 'both'}}">次数卡或储值卡</text>
+							<text wx:else>请选择</text>
+						</view>
+					</picker>
+				</view>
+
+				<view wx:if="{{formCostSet.costType === 'times' || formCostSet.costType === 'both'}}" class="form-group">
+					<view class="title must">消耗次数</view>
+					<input type="digit" bindinput="bindTimesInput" value="{{formCostSet.timesCost}}" placeholder="请输入消耗次数" class="input-admin" />
+				</view>
+
+				<view wx:if="{{formCostSet.costType === 'balance' || formCostSet.costType === 'both'}}" class="form-group">
+					<view class="title must">消耗金额(元)</view>
+					<input type="digit" bindinput="bindBalanceInput" value="{{formCostSet.balanceCost}}" placeholder="请输入消耗金额" class="input-admin" />
+				</view>
+
+				<view wx:if="{{formCostSet.costType === 'both'}}" class="form-group">
+					<view class="title">允许系统自动选卡</view>
+					<switch bindchange="bindAutoSelectChange" checked="{{formCostSet.allowAutoSelect}}" color="#667eea"/>
+				</view>
+
+				<view class="form-group">
+					<view class="form-text text-grey text-s">当前设置：{{costSetDisplay}}</view>
+				</view>
+			</view>
+
+			<!-- 取消限制设置 -->
+			<view class="form-group margin-top">
+				<view class="title">取消时间限制<text class="text-grey text-normal margin-left-xs">(用户)</text></view>
+				<switch bindchange="bindCancelLimitChange" checked="{{formCancelSet.isLimit}}" color="#667eea"/>
+			</view>
+
+			<view wx:if="{{formCancelSet.isLimit}}" class="form-group" bindtap="bindShowCancelPicker">
+				<view class="title must">限制取消时间</view>
+				<view class="form-text text-admin">{{cancelSetDisplay}}</view>
+			</view>
 
 		</view>
 
@@ -68,5 +117,28 @@
 
 	</view>
 
+	<!-- 取消时间限制选择器 -->
+	<view class="cancel-picker-modal" wx:if="{{showCancelPicker}}" bindtap="bindHideCancelPicker" catchtouchmove="preventTouchMove">
+		<view class="cancel-picker-container" catchtap="preventClose" catchtouchmove="preventTouchMove">
+			<view class="cancel-picker-header">
+				<view class="cancel-btn" bindtap="bindHideCancelPicker">取消</view>
+				<view class="cancel-title">选择取消限制时间</view>
+				<view class="cancel-confirm" bindtap="bindConfirmCancelPicker">确定</view>
+			</view>
+			<view class="cancel-picker-body">
+				<picker-view indicator-style="height: 50px;" style="width: 100%; height: 300px;" value="{{cancelPickerValue}}" bindchange="bindCancelPickerChange">
+					<picker-view-column>
+						<view wx:for="{{cancelDayOptions}}" wx:key="value" class="picker-item">{{item.label}}</view>
+					</picker-view-column>
+					<picker-view-column wx:if="{{cancelPickerValue[0] !== cancelDayOptions.length - 1}}">
+						<view wx:for="{{cancelHourOptions}}" wx:key="index" class="picker-item">{{item}}时</view>
+					</picker-view-column>
+					<picker-view-column wx:if="{{cancelPickerValue[0] !== cancelDayOptions.length - 1}}">
+						<view wx:for="{{cancelMinuteOptions}}" wx:key="index" class="picker-item">{{item}}分</view>
+					</picker-view-column>
+				</picker-view>
+			</view>
+		</view>
+	</view>
 
 </block>

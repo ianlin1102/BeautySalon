@@ -19,10 +19,11 @@ const TIME_NODE = {
 	limit: 50, //人数限制
 	isLimit: false,
 	status: 1,
-	stat: { //统计数据 
+	stat: { //统计数据
 		succCnt: 0,
 		cancelCnt: 0,
 		adminCancelCnt: 0,
+		waitCheckCnt: 0,
 	}
 };
 
@@ -415,10 +416,25 @@ class AdminMeetBiz extends BaseBiz {
 				desc: ''
 			},
 
-			formDaysSet: [], // 时间设置 
+			formDaysSet: [], // 时间设置
 
 
 			formIsShowLimit: 1, //是否显示可预约数量
+
+			formCancelSet: {  // 取消限制设置
+				isLimit: false,
+				days: 0,
+				hours: 0,
+				minutes: 0
+			},
+
+			formCostSet: {  // 消费设置
+				isEnabled: false,
+				costType: 'free',
+				timesCost: 1,
+				balanceCost: 0,
+				allowAutoSelect: true
+			},
 
 			formFormSet: formSetHelper.defaultForm(skin.DEFAULT_FORMS)
 		}
@@ -514,6 +530,8 @@ AdminMeetBiz.CHECK_FORM = {
 
 	daysSet: 'formDaysSet|must|array|name=预约时间设置',
 	isShowLimit: 'formIsShowLimit|must|int|in:0,1|name=是否显示可预约人数',
+	cancelSet: 'formCancelSet|object|name=取消限制设置',
+	costSet: 'formCostSet|object|name=消费设置',
 
 	formSet: 'formFormSet|must|array|name=用户资料设置',
 };

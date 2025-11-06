@@ -142,13 +142,48 @@ class MeetController extends BaseController {
 		// 数据格式化
 		let list = result.list;
 
+		// 批量获取 meet 的取消设置
+		let meetIds = [...new Set(list.map(item => item.JOIN_MEET_ID))];
+		let meetCancelSets = {};
+		if (meetIds.length > 0) {
+			let MeetModel = require('../model/meet_model.js');
+			let meets = await MeetModel.getAll({ _id: ['in', meetIds] }, 'MEET_CANCEL_SET');
+			for (let meet of meets) {
+				meetCancelSets[meet._id] = meet.MEET_CANCEL_SET || {};
+			}
+		}
+
 		let now = timeUtil.time('Y-M-D h:m');
+		let nowTimestamp = timeUtil.time('timestamp');
 
 		for (let k in list) {
 			if (now > (list[k].JOIN_MEET_DAY + ' ' + list[k].JOIN_MEET_TIME_END))
 				list[k].isTimeout = 1;
 			else
 				list[k].isTimeout = 0;
+
+			// 检查是否允许取消
+			list[k].canCancel = true;
+			if ((list[k].JOIN_STATUS == 1 || list[k].JOIN_STATUS == 0) && list[k].JOIN_IS_CHECKIN == 0) {
+				let cancelSet = meetCancelSets[list[k].JOIN_MEET_ID] || {};
+				if (cancelSet.isLimit) {
+					if (cancelSet.days === -1) {
+						list[k].canCancel = false;
+					} else {
+						// 计算限制时间
+						let startTime = timeUtil.time2Timestamp(list[k].JOIN_MEET_DAY + ' ' + list[k].JOIN_MEET_TIME_START + ':00');
+						let limitSeconds = 0;
+						if (cancelSet.days) limitSeconds += cancelSet.days * 24 * 3600;
+						if (cancelSet.hours) limitSeconds += cancelSet.hours * 3600;
+						if (cancelSet.minutes) limitSeconds += cancelSet.minutes * 60;
+						let limitTime = startTime - limitSeconds * 1000;
+
+						if (nowTimestamp >= limitTime) {
+							list[k].canCancel = false;
+						}
+					}
+				}
+			}
 
 			list[k].JOIN_MEET_DAY = timeUtil.fmtDateCHN(list[k].JOIN_MEET_DAY) + ' (' + timeUtil.week(list[k].JOIN_MEET_DAY) + ')';
 
@@ -216,6 +251,13 @@ class MeetController extends BaseController {
 
 		let service = new MeetService();
 		return await service.cancelMyJoin(this._userId, input.joinId);
+	}
+
+	/** 清理已取消和已过期的预约 */
+	async clearMyJoin() {
+		let service = new MeetService();
+		let count = await service.clearMyJoin(this._userId);
+		return { count };
 	}
 
 	/** 用户自助签到 */
@@ -297,6 +339,7 @@ class MeetController extends BaseController {
 			meetId: 'must|id',
 			timeMark: 'must|string',
 			forms: 'must|array',
+			cardId: 'string', // 卡项ID（可选）
 		};
 
 		// 取得数据
@@ -304,7 +347,7 @@ class MeetController extends BaseController {
 
 		let service = new MeetService();
 		let admin = null;
-		return await service.join(this._userId, input.meetId, input.timeMark, input.forms);
+		return await service.join(this._userId, input.meetId, input.timeMark, input.forms, input.cardId);
 	}
 
 

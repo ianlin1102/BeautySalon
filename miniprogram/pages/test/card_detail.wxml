@@ -50,13 +50,7 @@
 		</view>
 	</view>
 
-	<!-- 卡项描述 -->
-	<view class="card-desc" wx:if="{{card.CARD_DESC}}">
-		<view class="section-title">卡项介绍</view>
-		<view class="desc-text">{{card.CARD_DESC}}</view>
-	</view>
-
-	<!-- 详细内容 -->
+	<!-- 详细内容：显示富文本内容（图文混排） -->
 	<view class="card-content" wx:if="{{card.CARD_CONTENT && card.CARD_CONTENT.length>0}}">
 		<view class="content-title">详细说明</view>
 		<block wx:for="{{card.CARD_CONTENT}}" wx:key="index">

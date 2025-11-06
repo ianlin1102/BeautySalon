@@ -145,8 +145,9 @@ Page({
 			// 编辑时，如果没有图片，说明用户没有修改图片，保留原有图片即可
 			// 只有在新增时才强制要求上传封面图
 
-			// 提取简介
-			data.desc = AdminCardBiz.getDesc(data.formDesc, this.data.formContent);
+			// 卡项描述(CARD_DESC)：直接使用用户填写的值，不做任何提取
+			// 注意：validate.check() 已经将 formDesc 映射为 desc
+			// data.desc 已经包含了用户填写的卡项描述，留空则为空字符串
 
 			// 先修改，再上传
 			await cloudHelper.callCloudSumbit('admin/card_edit', data);

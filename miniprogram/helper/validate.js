@@ -34,16 +34,15 @@
 
  function isNull(value) {
  	if (value === null || value === undefined) return true;
- 	if (getDataType(value) == String && value === '') return true;
+ 	if (typeof value === 'string' && value === '') return true;
  	return false;
  }
 
  function isStrAndArrNull(value) {
  	if (value === null || value === undefined) return true;
 
- 	let type = getDataType(value);
- 	if (type == String && value === '') return true;
- 	if (type == Array && value.length == 0) return true;
+ 	if (typeof value === 'string' && value === '') return true;
+ 	if (Array.isArray(value) && value.length == 0) return true;
 
  	return false;
  }
@@ -51,10 +50,9 @@
  function isRealNull(value) {
  	if (value === null || value === undefined) return true;
 
- 	let type = getDataType(value);
- 	if (type == String && value === '') return true;
- 	if (type == Array && value.length == 0) return true;
- 	if (type == Object && JSON.stringify(value) == '{}') return true;
+ 	if (typeof value === 'string' && value === '') return true;
+ 	if (Array.isArray(value) && value.length == 0) return true;
+ 	if (typeof value === 'object' && !Array.isArray(value) && JSON.stringify(value) == '{}') return true;
 
  	return false;
  }
@@ -66,22 +64,18 @@
 
  // 是否必填
  function checkRequired(value, desc = '') {
- 	switch (getDataType(value)) {
- 		case Object:
- 			if (JSON.stringify(value) == '{}')
- 				return desc + '不能为空obj';
- 			break;
- 		case Array:
- 			if (value.length == 0)
- 				return desc + '不能为空arr';
- 			break;
- 		case String:
- 			if (value.length == 0)
- 				return desc + '不能为空';
- 			break;
- 		case null:
- 		case undefined:
+ 	if (value === null || value === undefined) {
+ 		return desc + '不能为空';
+ 	}
+ 	if (Array.isArray(value)) {
+ 		if (value.length == 0)
+ 			return desc + '不能为空arr';
+ 	} else if (typeof value === 'string') {
+ 		if (value.length == 0)
  			return desc + '不能为空';
+ 	} else if (typeof value === 'object') {
+ 		if (JSON.stringify(value) == '{}')
+ 			return desc + '不能为空obj';
  	}
  }
 
@@ -90,19 +84,15 @@
  	if (isStrAndArrNull(value)) return;
 
  	min = Number(min);
- 	switch (getDataType(value)) {
- 		case Array:
- 			if (value.length < min)
- 				return desc + '不能少于' + min + '项';
- 			break;
- 		case String:
- 			if (value.length < min)
- 				return desc + '不能少于' + min + '个字';
- 			break;
- 		case Number:
- 			if (value < min)
- 				return desc + '不能小于' + min;
- 			break;
+ 	if (Array.isArray(value)) {
+ 		if (value.length < min)
+ 			return desc + '不能少于' + min + '项';
+ 	} else if (typeof value === 'string') {
+ 		if (value.length < min)
+ 			return desc + '不能少于' + min + '个字';
+ 	} else if (typeof value === 'number') {
+ 		if (value < min)
+ 			return desc + '不能小于' + min;
  	}
  };
 
@@ -111,36 +101,29 @@
  	if (isStrAndArrNull(value)) return;
 
  	max = Number(max);
- 	switch (getDataType(value)) {
- 		case Array:
- 			if (value.length > max)
- 				return desc + '不能多于' + max + '项';
- 			break;
- 		case String:
- 			if (value.length > max)
- 				return desc + '不能多于' + max + '个字';
- 			break;
- 		case Number:
- 			if (value > max)
- 				return desc + '不能大于' + max;
- 			break;
+ 	if (Array.isArray(value)) {
+ 		if (value.length > max)
+ 			return desc + '不能多于' + max + '项';
+ 	} else if (typeof value === 'string') {
+ 		if (value.length > max)
+ 			return desc + '不能多于' + max + '个字';
+ 	} else if (typeof value === 'number') {
+ 		if (value > max)
+ 			return desc + '不能大于' + max;
  	}
  };
 
- // 校验字符/数组长度 
+ // 校验字符/数组长度
  function checkLen(value, len, desc = '') {
  	if (isStrAndArrNull(value)) return;
 
  	len = Number(len);
- 	switch (getDataType(value)) {
- 		case Array:
- 			if (value.length != len)
- 				return desc + '必须为' + len + '项';
- 			break;
- 		case String:
- 			if (value.length != len)
- 				return desc + '必须为' + len + '个字';
- 			break;
+ 	if (Array.isArray(value)) {
+ 		if (value.length != len)
+ 			return desc + '必须为' + len + '项';
+ 	} else if (typeof value === 'string') {
+ 		if (value.length != len)
+ 			return desc + '必须为' + len + '个字';
  	}
  };
 
@@ -193,7 +176,7 @@
  	min = Number(min);
  	max = Number(max);
 
- 	if (getDataType(value) != String) return desc + '必须为ID字符串格式';
+ 	if (typeof value !== 'string') return desc + '必须为ID字符串格式';
 
  	if (value.length < min || value.length > max) return desc + '必须为ID格式';
 	/*if (!/^\w+$/.test(value))
@@ -286,12 +269,12 @@
  }
 
  function checkObject(value, desc = '') {
- 	if (value.constructor != Object)
+ 	if (typeof value !== 'object' || value === null || Array.isArray(value))
  		return desc + '填写错误obj';
  }
 
  function checkBoolean(value, desc = '') {
- 	if (value.constructor != Boolean)
+ 	if (typeof value !== 'boolean')
  		return desc + '填写错误bool';
  }
 
@@ -299,8 +282,8 @@
  function checkIn(value, ref, desc = '') {
  	if (isNull(value)) return;
 
- 	let type = getDataType(value);
- 	if (type != String && type != Number) return desc + '填写范围错误';
+ 	let type = typeof value;
+ 	if (type !== 'string' && type !== 'number') return desc + '填写范围错误';
 
  	let arr = String(ref).split(',');
  	if (!arr.includes(value) && !arr.includes(value + ''))
@@ -310,7 +293,7 @@
  function checkIds(value, desc) {}
 
  function checkString(value, desc) {
- 	if (value.constructor != String)
+ 	if (typeof value !== 'string')
  		return desc + '填写错误';
  }
 
@@ -372,13 +355,18 @@
  		// 取值
  		let val = data[formName];
 
+ 		// DEBUG: Log what we're validating
+ 		if (formName === 'formDaysSet' || formName === 'formFormSet' || formName === 'formCancelSet' || formName === 'formCostSet') {
+ 			console.log('[validate.js] 检查字段:', formName, '值:', val, '类型:', typeof val, 'isArray:', Array.isArray(val), 'constructor:', val ? val.constructor : 'null/undefined');
+ 		}
+
  		switch (dataType) {
  			case 'Array': {
 				if (defVal !== undefined) {
  					try {
  						defVal = JSON.parse(defVal);
 
- 						if (getDataType(defVal) != Array)
+ 						if (!Array.isArray(defVal))
  							return _showError(desc + '默认值数组格式错误', formName, that);
  					} catch (ex) {
  						return _showError(desc + '默认值数组格式错误', formName, that);
@@ -386,7 +374,7 @@
  				}
  				if (val === null || val === undefined) val = defVal;
 
-				if (val !== undefined && getDataType(val) != Array)
+				if (val !== undefined && !Array.isArray(val))
  					return _showError(desc + '数组格式错误', formName, that);
 
  				break;
@@ -396,7 +384,7 @@
  					try {
  						defVal = JSON.parse(defVal);
 
- 						if (getDataType(defVal) != Object)
+ 						if (typeof defVal !== 'object' || defVal === null || Array.isArray(defVal))
  							return _showError(desc + '默认值对象格式错误', formName, that);
  					} catch (ex) {
  						return _showError(desc + '默认值对象格式错误', formName, that);
@@ -404,7 +392,7 @@
  				}
  				if (val === null || val === undefined) val = defVal;
 
-				if (val !== undefined && getDataType(val) != Object)
+				if (val !== undefined && (typeof val !== 'object' || val === null || Array.isArray(val)))
  					return _showError(desc + '对象格式错误', formName, that);
 
  				break;
@@ -414,7 +402,7 @@
  					try {
  						defVal = JSON.parse(defVal);
 
- 						if (getDataType(defVal) != Boolean)
+ 						if (typeof defVal !== 'boolean')
  							return _showError(desc + '默认值布尔格式错误', formName, that);
  					} catch (ex) {
  						return _showError(desc + '默认值布尔格式错误');
@@ -422,7 +410,7 @@
  				}
  				if (val === null || val === undefined) val = defVal;
 
-				if (val !== undefined && getDataType(val) != Boolean)
+				if (val !== undefined && typeof val !== 'boolean')
  					return _showError(desc + '布尔格式错误', formName, that);
 
  				break;
@@ -438,8 +426,8 @@
  				if (val === '') //数字不能为空
  					return _showError(desc + '不能为空', formName, that);
 
- 				let dataType = getDataType(val);
- 				if (dataType == Object || dataType == Boolean || dataType == Array)
+ 				let dataType = typeof val;
+ 				if (dataType === 'object' || dataType === 'boolean')
  					return _showError(desc + '必须为数字格式', formName, that);
 
  				// 数字格式校验
@@ -451,8 +439,8 @@
  				break;
  			}
  			case 'String': {
- 				let dataType = getDataType(val);
- 				if (dataType == Object || dataType == Boolean || dataType == Array)
+ 				let dataType = typeof val;
+ 				if (dataType === 'object' || dataType === 'boolean')
  					return _showError(desc + '必须为字符串格式', formName, that);
 
  				if (val === null || val === undefined) val = defVal;

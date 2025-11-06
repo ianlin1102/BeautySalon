@@ -88,8 +88,9 @@ Page({
 		// 图片也改为可选
 		try {
 
-			// 提取简介
-			data.desc = AdminCardBiz.getDesc(data.formDesc, this.data.formContent);
+			// 卡项描述(CARD_DESC)：直接使用用户填写的值，不做任何提取
+			// 注意：validate.check() 已经将 formDesc 映射为 desc
+			// data.desc 已经包含了用户填写的卡项描述，留空则为空字符串
 
 			// 先创建，再上传
 			let result = await cloudHelper.callCloudSumbit('admin/card_insert', data);

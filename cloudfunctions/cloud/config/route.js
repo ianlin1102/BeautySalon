@@ -25,6 +25,7 @@ module.exports = {
 
 	'my/my_join_list': 'meet_controller@getMyJoinList',
 	'my/my_join_cancel': 'meet_controller@cancelMyJoin',
+	'my/my_join_clear': 'meet_controller@clearMyJoin',
 	'my/my_join_detail': 'meet_controller@getMyJoinDetail',
 	'my/my_join_someday': 'meet_controller@getMyJoinSomeday',
 	'my/my_join_checkin': 'meet_controller@userSelfCheckin',

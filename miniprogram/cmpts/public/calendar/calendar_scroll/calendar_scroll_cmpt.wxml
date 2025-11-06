@@ -57,6 +57,8 @@
 				</view>
 			</view>
 			<cmpt-calendar mode="one"
+						   year="{{calendarYear}}"
+						   month="{{calendarMonth}}"
 						   hasDays="{{hasDays}}"
 						   oneDoDay="{{selectedDayData}}"
 						   bind:click="bindFullCalendarClick" />

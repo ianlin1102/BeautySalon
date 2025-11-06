@@ -100,12 +100,12 @@
 			<view class="comm-list menu card-project shadow-project">
 
 				<!-- 临时测试按钮 -->
-				<view class="item arrow" bindtap="testPointsAPI">
+				<!-- <view class="item arrow" bindtap="testPointsAPI">
 					<view class="content">
 						<text class="icon-settings my-icon-project text-orange"></text>
 						<text class="text-black">初始化积分系统</text>
 					</view>
-				</view>
+				</view> -->
 
 				<view class="item arrow" bindtap="bindSetTap">
 					<view class="content">

@@ -126,23 +126,36 @@ class AdminMeetService extends BaseAdminService {
 			JOIN_MEET_TIME_MARK: timeMark,
 			JOIN_STATUS: JoinModel.STATUS.SUCC
 		};
-		
+
+		// 先获取所有要取消的预约，用于返还卡项
+		let joins = await JoinModel.getAll(where);
+
 		let data = {
 			JOIN_STATUS: JoinModel.STATUS.ADMIN_CANCEL,
 			JOIN_EDIT_ADMIN_ID: admin.ADMIN_ID,
 			JOIN_EDIT_ADMIN_NAME: admin.ADMIN_NAME,
-			JOIN_EDIT_ADMIN_TIME: timeUtil.timestamp(),
+			JOIN_EDIT_ADMIN_TIME: timeUtil.time(),
 			JOIN_EDIT_ADMIN_STATUS: JoinModel.STATUS.ADMIN_CANCEL
 		};
-		
+
 		if (reason) {
 			data.JOIN_REASON = reason;
 		}
-		
-		await JoinModel.editMany(where, data);
-		
-		// 更新统计数据
+
+		// 批量返还卡项（在更新状态之前）
 		let meetService = new MeetService();
+		for (let join of joins) {
+			try {
+				await meetService._refundCard(join, 'admin');
+			} catch (err) {
+				console.error('返还卡项失败:', join._id, err);
+				// 继续处理其他预约，不中断整个流程
+			}
+		}
+
+		await JoinModel.edit(where, data);
+
+		// 更新统计数据
 		meetService.statJoinCnt(meetId, timeMark);
 	}
 
@@ -155,6 +168,8 @@ class AdminMeetService extends BaseAdminService {
 		typeName,
 		daysSet,
 		isShowLimit,
+		cancelSet,
+		costSet,
 		formSet,
 	}) {
 		// 数据准备
@@ -164,6 +179,8 @@ class AdminMeetService extends BaseAdminService {
 			MEET_TYPE_ID: typeId,
 			MEET_TYPE_NAME: typeName,
 			MEET_IS_SHOW_LIMIT: isShowLimit,
+			MEET_CANCEL_SET: cancelSet || { isLimit: false, days: 0, hours: 0, minutes: 0 },
+			MEET_COST_SET: costSet || { isEnabled: false, costType: 'free', timesCost: 1, balanceCost: 0, allowAutoSelect: true },
 			MEET_FORM_SET: formSet,
 			MEET_ADMIN_ID: adminId,
 			MEET_STATUS: 1,
@@ -206,6 +223,18 @@ class AdminMeetService extends BaseAdminService {
 
 		let meetService = new MeetService();
 		meet.MEET_DAYS_SET = await meetService.getDaysSet(id, timeUtil.time('Y-M-D')); //今天及以后
+
+		// 确保关键字段有默认值
+		if (!Array.isArray(meet.MEET_FORM_SET)) {
+			console.warn('MEET_FORM_SET 不是数组，meetId:', id);
+			meet.MEET_FORM_SET = [];
+		}
+		if (!meet.MEET_CANCEL_SET) {
+			meet.MEET_CANCEL_SET = { isLimit: false, days: 0, hours: 0, minutes: 0 };
+		}
+		if (!meet.MEET_COST_SET) {
+			meet.MEET_COST_SET = { isEnabled: false, costType: 'free', timesCost: 1, balanceCost: 0, allowAutoSelect: true };
+		}
 
 		return meet;
 	}
@@ -295,6 +324,8 @@ class AdminMeetService extends BaseAdminService {
 		order,
 		daysSet,
 		isShowLimit,
+		cancelSet,
+		costSet,
 		formSet
 	}) {
 		// 更新数据
@@ -304,6 +335,8 @@ class AdminMeetService extends BaseAdminService {
 			MEET_TYPE_ID: typeId,
 			MEET_TYPE_NAME: typeName,
 			MEET_IS_SHOW_LIMIT: isShowLimit,
+			MEET_CANCEL_SET: cancelSet || { isLimit: false, days: 0, hours: 0, minutes: 0 },
+			MEET_COST_SET: costSet || { isEnabled: false, costType: 'free', timesCost: 1, balanceCost: 0, allowAutoSelect: true },
 			MEET_FORM_SET: formSet
 		}
 
@@ -436,22 +469,40 @@ class AdminMeetService extends BaseAdminService {
 	 * 特殊约定 99=>正常取消 
 	 */
 	async statusJoin(admin, joinId, status, reason = '') {
+		// 如果是取消操作，先获取预约信息用于返还卡项
+		let join = null;
+		if (status === JoinModel.STATUS.ADMIN_CANCEL) {
+			join = await JoinModel.getOne({ _id: joinId });
+			if (join) {
+				// 返还卡项
+				let meetService = new MeetService();
+				try {
+					await meetService._refundCard(join, 'admin');
+				} catch (err) {
+					console.error('返还卡项失败:', joinId, err);
+					// 即使返还失败也继续取消操作
+				}
+			}
+		}
+
 		let data = {
 			JOIN_STATUS: status,
 			JOIN_EDIT_ADMIN_ID: admin.ADMIN_ID,
 			JOIN_EDIT_ADMIN_NAME: admin.ADMIN_NAME,
-			JOIN_EDIT_ADMIN_TIME: timeUtil.timestamp(),
+			JOIN_EDIT_ADMIN_TIME: timeUtil.time(),
 			JOIN_EDIT_ADMIN_STATUS: status
 		};
-		
+
 		if (reason) {
 			data.JOIN_REASON = reason;
 		}
-		
+
 		await JoinModel.edit(joinId, data);
-		
+
 		// 更新统计数据
-		let join = await JoinModel.getOne({ _id: joinId });
+		if (!join) {
+			join = await JoinModel.getOne({ _id: joinId });
+		}
 		if (join) {
 			let meetService = new MeetService();
 			meetService.statJoinCnt(join.JOIN_MEET_ID, join.JOIN_MEET_TIME_MARK);

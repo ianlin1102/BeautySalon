@@ -124,8 +124,10 @@
 				</view>
 
 				<view class="record-balance">
-					<text wx:if="{{item.RECORD_AFTER_TIMES !== undefined}}">余额: {{item.RECORD_AFTER_TIMES}}次</text>
-					<text wx:if="{{item.RECORD_AFTER_AMOUNT !== undefined}}">余额: ${{item.RECORD_AFTER_AMOUNT}}</text>
+					<!-- 次数卡只显示次数余额 -->
+					<text wx:if="{{card.USER_CARD_TYPE === 1 && item.RECORD_AFTER_TIMES !== undefined}}">余额: {{item.RECORD_AFTER_TIMES}}次</text>
+					<!-- 余额卡只显示金额余额 -->
+					<text wx:if="{{card.USER_CARD_TYPE === 2 && item.RECORD_AFTER_AMOUNT !== undefined}}">余额: ${{item.RECORD_AFTER_AMOUNT}}</text>
 				</view>
 			</view>
 		</view>

@@ -3,6 +3,7 @@ const cloudHelper = require('../helper/cloud_helper.js');
 const timeHelper = require('../helper/time_helper.js');
 const qrcodeLib = require('../lib/tools/qrcode_lib.js');
 const MeetBiz = require('../biz/meet_biz.js');
+const cancelHelper = require('../helper/cancel_helper.js');
 
 module.exports = Behavior({
 
@@ -13,6 +14,9 @@ module.exports = Behavior({
 		isLoad: false,
 
 		isShowHome: false,
+
+		canCancel: true, // 是否允许取消
+		cancelReason: '', // 不允许取消的原因
 	},
 
 	methods: {
@@ -55,10 +59,24 @@ module.exports = Behavior({
 					size: 100
 				});
 
+				// 检查是否允许取消
+				let canCancel = true;
+				let cancelReason = '';
+
+				// 只有状态为1(预约成功)或0(待审核)且未签到的情况下才可能取消
+				if ((join.JOIN_STATUS == 1 || join.JOIN_STATUS == 0) && join.JOIN_IS_CHECKIN == 0) {
+					let cancelSet = join.meet?.MEET_CANCEL_SET || {};
+					let checkResult = cancelHelper.checkCanCancel(cancelSet, join.JOIN_MEET_DAY, join.JOIN_MEET_TIME_START);
+					canCancel = checkResult.canCancel;
+					cancelReason = checkResult.reason;
+				}
+
 				this.setData({
 					isLoad: true,
 					join,
-					qrImageData
+					qrImageData,
+					canCancel,
+					cancelReason
 				});
 			} catch (err) {
 				console.error(err);
@@ -109,6 +127,11 @@ module.exports = Behavior({
 		},
 
 		bindCancelTap: async function (e) {
+			// 检查是否允许取消
+			if (!this.data.canCancel) {
+				return pageHelper.showModal(this.data.cancelReason || '已超过取消时间限制');
+			}
+
 			let callback = async () => {
 				try {
 					let params = {

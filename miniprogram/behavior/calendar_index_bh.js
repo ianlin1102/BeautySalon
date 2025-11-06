@@ -61,12 +61,15 @@ module.exports = Behavior({
 			}
 			try {
 				await cloudHelper.callCloudSumbit('meet/list_has_day', params, opts).then(res => {
+					console.log('📅 hasDays 返回数据:', res.data);
+					console.log('📅 hasDays 数据类型:', typeof res.data, Array.isArray(res.data));
+					console.log('📅 hasDays 长度:', res.data ? res.data.length : 'null');
 					this.setData({
 						hasDays: res.data,
 					});
 				});
 			} catch (err) {
-				console.error(err);
+				console.error('❌ _loadHasList 错误:', err);
 			}
 		},
 

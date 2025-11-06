@@ -70,3 +70,60 @@ cmpt-picker-multi {
 .form-group .desc-textarea {
 	height: 100rpx;
 }
+
+/* 取消时间限制选择器样式 */
+.cancel-picker-modal {
+	position: fixed;
+	top: 0;
+	left: 0;
+	right: 0;
+	bottom: 0;
+	background: rgba(0, 0, 0, 0.5);
+	z-index: 9999;
+	display: flex;
+	align-items: flex-end;
+}
+
+.cancel-picker-container {
+	width: 100%;
+	background: white;
+	border-radius: 20rpx 20rpx 0 0;
+}
+
+.cancel-picker-header {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	padding: 30rpx 40rpx;
+	border-bottom: 1px solid #eee;
+}
+
+.cancel-btn {
+	color: #999;
+	font-size: 30rpx;
+}
+
+.cancel-title {
+	color: #333;
+	font-size: 32rpx;
+	font-weight: bold;
+}
+
+.cancel-confirm {
+	color: #667eea;
+	font-size: 30rpx;
+	font-weight: bold;
+}
+
+.cancel-picker-body {
+	padding: 20rpx 0;
+}
+
+.picker-item {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	height: 50px;
+	font-size: 32rpx;
+	color: #333;
+}

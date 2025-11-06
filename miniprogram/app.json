@@ -75,16 +75,10 @@
 				"selectedIconPath": "/projects/A00/skin/images/tabbar/home_cur.png"
 			},
 			{
-				"pagePath": "projects/A00/news/cate1/news_cate1",
-				"text": "小店动态",
+				"pagePath": "pages/test/card_store",
+				"text": "卡项商城",
 				"iconPath": "/projects/A00/skin/images/tabbar/cate1.png",
 				"selectedIconPath": "/projects/A00/skin/images/tabbar/cate1_cur.png"
-			},
-			{
-				"pagePath": "projects/A00/news/cate2/news_cate2",
-				"text": "美容小课堂",
-				"iconPath": "/projects/A00/skin/images/tabbar/cate2.png",
-				"selectedIconPath": "/projects/A00/skin/images/tabbar/cate2_cur.png"
 			},
 			{
 				"pagePath": "projects/A00/calendar/index/calendar_index",

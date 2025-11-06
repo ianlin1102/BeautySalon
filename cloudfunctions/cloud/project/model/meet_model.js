@@ -43,6 +43,24 @@ MeetModel.DB_STRUCTURE = {
 
 	MEET_FORM_SET: 'array|true|default=[]|comment=表单字段设置',
 
+	MEET_CANCEL_SET: 'object|true|default={}|comment=取消限制设置',
+	/* {
+		isLimit: false,  // 是否限制取消
+		days: 0,         // 天数 (0-7, 如果为-1表示不能取消)
+		hours: 0,        // 小时 (0-23)
+		minutes: 0       // 分钟 (0, 15, 30, 45)
+	}
+	*/
+
+	MEET_COST_SET: 'object|true|default={}|comment=消费设置',
+	/* {
+		isEnabled: false,      // 是否启用付费
+		costType: 'free',      // 'free'=免费, 'times'=次数卡, 'balance'=储值卡, 'both'=两者皆可
+		timesCost: 0,          // 需要消耗的次数（当costType为times或both时）
+		balanceCost: 0,        // 需要消耗的金额（当costType为balance或both时）
+		allowAutoSelect: true  // 是否允许系统自动选择合适的卡
+	}
+	*/
 
 	MEET_STATUS: 'int|true|default=1|comment=状态 0=未启用,1=使用中,9=停止预约,10=已关闭',
 	MEET_ORDER: 'int|true|default=9999',
