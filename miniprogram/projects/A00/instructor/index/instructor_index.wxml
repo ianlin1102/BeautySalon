@@ -1,0 +1,22 @@
+<view wx:if="{{isLoad===null}}" class="margin-top load notexist text-l"></view>
+<view wx:if="{{isLoad===false}}" class="margin-top load loading text-l"></view>
+
+<view wx:if="{{isLoad}}" class="instructor-list-page">
+	<!-- 导师列表 -->
+	<view class="instructor-grid" wx:if="{{instructorList && instructorList.length > 0}}">
+		<view class="instructor-card" wx:for="{{instructorList}}" wx:key="_id" bindtap="onInstructorTap" data-id="{{item._id}}">
+			<view class="instructor-card-inner">
+				<image src="{{item.INSTRUCTOR_PIC}}" mode="aspectFill" class="instructor-card-avatar" />
+				<view class="instructor-card-info">
+					<view class="instructor-card-name">{{item.INSTRUCTOR_NAME}}</view>
+					<view class="instructor-card-desc" wx:if="{{item.INSTRUCTOR_DESC}}">{{item.INSTRUCTOR_DESC}}</view>
+				</view>
+			</view>
+		</view>
+	</view>
+
+	<!-- 空状态 -->
+	<view class="empty-state" wx:if="{{!instructorList || instructorList.length === 0}}">
+		<text class="empty-text">暂无导师信息</text>
+	</view>
+</view>

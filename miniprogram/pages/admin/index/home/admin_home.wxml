@@ -39,20 +39,21 @@
 		</view>
 		<view class="item" bindtap="url" data-url="../../news/list/admin_news_list"> <text class="icon-newsfill text-darkgreen"></text> <text class="text-black">内容管理</text>
 		</view>
-		<view class="item" bindtap="url" data-url="../../card/list/admin_card_list"> <text class="icon-cart text-red"></text> <text class="text-black">卡项管理</text>
+		<view class="item" bindtap="url" data-url="../../card/list/admin_card_list"> <text class="icon-cart text-red"></text> <text class="text-black">卡项商城管理</text>
+		</view>
+		<view class="item" bindtap="url" data-url="../../../pages/admin/user_card/manage/admin_user_card_manage"> <text class="icon-favorfill text-purple"></text> <text class="text-black">管理用户卡项</text>
+		</view>
+		<view class="item" bindtap="url" data-url="../../carousel/list/admin_carousel_list"> <text class="icon-picfill text-orange"></text> <text class="text-black">轮播图管理</text>
+		</view>
+		<view class="item" bindtap="url" data-url="../../instructor/list/admin_instructor_list"> <text class="icon-group_fill text-mauve"></text> <text class="text-black">导师团队管理</text>
+		</view>
+		<view class="item" bindtap="url" data-url="../../about/edit/admin_about_edit"> <text class="icon-infofill text-brown"></text> <text class="text-black">关于我们管理</text>
 		</view>
 	</view>
 
 
 	<!-- BOTTOM begin -->
 	<view class="comm-list menu  margin-top">
-	 
-		<view class="item arrow" bindtap="url" data-url='../../setup/about/admin_setup_about'>
-			<view class="content">
-				<text class="icon-edit text-darkgreen"></text>
-				<text class="text-black">编辑 - 关于我们</text>
-			</view>
-		</view>
 
 		<view class="item arrow" bindtap="url" data-url='../../setup/contact/admin_setup_contact'>
 			<view class="content">

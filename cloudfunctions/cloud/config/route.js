@@ -123,6 +123,40 @@ module.exports = {
 	'admin/card_update_pic': 'admin/admin_card_controller@updateCardPic#noDemo',
 	'admin/card_update_content': 'admin/admin_card_controller@updateCardContent#noDemo',
 
+	// 前端 - 轮播图
+	'carousel/list': 'carousel_controller@getCarouselList',
+
+	// 管理后台 - 轮播图管理
+	'admin/carousel_list': 'admin/admin_carousel_controller@getCarouselList',
+	'admin/carousel_insert': 'admin/admin_carousel_controller@insertCarousel#noDemo',
+	'admin/carousel_edit': 'admin/admin_carousel_controller@editCarousel#noDemo',
+	'admin/carousel_del': 'admin/admin_carousel_controller@delCarousel#noDemo',
+	'admin/carousel_sort': 'admin/admin_carousel_controller@sortCarousel#noDemo',
+	'admin/carousel_status': 'admin/admin_carousel_controller@statusCarousel#noDemo',
+	'admin/carousel_detail': 'admin/admin_carousel_controller@getCarouselDetail',
+
+	// 前端 - 导师团队
+	'instructor/list': 'instructor_controller@getInstructorList',
+	'instructor/detail': 'instructor_controller@getInstructorDetail',
+
+	// 管理后台 - 导师团队管理
+	'admin/instructor_list': 'admin/admin_instructor_controller@getInstructorList',
+	'admin/instructor_insert': 'admin/admin_instructor_controller@insertInstructor#noDemo',
+	'admin/instructor_edit': 'admin/admin_instructor_controller@editInstructor#noDemo',
+	'admin/instructor_del': 'admin/admin_instructor_controller@delInstructor#noDemo',
+	'admin/instructor_sort': 'admin/admin_instructor_controller@sortInstructor#noDemo',
+	'admin/instructor_status': 'admin/admin_instructor_controller@statusInstructor#noDemo',
+	'admin/instructor_detail': 'admin/admin_instructor_controller@getInstructorDetail',
+
+	// 前端 - 关于我们
+	'about/detail': 'about_controller@getAboutDetail',
+
+	// 管理后台 - 关于我们管理
+	'admin/about_detail': 'admin/admin_about_controller@getAboutDetail',
+	'admin/about_edit': 'admin/admin_about_controller@editAbout#noDemo',
+	'admin/about_update_pic': 'admin/admin_about_controller@updateAboutPic#noDemo',
+	'admin/about_update_content': 'admin/admin_about_controller@updateAboutContent#noDemo',
+
 	// 管理后台 - 用户卡项管理
 	'admin/user_card_search': 'admin/admin_user_card_controller@searchUserByPhone',           // 通过手机号搜索用户
 	'admin/user_card_search_by_id': 'admin/admin_user_card_controller@searchByUniqueId',      // 通过卡项识别码搜索

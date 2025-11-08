@@ -1,0 +1,23 @@
+<view class="container">
+	<view class="header">
+		<text class="title">管理用户卡项</text>
+		<text class="admin-status" wx:if="{{isAdmin}}" style="color: #07c160;">管理员</text>
+		<text class="admin-status" wx:else style="color: #ff976a;">普通用户</text>
+	</view>
+
+	<!-- 导航按钮 -->
+	<view class="section">
+		<view class="nav-buttons">
+			<button class="btn-nav" bindtap="goBack">← 返回</button>
+			<button class="btn-nav btn-home" bindtap="goHome">首页</button>
+		</view>
+	</view>
+
+	<!-- 快速访问 -->
+	<view class="section">
+		<view class="section-title">快速访问</view>
+		<button class="btn btn-warning" bindtap="goCardStore">卡项商城</button>
+		<button class="btn btn-warning" bindtap="goCardSearch">卡项搜索</button>
+		<view class="hint">快速跳转到常用页面</view>
+	</view>
+</view>

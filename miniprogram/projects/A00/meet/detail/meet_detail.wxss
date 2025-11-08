@@ -319,15 +319,30 @@
 	color: #999;
 }
 
-/* 用户已预约的时间段样式 - 使用主题色 */
+/* 用户已预约的时间段样式 - 使用淡紫色 */
 .vertical-main .text-list .item .time-text.user-joined {
-	background: linear-gradient(135deg, var(--projectColor, #5756B3), var(--projectCompareColor, #E7BDD3));
+	background-color: #F6F7FF;
 	border-color: var(--projectColor, #5756B3);
-	color: #fff;
+	color: var(--projectColor, #5756B3);
 	font-weight: bold;
 }
 
-.vertical-main .text-list .item .time-text .joined-text {
-	color: #fff;
+.vertical-main .text-list .item .time-text.user-joined .joined-text {
+	color: var(--projectColor, #5756B3);
 	font-weight: bold;
+}
+
+/* 覆盖日期标题样式 - 使用淡紫色背景 */
+.centered-date-header {
+	background-color: #F6F7FF !important;
+	background: #F6F7FF !important;
+	padding: 25rpx 20rpx;
+	text-align: center;
+}
+
+.centered-date-title {
+	font-size: 32rpx;
+	font-weight: bold;
+	color: var(--projectColor, #5756B3) !important;
+	text-shadow: none !important;
 }

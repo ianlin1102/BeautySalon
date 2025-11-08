@@ -74,7 +74,7 @@
 <view wx:if="{{type=='image'}}" class="modal  {{show?'show':''}}">
 	<view class="dialog">
 		<view class="bg-img" style="height:{{height}}rpx;">
-			<image mode="aspectFill" src="{{imgURL}}"></image>
+			<image class="bg-image" mode="aspectFill" src="{{imgURL}}"></image>
 			<view class="bar justify-end text-white">
 				<view class="action" bindtap="bindHideModalTap">
 					<text class="icon-close"></text>

@@ -299,23 +299,44 @@
  	for (let i = 0; i < imgList.length; i++) {
 
  		let filePath = imgList[i];
- 		let ext = filePath.match(/\.[^.]+?$/)[0];
 
- 		// 是否为临时文件
- 		if (filePath.includes('tmp') || filePath.includes('temp') || filePath.includes('wxfile')) {
+ 		// 检查是否为临时文件 (不是以 cloud:// 或 https:// 开头的都视为临时文件)
+ 		let isTempFile = !filePath.startsWith('cloud://') && !filePath.startsWith('https://');
+
+ 		if (isTempFile) {
+ 			console.log('📤 上传临时文件:', filePath);
+
+ 			let ext = filePath.match(/\.[^.]+?$/);
+ 			if (!ext) {
+ 				console.error('❌ 无法识别文件扩展名:', filePath);
+ 				continue;
+ 			}
+ 			ext = ext[0];
+
  			// 使用时间戳和随机数确保文件名唯一性
  			let timestamp = Date.now();
  			let rd = dataHelper.genRandomNum(100000, 999999);
  			let uniqueId = timestamp + '_' + rd;
+ 			let cloudPath = id ? dir + id + '/' + uniqueId + ext : dir + uniqueId + ext;
+
+ 			console.log('☁️ 云存储路径:', cloudPath);
+
  			await wx.cloud.uploadFile({
- 				cloudPath: id ? dir + id + '/' + uniqueId + ext : dir + uniqueId + ext,
+ 				cloudPath: cloudPath,
  				filePath: filePath, // 文件路径
  			}).then(res => {
+ 				console.log('✅ 上传成功:', res.fileID);
  				imgList[i] = res.fileID;
  			}).catch(error => {
- 				// handle error TODO:剔除图片
- 				console.error(error);
+ 				console.error('❌ 上传失败:', error);
+ 				wx.showModal({
+ 					title: '图片上传失败',
+ 					content: '请检查网络连接和云存储配置',
+ 					showCancel: false
+ 				});
  			})
+ 		} else {
+ 			console.log('⏭️ 跳过已上传文件:', filePath);
  		}
  	}
 

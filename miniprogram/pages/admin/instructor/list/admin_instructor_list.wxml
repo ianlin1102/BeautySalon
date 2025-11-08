@@ -1,0 +1,69 @@
+<block wx:if="{{isAdmin}}">
+	<cmpt-comm-list type="admin-instructor" _menus="{{sortMenus}}" _items="{{sortItems}}" route="admin/instructor_list" sortMenusDefaultIndex="0" topBottom="50" placeholder="搜索导师姓名" bind:list="bindCommListCmpt">
+
+		<view slot="searchEnd">
+			<button bindtap="url" data-url="../add/admin_instructor_add" class="btn radius bg-admin text-white margin-right-s"><text class="icon-roundadd margin-right-xxs"></text>新增导师</button>
+		</view>
+		<!-- List Begin -->
+		<view class="admin-comm-list">
+			<view wx:if="{{dataList && dataList.total }}" class="load text-grey">共有{{dataList.total}}条符合条件记录</view>
+
+			<view class="item" wx:for="{{dataList.list}}" wx:key="key">
+				<view class="header">
+					<view class="left text-cut">
+						{{item.INSTRUCTOR_NAME}}
+					</view>
+					<view class="right">
+						<text wx:if="{{item.INSTRUCTOR_STATUS==1}}" class="text-black">正常</text>
+						<text wx:elif="{{item.INSTRUCTOR_STATUS==0}}" class="text-orange">停用</text>
+					</view>
+				</view>
+
+				<view class="info">
+					<view class="info-item">
+						<view class="title">头像</view>
+						<view class="mao">：</view>
+						<view class="content">
+							<image src="{{item.INSTRUCTOR_PIC}}" mode="aspectFill" style="width:100rpx;height:100rpx;border-radius:50%;"></image>
+						</view>
+					</view>
+
+					<view class="info-item" wx:if="{{item.INSTRUCTOR_DESC}}">
+						<view class="title">简介</view>
+						<view class="mao">：</view>
+						<view class="content text-cut">{{item.INSTRUCTOR_DESC}}</view>
+					</view>
+
+					<view class="info-item">
+						<view class="title">排序号</view>
+						<view class="mao">：</view>
+						<view class="content">{{item.INSTRUCTOR_ORDER}} <text class="margin-left-xxs text-grey">(小的先显示)</text></view>
+					</view>
+
+					<view class="info-item">
+						<view class="title">创建</view>
+						<view class="mao">：</view>
+						<view class="content">{{item.INSTRUCTOR_ADD_TIME}}</view>
+					</view>
+
+					<view class="oprt">
+						<view bindtap="url" data-url="../edit/admin_instructor_edit?id={{item._id}}" class="btn round margin-right-s">编辑</view>
+
+						<view bindtap="bindStatusSelectTap" data-id="{{item._id}}" class="btn margin-right-s">状态修改</view>
+
+					</view>
+				</view>
+			</view>
+
+		</view>
+		<!-- List END -->
+
+		<!--load begin-->
+		<import src="../../../../tpls/public/list_load_tpl.wxml" />
+		<template is="listLoadTpl" data="{{dataList,skin:'text-grey'}}" />
+		<!--load end-->
+
+
+	</cmpt-comm-list>
+
+</block>

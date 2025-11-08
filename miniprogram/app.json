@@ -1,7 +1,7 @@
 {
 	"pages": [
 		"projects/A00/my/index/my_index",
-		"pages/test/card_test",
+		"pages/admin/user_card/manage/admin_user_card_manage",
 		"pages/test/card_store",
 		"pages/test/card_search",
 		"pages/test/card_records",
@@ -9,9 +9,19 @@
 		"pages/admin/card/list/admin_card_list",
 		"pages/admin/card/add/admin_card_add",
 		"pages/admin/card/edit/admin_card_edit",
+		"pages/admin/carousel/list/admin_carousel_list",
+		"pages/admin/carousel/add/admin_carousel_add",
+		"pages/admin/carousel/edit/admin_carousel_edit",
+		"pages/admin/instructor/list/admin_instructor_list",
+		"pages/admin/instructor/add/admin_instructor_add",
+		"pages/admin/instructor/edit/admin_instructor_edit",
+		"pages/admin/about/edit/admin_about_edit",
 		"projects/A00/default/index/default_index",
+		"projects/A00/about/detail/about_detail",
 		"projects/A00/about/index/about_index",
 		"projects/A00/about/contact/about_contact",
+		"projects/A00/instructor/index/instructor_index",
+		"projects/A00/instructor/detail/instructor_detail",
 		"projects/A00/calendar/index/calendar_index",
 		"projects/A00/card/my_cards/my_cards",
 		"projects/A00/card/detail/card_detail",
@@ -57,40 +67,40 @@
 
 	],
 	"window": {
-		"backgroundColor": "#f1f1f1",
+		"backgroundColor": "#ffffff",
 		"backgroundTextStyle": "dark",
-		"navigationBarBackgroundColor": "#5756B3",
+		"navigationBarBackgroundColor": "#333333",
 		"navigationBarTitleText": "美容店预约小程序",
 		"navigationBarTextStyle": "white"
 	},
 	"tabBar": {
 		"custom": false,
-		"backgroundColor": "#fefefe",
+		"backgroundColor": "#ffffff",
 		"color": "#999999",
-		"selectedColor": "#5756B3",
+		"selectedColor": "#333333",
 		"list": [{
 				"pagePath": "projects/A00/default/index/default_index",
 				"text": "首页",
-				"iconPath": "/projects/A00/skin/images/tabbar/home.png",
-				"selectedIconPath": "/projects/A00/skin/images/tabbar/home_cur.png"
+				"iconPath": "/projects/A00/skin/images/tabbar_icon/home_cur.png",
+				"selectedIconPath": "/projects/A00/skin/images/tabbar_icon/home_selected.png"
 			},
 			{
 				"pagePath": "pages/test/card_store",
 				"text": "卡项商城",
-				"iconPath": "/projects/A00/skin/images/tabbar/cate1.png",
-				"selectedIconPath": "/projects/A00/skin/images/tabbar/cate1_cur.png"
+				"iconPath": "/projects/A00/skin/images/tabbar_icon/shop_cur.png",
+				"selectedIconPath": "/projects/A00/skin/images/tabbar_icon/shop_selected.png"
 			},
 			{
 				"pagePath": "projects/A00/calendar/index/calendar_index",
 				"text": "预约日历",
-				"iconPath": "/projects/A00/skin/images/tabbar/day.png",
-				"selectedIconPath": "/projects/A00/skin/images/tabbar/day_cur.png"
+				"iconPath": "/projects/A00/skin/images/tabbar_icon/calendar_cur.png",
+				"selectedIconPath": "/projects/A00/skin/images/tabbar_icon/calendar_selected.png"
 			},
 			{
 				"pagePath": "projects/A00/my/index/my_index",
 				"text": "我的",
-				"iconPath": "/projects/A00/skin/images/tabbar/my.png",
-				"selectedIconPath": "/projects/A00/skin/images/tabbar/my_cur.png"
+				"iconPath": "/projects/A00/skin/images/tabbar_icon/profile_cur.png",
+				"selectedIconPath": "/projects/A00/skin/images/tabbar_icon/profile_selected.png"
 			}
 		]
 	},

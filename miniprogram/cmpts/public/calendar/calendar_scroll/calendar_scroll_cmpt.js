@@ -30,40 +30,25 @@ Component({
 
 	lifetimes: {
 		attached() {
-			console.log('🎯 calendar_scroll 组件 attached');
 			this._init();
 		}
 	},
 
 	observers: {
 		'hasDays': function(hasDays) {
-			console.log('👀 hasDays 数据变化:', hasDays, '长度:', hasDays ? hasDays.length : 0);
 		}
 	},
 
 	methods: {
 		_init() {
-			console.log('🚀 calendar_scroll 组件 _init 开始');
 			const today = new Date();
 			const todayFull = this._formatDate(today);
-			console.log('📆 today 对象:', today);
-			console.log('📆 todayFull:', todayFull);
 
 			// 默认选中今天
 			const selectedDay = this.data.selectedDay || todayFull;
 
 			// 生成未来4个月的日期
 			const scrollDays = this._generateFutureMonths(4);
-
-			console.log('📆 生成的 scrollDays 长度:', scrollDays.length);
-			if (scrollDays.length > 0) {
-				console.log('📆 第一个日期:', scrollDays[0]);
-				console.log('📆 最后一个日期:', scrollDays[scrollDays.length - 1]);
-			} else {
-				console.error('❌ scrollDays 为空!');
-			}
-			console.log('📆 今天日期:', todayFull);
-			console.log('📆 选中日期:', selectedDay);
 
 			// 设置弹窗日历的年月
 			const calendarYear = today.getFullYear();
@@ -85,25 +70,18 @@ Component({
 		 * 生成未来N个月的所有日期
 		 */
 		_generateFutureMonths(monthCount) {
-			console.log('📅 _generateFutureMonths 开始, monthCount:', monthCount);
 			const today = new Date();
 			const todayTime = today.getTime();
 			const todayFormatted = this._formatDate(today);
 			const days = [];
-
-			console.log('📅 today:', today);
-			console.log('📅 todayFormatted:', todayFormatted);
 
 			for (let monthOffset = 0; monthOffset < monthCount; monthOffset++) {
 				const currentDate = new Date(today.getFullYear(), today.getMonth() + monthOffset, 1);
 				const year = currentDate.getFullYear();
 				const month = currentDate.getMonth();
 
-				console.log(`📅 处理月份 ${monthOffset}: ${year}-${month + 1}`);
-
 				// 获取该月的天数
 				const daysInMonth = new Date(year, month + 1, 0).getDate();
-				console.log(`📅 该月天数: ${daysInMonth}`);
 
 				for (let day = 1; day <= daysInMonth; day++) {
 					const date = new Date(year, month, day);

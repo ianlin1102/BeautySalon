@@ -6,7 +6,12 @@ Page({
 	behaviors: [behavior],
 
 	data: {
-		pointsInfo: null  // 新增：积分信息
+		pointsInfo: null,  // 新增：积分信息
+		myStats: {  // 新增：统计数据
+			cardCount: 0,
+			courseCount: 0,
+			appointmentCount: 0
+		}
 	},
 
 	onReady: async function () {
@@ -23,20 +28,23 @@ Page({
 			if (this._loadUser) {
 				await this._loadUser();
 			}
-			
-			// 2. 再并行加载其他数据
+
+			// 2. 并行加载预约和积分信息
 			const promises = [];
-			
+
 			if (this._loadTodayList) {
 				promises.push(this._loadTodayList());
 			}
-			
+
 			promises.push(this.getPointsInfo());
-			
+
 			await Promise.all(promises);
-			
+
+			// 3. 加载统计数据(需要等待预约数据加载完成)
+			await this.loadMyStats();
+
 		} catch (err) {
-			console.log('页面初始化数据加载出错:', err);
+			// 静默失败
 		}
 	},
 
@@ -47,36 +55,129 @@ Page({
 			if (this._loadUser) {
 				await this._loadUser();
 			}
-			
+
 			// 2. 并行加载今日预约和积分信息
 			const promises = [];
-			
+
 			if (this._loadTodayList) {
 				promises.push(this._loadTodayList());
 			}
-			
+
 			promises.push(this.getPointsInfo());
-			
+
 			await Promise.all(promises);
-			
+
+			// 3. 加载统计数据(需要等待预约数据加载完成)
+			await this.loadMyStats();
+
 		} catch (err) {
-			console.log('页面数据加载出错:', err);
+			// 静默失败
+		}
+	},
+
+	// 新增：加载统计数据
+	async loadMyStats() {
+		const cloudHelper = require('../../../../helper/cloud_helper.js');
+		const cacheHelper = require('../../../../helper/cache_helper.js');
+		const timeHelper = require('../../../../helper/time_helper.js');
+
+		const CACHE_KEY = 'MY_STATS_DATA';
+		const CACHE_TIME = 60 * 30; // 30分钟
+		const CACHE_TIMESTAMP_KEY = 'MY_STATS_TIMESTAMP';
+
+		try {
+			// 1. 先尝试从缓存读取
+			let cachedData = cacheHelper.get(CACHE_KEY);
+			let cacheTimestamp = cacheHelper.get(CACHE_TIMESTAMP_KEY);
+			let now = Date.now();
+
+			// 如果有缓存且在有效期内，直接使用
+			if (cachedData && cacheTimestamp && (now - cacheTimestamp < CACHE_TIME * 1000)) {
+				this.setData({
+					myStats: cachedData
+				});
+				return;
+			}
+
+			// 2. 缓存过期或无缓存，重新获取数据
+			let cardCount = 0;
+			let appointmentCount = 0;
+			let courseCount = 0;
+
+			// 获取卡包数量
+			try {
+				let cardResult = await cloudHelper.callCloudData('card/my_cards', {
+					page: 1,
+					size: 1000
+				});
+
+				if (cardResult && cardResult.list) {
+					cardCount = cardResult.list.length;
+				}
+			} catch (e) {
+				// 静默失败
+			}
+
+			// 获取预约数量
+			try {
+				let params = {
+					search: '',
+					sortType: '',
+					sortVal: '',
+					orderBy: {},
+					page: 1,
+					size: 100,
+					isTotal: false
+				};
+				let opts = { title: 'bar' };
+				let result = await cloudHelper.callCloudSumbit('my/my_join_list', params, opts);
+				let allJoins = result.data.list || [];
+
+				// 过滤有效预约
+				let nowTimeStr = timeHelper.time('Y-M-D h:m');
+				let futureJoins = allJoins.filter(join => {
+					if (join.JOIN_STATUS !== 1) return false;
+					if (!join.JOIN_MEET_DAY || !join.JOIN_MEET_TIME_END) return false;
+					try {
+						let joinDateTime = join.JOIN_MEET_DAY + ' ' + join.JOIN_MEET_TIME_END;
+						return joinDateTime > nowTimeStr;
+					} catch (e) {
+						return false;
+					}
+				});
+
+				appointmentCount = futureJoins.length;
+			} catch (e) {
+				// 静默失败
+			}
+
+			// 3. 更新数据和缓存
+			let statsData = {
+				cardCount: cardCount,
+				courseCount: courseCount,
+				appointmentCount: appointmentCount
+			};
+
+			this.setData({
+				myStats: statsData
+			});
+
+			// 保存到缓存
+			cacheHelper.set(CACHE_KEY, statsData, CACHE_TIME);
+			cacheHelper.set(CACHE_TIMESTAMP_KEY, now, CACHE_TIME);
+		} catch (e) {
+			// 静默失败
 		}
 	},
 
 	// 新增：获取积分信息方法
 	async getPointsInfo() {
 		try {
-			console.log('my_index.js: 开始获取积分信息');
 			let pointsInfo = await PassortBiz.getPointsInfo();
-			console.log('my_index.js: 收到积分信息:', pointsInfo);
-			
 			this.setData({
 				pointsInfo: pointsInfo
 			});
-			console.log('my_index.js: 页面数据已更新');
 		} catch (e) {
-			console.error('my_index.js: 获取积分信息失败:', e);
 			// 设置默认积分信息，避免页面显示异常
 			this.setData({
 				pointsInfo: {
@@ -92,6 +193,25 @@ Page({
 
 	bindSetTap: function (e) {
 		this.setTap(e, skin);
+	},
+
+	// 下拉刷新
+	onPullDownRefresh: async function () {
+		const cacheHelper = require('../../../../helper/cache_helper.js');
+
+		// 清除所有缓存，强制重新加载
+		cacheHelper.remove('MY_JOIN_LIST');
+		cacheHelper.remove('MY_JOIN_LIST_TIMESTAMP');
+		cacheHelper.remove('MY_STATS_DATA');
+		cacheHelper.remove('MY_STATS_TIMESTAMP');
+
+		// 重新加载数据
+		await this._loadTodayList();
+		await this._loadUser();
+		await this.getPointsInfo();
+		await this.loadMyStats();
+
+		wx.stopPullDownRefresh();
 	},
 
 	// 临时测试方法

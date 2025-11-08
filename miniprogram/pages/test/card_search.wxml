@@ -3,15 +3,9 @@
 		<text class="title">卡项搜索</text>
 	</view>
 
-	<!-- 快速访问 -->
-	<view class="section quick-nav">
-		<button class="btn-quick" bindtap="goCardStore">🛒 商城</button>
-		<button class="btn-quick" bindtap="goCardTest">⚙️ 管理</button>
-	</view>
-
 	<!-- 搜索区域 -->
 	<view class="section">
-		<view class="section-title">🔍 搜索方式</view>
+		<view class="section-title">搜索方式</view>
 
 		<!-- 搜索类型选择 -->
 		<view class="search-type-tabs">
@@ -57,7 +51,7 @@
 
 	<!-- 搜索结果 - 识别码搜索 -->
 	<view wx:if="{{searchResult && searchType === 'uniqueId'}}" class="section">
-		<view class="section-title">📋 卡项详情</view>
+		<view class="section-title">卡项详情</view>
 
 		<!-- 用户信息 -->
 		<view class="user-info" wx:if="{{searchResult.user}}">
@@ -124,7 +118,7 @@
 
 	<!-- 搜索结果 - 手机号搜索 -->
 	<view wx:if="{{searchResult && searchType === 'phone'}}" class="section">
-		<view class="section-title">👤 用户信息</view>
+		<view class="section-title">用户信息</view>
 
 		<!-- 用户基本信息 -->
 		<view class="user-info" wx:if="{{searchResult.user}}">
@@ -161,7 +155,7 @@
 
 		<!-- 卡项列表 -->
 		<view wx:if="{{searchResult.cards && searchResult.cards.list}}" class="card-list">
-			<view class="section-title">💳 用户卡项列表</view>
+			<view class="section-title">用户卡项列表</view>
 			<view class="card-item" wx:for="{{searchResult.cards.list}}" wx:key="_id">
 				<view class="card-header">
 					<text class="card-name">{{item.USER_CARD_CARD_NAME}}</text>
@@ -209,7 +203,6 @@
 			</view>
 
 			<view wx:if="{{searchResult.cards.list.length === 0}}" class="empty-state">
-				<text class="empty-icon">📭</text>
 				<text class="empty-text">该用户暂无卡项</text>
 			</view>
 		</view>
@@ -217,7 +210,6 @@
 
 	<!-- 空状态 -->
 	<view wx:if="{{!searchResult && hasSearched}}" class="section empty-state">
-		<text class="empty-icon">🔍</text>
 		<text class="empty-text">未找到相关信息</text>
 	</view>
 
@@ -259,7 +251,6 @@
 					</view>
 				</view>
 				<view wx:else class="empty-records">
-					<text class="empty-icon">📭</text>
 					<text class="empty-text">暂无使用记录</text>
 				</view>
 			</scroll-view>

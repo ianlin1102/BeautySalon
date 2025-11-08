@@ -1,0 +1,81 @@
+@import "../../skin/skin.wxss";
+
+page {
+	background-color: #F6F7FF;
+}
+
+.instructor-list-page {
+	min-height: 100vh;
+	padding: 30rpx;
+}
+
+/* 导师网格布局 */
+.instructor-grid {
+	display: flex;
+	flex-direction: column;
+	gap: 20rpx;
+}
+
+/* 导师卡片 */
+.instructor-card {
+	background-color: #ffffff;
+	border-radius: 20rpx;
+	overflow: hidden;
+	box-shadow: 0 4rpx 12rpx rgba(0, 0, 0, 0.05);
+	transition: all 0.3s ease;
+}
+
+.instructor-card:active {
+	transform: scale(0.98);
+	box-shadow: 0 2rpx 8rpx rgba(0, 0, 0, 0.08);
+}
+
+.instructor-card-inner {
+	display: flex;
+	align-items: center;
+	padding: 30rpx;
+}
+
+.instructor-card-avatar {
+	width: 120rpx;
+	height: 120rpx;
+	border-radius: 50%;
+	flex-shrink: 0;
+	border: 4rpx solid #F6F7FF;
+}
+
+.instructor-card-info {
+	flex: 1;
+	margin-left: 30rpx;
+	display: flex;
+	flex-direction: column;
+	gap: 10rpx;
+}
+
+.instructor-card-name {
+	font-size: 32rpx;
+	font-weight: bold;
+	color: #333;
+}
+
+.instructor-card-desc {
+	font-size: 26rpx;
+	color: #666;
+	line-height: 1.6;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	display: -webkit-box;
+	-webkit-line-clamp: 2;
+	-webkit-box-orient: vertical;
+}
+
+/* 空状态 */
+.empty-state {
+	padding: 200rpx 40rpx;
+	text-align: center;
+}
+
+.empty-text {
+	font-size: 28rpx;
+	color: #999;
+}

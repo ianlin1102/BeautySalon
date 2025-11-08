@@ -62,6 +62,8 @@ Page({
 
     // 下拉刷新
     onPullDownRefresh() {
+        // 清除缓存，强制重新加载
+        PassportBiz.clearPointsCache();
         this.getPointsInfo();
         this.getPointsHistory();
         wx.stopPullDownRefresh();

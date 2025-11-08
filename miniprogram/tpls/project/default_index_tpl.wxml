@@ -1,32 +1,75 @@
 <template name="defaultIndexTpl">
 	<view class="main">
-		<view class="up">
-			<image mode="aspectFill" src="{{upImg}}" />
+		<!-- Carousel Banner -->
+		<view class="carousel-section">
+			<swiper class="carousel" autoplay="{{true}}" interval="{{5000}}" duration="{{500}}" circular="{{true}}" indicator-dots="{{true}}" indicator-color="rgba(0, 0, 0, 0.3)" indicator-active-color="#333333">
+				<block wx:for="{{carouselList}}" wx:key="_id">
+					<swiper-item>
+						<image src="{{item.CAROUSEL_PIC}}" mode="aspectFill" class="carousel-image" bindtap="onCarouselTap" data-url="{{item.CAROUSEL_URL}}" />
+					</swiper-item>
+				</block>
+			</swiper>
 		</view>
-		<view class="down">
-			<view class="menu card-project shadow-project">
-				<view bindtap="url" data-url="../../news/index/news_index?id={{item.val}}" class="item" wx:for="{{skin.newsCateArr}}" wx:key="key">
-					<view class="item-inner">
-						<view class="img"><image src="../../skin/images/menu/news_{{item.val}}.png" /></view>
-						<view class="title">{{item.label}}</view>
+
+		<!-- Main Menu -->
+		<view class="main-menu">
+			<view class="menu-grid card-project shadow-project">
+				<view bindtap="url" data-url="../../meet/index/meet_index" class="menu-item">
+					<view class="menu-item-inner">
+						<view class="menu-icon"><image src="../../skin/images/menu_icon/定时见面_appointment.png" /></view>
+						<view class="menu-title">预约</view>
 					</view>
 				</view>
 
-				<view bindtap="url" data-url="../../meet/index/meet_index?id={{item.val}}" class="item" wx:for="{{skin.meetTypeArr}}" wx:key="key">
-					<view class="item-inner">
-						<view class="img"><image src="../../skin/images/menu/meet_{{item.val}}.png" /></view>
-						<view class="title">{{item.label}}</view>
+				<view bindtap="url" data-url="/pages/test/card_store" class="menu-item">
+					<view class="menu-item-inner">
+						<view class="menu-icon"><image src="../../skin/images/menu_icon/银行卡_bank-card-one.png" /></view>
+						<view class="menu-title">卡项</view>
 					</view>
 				</view>
 
+				<view bindtap="showComingSoon" class="menu-item">
+					<view class="menu-item-inner">
+						<view class="menu-icon"><image src="../../skin/images/menu_icon/书籍_bookshelf.png" /></view>
+						<view class="menu-title">课程</view>
+					</view>
+				</view>
+
+				<view bindtap="url" data-url="../../about/detail/about_detail" class="menu-item">
+					<view class="menu-item-inner">
+						<view class="menu-icon"><image src="../../skin/images/menu_icon/徽章_medal-one.png" /></view>
+						<view class="menu-title">关于我们</view>
+					</view>
+				</view>
 			</view>
+		</view>
 
-			<!-- List Begin -->
-			<view wx:if="{{!dataList}}" class="margin-top load loading text-l load-project"></view>
-			<import src="../../tpls/public/base_list_tpl.wxml" />
-			<template is="baseListTpl" data="{{dataList,listMode}}" />
-			<!-- List END -->
+		<!-- Instructor Team Section -->
+		<view class="instructor-section">
+			<view class="section-header">
+				<view class="section-title">导师团队</view>
+				<view class="section-more" bindtap="url" data-url="../../instructor/index/instructor_index">更多</view>
+			</view>
+			<swiper class="instructor-swiper" autoplay="{{true}}" interval="{{4000}}" duration="{{500}}" circular="{{true}}" indicator-dots="{{true}}" indicator-color="rgba(0, 0, 0, 0.2)" indicator-active-color="#333333" disable-touch="{{false}}">
+				<block wx:for="{{instructorList}}" wx:key="_id" wx:if="{{index % 2 === 0}}">
+					<swiper-item>
+						<view class="instructor-swiper-item">
+							<!-- 当前导师 -->
+							<view class="instructor-item" bindtap="onInstructorTap" data-id="{{item._id}}">
+								<image src="{{item.INSTRUCTOR_PIC}}" mode="aspectFill" class="instructor-avatar" />
+								<view class="instructor-name">{{item.INSTRUCTOR_NAME}}</view>
+							</view>
+							<!-- 下一个导师 (如果存在) -->
+							<block wx:if="{{instructorList[index + 1]}}">
+								<view class="instructor-item" bindtap="onInstructorTap" data-id="{{instructorList[index + 1]._id}}">
+									<image src="{{instructorList[index + 1].INSTRUCTOR_PIC}}" mode="aspectFill" class="instructor-avatar" />
+									<view class="instructor-name">{{instructorList[index + 1].INSTRUCTOR_NAME}}</view>
+								</view>
+							</block>
+						</view>
+					</swiper-item>
+				</block>
+			</swiper>
 		</view>
 	</view>
-
 </template>

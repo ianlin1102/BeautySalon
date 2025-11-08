@@ -2,6 +2,7 @@ const AdminBiz = require('../../../../biz/admin_biz.js');
 const pageHelper = require('../../../../helper/page_helper.js');
 const bizHelper = require('../../../../biz/biz_helper.js');
 const cloudHelper = require('../../../../helper/cloud_helper.js');
+const cacheHelper = require('../../../../helper/cache_helper.js');
 const timeHelper = require('../../../../helper/time_helper.js');
 const validate = require('../../../../helper/validate.js');
 const AdminMeetBiz = require('../../../../biz/admin_meet_biz.js');
@@ -270,6 +271,9 @@ Page({
 			let callback = async function () {
 				bizHelper.removeCacheList('admin-meet');
 				bizHelper.removeCacheList('meet-list');
+				// 清除前端缓存
+				cacheHelper.remove('MEET_HAS_DAYS');
+				cacheHelper.remove('MEET_LIST_');
 				wx.navigateBack();
 
 			}
@@ -385,7 +389,7 @@ Page({
 			if (!await AdminMeetBiz.updateMeetStyleSet(meetId, formStyleSet, this)) return;
 
 
-			let callback = async function () { 
+			let callback = async function () {
 				// 更新列表页面数据
 				let node = {
 					'MEET_TITLE': data.title,
@@ -396,6 +400,9 @@ Page({
 					'leaveDay': AdminMeetBiz.getLeaveDay(data.daysSet)
 				}
 				pageHelper.modifyPrevPageListNodeObject(meetId, node);
+				// 清除前端缓存
+				cacheHelper.remove('MEET_HAS_DAYS');
+				cacheHelper.remove('MEET_LIST_');
 				wx.navigateBack();
 
 			}

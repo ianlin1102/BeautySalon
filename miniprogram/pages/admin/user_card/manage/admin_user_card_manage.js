@@ -2,8 +2,8 @@
  * 卡项系统测试页面
  */
 
-const cloudHelper = require('../../helper/cloud_helper.js');
-const pageHelper = require('../../helper/page_helper.js');
+const cloudHelper = require('../../../../helper/cloud_helper.js');
+const pageHelper = require('../../../../helper/page_helper.js');
 
 Page({
 	data: {
@@ -29,12 +29,12 @@ Page({
 			this.setData({
 				isAdmin: true
 			});
-			this.addLog('✅ 管理员身份验证成功', 'success');
+			this.addLog('管理员身份验证成功', 'success');
 		} catch (e) {
 			this.setData({
 				isAdmin: false
 			});
-			this.addLog('⚠️ 非管理员用户，部分功能不可用', 'warning');
+			this.addLog('非管理员用户，部分功能不可用', 'warning');
 		}
 	},
 
@@ -101,7 +101,7 @@ Page({
 
 	// 测试1：创建次数卡
 	async testCreateTimesCard() {
-		this.addLog('📝 开始测试：创建次数卡...', 'info');
+		this.addLog('开始测试：创建次数卡...', 'info');
 		try {
 			let params = {
 				type: 1,
@@ -120,7 +120,7 @@ Page({
 			console.log('创建卡项返回数据:', result);
 
 			if (!result || !result.data || !result.data.id) {
-				this.addLog('❌ 创建失败：返回数据无效', 'error');
+				this.addLog('创建失败：返回数据无效', 'error');
 				console.log('result:', result);
 				return;
 			}
@@ -128,16 +128,16 @@ Page({
 			this.setData({
 				createdCardId: result.data.id
 			});
-			this.addLog(`✅ 创建次数卡成功！卡项ID: ${result.data.id}`, 'success');
+			this.addLog(`创建次数卡成功！卡项ID: ${result.data.id}`, 'success');
 		} catch (e) {
 			console.log('创建次数卡错误:', e);
-			this.addLog(`❌ 创建次数卡失败: ${e.message || e.errMsg}`, 'error');
+			this.addLog(`创建次数卡失败: ${e.message || e.errMsg}`, 'error');
 		}
 	},
 
 	// 测试2：创建余额卡
 	async testCreateBalanceCard() {
-		this.addLog('📝 开始测试：创建余额卡...', 'info');
+		this.addLog('开始测试：创建余额卡...', 'info');
 		try {
 			let params = {
 				type: 2,
@@ -152,15 +152,15 @@ Page({
 			};
 
 			let result = await cloudHelper.callCloudSumbit('admin/card_insert', params);
-			this.addLog(`✅ 创建余额卡成功！卡项ID: ${result.data.id}`, 'success');
+			this.addLog(`创建余额卡成功！卡项ID: ${result.data.id}`, 'success');
 		} catch (e) {
-			this.addLog(`❌ 创建余额卡失败: ${e.message || e.errMsg}`, 'error');
+			this.addLog(`创建余额卡失败: ${e.message || e.errMsg}`, 'error');
 		}
 	},
 
 	// 测试3：获取卡项列表
 	async testGetCardList() {
-		this.addLog('📝 开始测试：获取卡项列表...', 'info');
+		this.addLog('开始测试：获取卡项列表...', 'info');
 		try {
 			let params = {
 				page: 1,
@@ -169,12 +169,12 @@ Page({
 			};
 
 			let data = await cloudHelper.callCloudData('admin/card_list', params);
-			this.addLog(`✅ 获取卡项列表成功！共${data.total}个卡项`, 'success');
+			this.addLog(`获取卡项列表成功！共${data.total}个卡项`, 'success');
 			if (data.list && data.list.length > 0) {
 				this.addLog(`   第一个卡项: ${data.list[0].CARD_NAME}`, 'info');
 			}
 		} catch (e) {
-			this.addLog(`❌ 获取卡项列表失败: ${e.message || e.errMsg}`, 'error');
+			this.addLog(`获取卡项列表失败: ${e.message || e.errMsg}`, 'error');
 		}
 	},
 
@@ -190,11 +190,11 @@ Page({
 	// 测试4：搜索用户
 	async testSearchUser() {
 		if (!this.data.phone) {
-			this.addLog('❌ 请先输入手机号', 'error');
+			this.addLog('请先输入手机号', 'error');
 			return;
 		}
 
-		this.addLog(`📝 开始测试：搜索用户 ${this.data.phone}...`, 'info');
+		this.addLog(`开始测试：搜索用户 ${this.data.phone}...`, 'info');
 		try {
 			let params = {
 				phone: this.data.phone
@@ -205,7 +205,7 @@ Page({
 
 			// 检查返回数据
 			if (!data || !data.user) {
-				this.addLog('❌ 未找到用户信息', 'error');
+				this.addLog('未找到用户信息', 'error');
 				return;
 			}
 
@@ -222,7 +222,7 @@ Page({
 			console.log('totalTimes:', data.totalTimes);
 			console.log('cards.total:', data.cards ? data.cards.total : 'undefined');
 
-			this.addLog(`✅ 找到用户: ${data.user.USER_NAME || '未设置姓名'}`, 'success');
+			this.addLog(`找到用户: ${data.user.USER_NAME || '未设置姓名'}`, 'success');
 			this.addLog(`   手机号: ${data.user.USER_MOBILE}`, 'info');
 			this.addLog(`   用户OpenID: ${data.userId}`, 'info');
 			this.addLog(`   总余额: $${data.totalBalance || data.totalAmount || 0}`, 'info');
@@ -230,18 +230,18 @@ Page({
 			this.addLog(`   卡项数量: ${data.cards.total}`, 'info');
 		} catch (e) {
 			console.log('搜索用户错误:', e);
-			this.addLog(`❌ 搜索用户失败: ${e.message || e.errMsg}`, 'error');
+			this.addLog(`搜索用户失败: ${e.message || e.errMsg}`, 'error');
 		}
 	},
 
 	// 测试5：给用户充值次数卡
 	async testAddUserTimesCard() {
 		if (!this.data.userId) {
-			this.addLog('❌ 请先搜索用户', 'error');
+			this.addLog('请先搜索用户', 'error');
 			return;
 		}
 
-		this.addLog('📝 开始测试：给用户充值次数卡...', 'info');
+		this.addLog('开始测试：给用户充值次数卡...', 'info');
 		try {
 			let params = {
 				userId: this.data.userId,
@@ -258,20 +258,20 @@ Page({
 			this.setData({
 				createdUserCardId: result.data.userCardId
 			});
-			this.addLog(`✅ 充值次数卡成功！用户卡项ID: ${result.data.userCardId}`, 'success');
+			this.addLog(`充值次数卡成功！用户卡项ID: ${result.data.userCardId}`, 'success');
 		} catch (e) {
-			this.addLog(`❌ 充值次数卡失败: ${e.message || e.errMsg}`, 'error');
+			this.addLog(`充值次数卡失败: ${e.message || e.errMsg}`, 'error');
 		}
 	},
 
 	// 测试6：给用户充值余额
 	async testAddUserBalanceCard() {
 		if (!this.data.userId) {
-			this.addLog('❌ 请先搜索用户', 'error');
+			this.addLog('请先搜索用户', 'error');
 			return;
 		}
 
-		this.addLog('📝 开始测试：给用户充值余额...', 'info');
+		this.addLog('开始测试：给用户充值余额...', 'info');
 		try {
 			let params = {
 				userId: this.data.userId,
@@ -284,9 +284,9 @@ Page({
 			};
 
 			let result = await cloudHelper.callCloudSumbit('admin/user_card_add', params);
-			this.addLog(`✅ 充值余额成功！用户卡项ID: ${result.data.userCardId}`, 'success');
+			this.addLog(`充值余额成功！用户卡项ID: ${result.data.userCardId}`, 'success');
 		} catch (e) {
-			this.addLog(`❌ 充值余额失败: ${e.message || e.errMsg}`, 'error');
+			this.addLog(`充值余额失败: ${e.message || e.errMsg}`, 'error');
 		}
 	},
 
