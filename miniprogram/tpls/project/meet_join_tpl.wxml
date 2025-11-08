@@ -24,9 +24,80 @@
 			</view>
 			<!-- form content end -->
 
+	<!-- 卡项选择 begin -->
+	<view wx:if="{{needCard}}" class="form-box card-project shadow-project margin-top">
+		<view class="form-group">
+			<view class="title text-bold" style="display:flex;justify-content:space-between;align-items:baseline;">
+				<text><text class="text-red">*</text> 选择卡项</text>
+				<text class="text-grey text-normal" style="font-size:24rpx;">
+					<text wx:if="{{costSet.costType === 'times'}}">本次将消耗 {{costSet.timesCost}} 次</text>
+					<text wx:elif="{{costSet.costType === 'balance'}}">本次将消耗 {{costSet.balanceCost}} 元</text>
+					<text wx:else>消耗 {{costSet.timesCost}} 次 或 {{costSet.balanceCost}} 元</text>
+				</text>
+			</view>
 		</view>
 
-		<button bindtap="bindCheckTap" class="btn-base btn-project" style="margin-bottom:100rpx;">提交</button>
+		<view wx:if="{{userCards.length > 0}}" class="form-group">
+			<picker bindchange="bindCardChange" value="{{selectedCardIndex}}" range="{{userCardsDisplay}}">
+				<view class="form-text text-admin" style="display:flex;justify-content:space-between;align-items:center;padding:20rpx 0;">
+					<view wx:if="{{selectedCardIndex >= 0}}" style="flex:1;overflow:hidden;margin-right:20rpx;">
+						<view style="font-size:30rpx;color:#333;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">
+							{{userCards[selectedCardIndex].USER_CARD_CARD_NAME}}
+						</view>
+					</view>
+					<view wx:else style="flex:1;">
+						<text class="text-grey">请选择要使用的卡项</text>
+					</view>
+					<view wx:if="{{selectedCardIndex >= 0}}" style="display:flex;align-items:center;white-space:nowrap;">
+						<text style="color:#667eea;font-size:28rpx;font-weight:500;">
+							<text wx:if="{{userCards[selectedCardIndex].USER_CARD_TYPE === 1}}">剩余 {{userCards[selectedCardIndex].USER_CARD_REMAIN_TIMES}} 次</text>
+							<text wx:else>剩余 {{userCards[selectedCardIndex].USER_CARD_REMAIN_AMOUNT}} 元</text>
+						</text>
+					</view>
+				</view>
+			</picker>
+		</view>
+
+		<view wx:else class="form-group">
+			<view style="padding:40rpx 20rpx;text-align:center;">
+				<view style="font-size:100rpx;color:#ffa940;margin-bottom:20rpx;">⚠️</view>
+				<view style="font-size:32rpx;color:#333;font-weight:500;margin-bottom:20rpx;">暂无可用卡项</view>
+				<view style="font-size:28rpx;color:#666;line-height:1.8;margin-bottom:30rpx;">
+					<text wx:if="{{costSet.costType === 'times'}}">本预约需要消耗 {{costSet.timesCost}} 次，</text>
+					<text wx:elif="{{costSet.costType === 'balance'}}">本预约需要消耗 {{costSet.balanceCost}} 元，</text>
+					<text wx:else>本预约需要消耗 {{costSet.timesCost}} 次 或 {{costSet.balanceCost}} 元，</text>
+					但您暂时没有可用的卡项或余额不足
+				</view>
+				<view style="font-size:26rpx;color:#999;line-height:2;">
+					<view>💳 请先购买卡项</view>
+					<view>📞 或联系我们为您充值</view>
+				</view>
+			</view>
+		</view>
+	</view>
+	<!-- 卡项选择 end -->
+
+	<!-- 免责条款 -->
+	<view class="form-box card-project shadow-project margin-top">
+		<view class="form-group">
+			<view class="title text-bold"><text class="icon-warn margin-right-xs text-orange"></text>预约须知</view>
+		</view>
+		<view class="form-group">
+			<view class="line-desc text-grey" style="line-height:1.8">{{termsText}}</view>
+		</view>
+		<view class="form-group">
+			<checkbox-group bindchange="bindAgreeTerms">
+				<label class="checkbox">
+					<checkbox value="agreed" color="#667eea"/>
+					<text class="margin-left-xs">我已阅读并同意以上预约须知</text>
+				</label>
+			</checkbox-group>
+		</view>
+	</view>
+
+	</view>
+
+	<button bindtap="bindCheckTap" class="btn-base btn-project" disabled="{{!agreedTerms}}" style="margin-bottom:100rpx;">{{agreedTerms ? '提交' : '请先同意预约须知'}}</button>
 
 
 	</view>

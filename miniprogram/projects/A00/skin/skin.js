@@ -2,13 +2,14 @@ module.exports = {
 	PID: 'A00', //美业
 
 	NAV_COLOR: '#ffffff',
-	NAV_BG: '#5756B3',
+	NAV_BG: '#333333',
 
 	MEET_NAME: '预约',
 
 	MENU_ITEM: ['首页', '预约日历', '我的'], // 第1,4,5菜单
 
 	NEWS_CATE: '1=小店动态|rightpic,2=美容小课堂|leftbig',
+	CARD_CATE: '1=次数卡|leftbig,2=余额卡|leftbig',
 	MEET_TYPE: '1=美容师预约|leftbig2,2=项目预约|leftbig',
 
 	DEFAULT_FORMS: [{

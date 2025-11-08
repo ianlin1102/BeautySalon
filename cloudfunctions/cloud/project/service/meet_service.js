@@ -117,7 +117,7 @@ class MeetService extends BaseService {
 	}
 
 	// 预约逻辑
-	async join(userId, meetId, timeMark, forms) {
+	async join(userId, meetId, timeMark, forms, cardId) {
 		// 预约时段是否存在
 		let meetWhere = {
 			_id: meetId
@@ -155,6 +155,125 @@ class MeetService extends BaseService {
 		data.JOIN_START_TIME = timeUtil.time2Timestamp(daySet.day + ' ' + timeSet.start + ':00');
 
 		data.JOIN_FORMS = forms;
+
+		// 卡项扣费处理
+		if (cardId && meet.MEET_COST_SET && meet.MEET_COST_SET.isEnabled) {
+			try {
+				console.log('=== 开始扣费处理 ===');
+				console.log('cardId:', cardId);
+				console.log('userId:', userId);
+
+				const UserCardModel = require('../model/user_card_model.js');
+				const CardRecordModel = require('../model/card_record_model.js');
+
+				// 获取用户卡项信息
+				let userCard = await UserCardModel.getOne({
+					_id: cardId,
+					USER_CARD_USER_ID: userId,
+					USER_CARD_STATUS: UserCardModel.STATUS.IN_USE
+				});
+
+				console.log('获取到的卡项:', userCard);
+
+				if (!userCard) {
+					this.AppError('卡项不存在或已失效');
+				}
+
+			let costSet = meet.MEET_COST_SET;
+			let deductAmount = 0;
+			let deductType = ''; // 'times' 或 'amount'
+			let cardData = {};
+
+			// 检查卡项类型和余额
+			if (userCard.USER_CARD_TYPE === UserCardModel.TYPE.TIMES) {
+				if (costSet.costType !== 'times' && costSet.costType !== 'both') {
+					this.AppError('该预约不支持次数卡');
+				}
+				let remainTimes = userCard.USER_CARD_REMAIN_TIMES || 0;
+				if (remainTimes < costSet.timesCost) {
+					this.AppError('卡项次数不足');
+				}
+				deductAmount = costSet.timesCost;
+				deductType = 'times';
+				cardData.USER_CARD_REMAIN_TIMES = remainTimes - costSet.timesCost;
+				cardData.USER_CARD_USED_TIMES = (userCard.USER_CARD_USED_TIMES || 0) + costSet.timesCost;
+				// 如果次数用完，更新状态
+				if (cardData.USER_CARD_REMAIN_TIMES <= 0) {
+					cardData.USER_CARD_STATUS = UserCardModel.STATUS.USED_UP;
+				}
+			} else if (userCard.USER_CARD_TYPE === UserCardModel.TYPE.BALANCE) {
+				if (costSet.costType !== 'balance' && costSet.costType !== 'both') {
+					this.AppError('该预约不支持储值卡');
+				}
+				let remainAmount = userCard.USER_CARD_REMAIN_AMOUNT || 0;
+				if (remainAmount < costSet.balanceCost) {
+					this.AppError('卡项余额不足');
+				}
+				deductAmount = costSet.balanceCost;
+				deductType = 'amount';
+				cardData.USER_CARD_REMAIN_AMOUNT = remainAmount - costSet.balanceCost;
+				cardData.USER_CARD_USED_AMOUNT = (userCard.USER_CARD_USED_AMOUNT || 0) + costSet.balanceCost;
+				// 如果余额用完，更新状态
+				if (cardData.USER_CARD_REMAIN_AMOUNT <= 0) {
+					cardData.USER_CARD_STATUS = UserCardModel.STATUS.USED_UP;
+				}
+			}
+
+			// 扣除卡项余额
+			await UserCardModel.edit(cardId, cardData);
+
+				// 记录使用记录到 card_record
+				let beforeTimes = userCard.USER_CARD_REMAIN_TIMES || 0;
+				let beforeAmount = userCard.USER_CARD_REMAIN_AMOUNT || 0;
+				let afterTimes = cardData.USER_CARD_REMAIN_TIMES !== undefined ? cardData.USER_CARD_REMAIN_TIMES : beforeTimes;
+				let afterAmount = cardData.USER_CARD_REMAIN_AMOUNT !== undefined ? cardData.USER_CARD_REMAIN_AMOUNT : beforeAmount;
+
+				console.log('准备插入消费记录:', {
+					cardId,
+					userId,
+					deductType,
+					deductAmount,
+					beforeTimes,
+					afterTimes,
+					beforeAmount,
+					afterAmount
+				});
+
+				await CardRecordModel.insert({
+					RECORD_USER_CARD_ID: cardId,
+					RECORD_USER_ID: userId,
+					RECORD_TYPE: CardRecordModel.TYPE.CONSUME,
+					RECORD_CHANGE_TIMES: deductType === 'times' ? -deductAmount : 0,
+					RECORD_CHANGE_AMOUNT: deductType === 'amount' ? -deductAmount : 0,
+					RECORD_BEFORE_TIMES: beforeTimes,
+					RECORD_AFTER_TIMES: afterTimes,
+					RECORD_BEFORE_AMOUNT: beforeAmount,
+					RECORD_AFTER_AMOUNT: afterAmount,
+					RECORD_REASON: '预约消费 - ' + meet.MEET_TITLE,
+					RECORD_RELATED_ID: ''
+				});
+
+				console.log('消费记录插入成功');
+
+				// 记录扣费信息到预约记录
+				data.JOIN_CARD_DEDUCT = {
+					cardId: cardId,
+					cardType: deductType,
+					cardName: userCard.USER_CARD_CARD_NAME,
+					deductAmount: deductAmount,
+					deductTime: timeUtil.time(),
+					refunded: false,
+					refundTime: 0,
+					refundReason: '',
+					refundBy: ''
+				};
+
+				console.log('卡项扣费处理完成');
+			} catch (err) {
+				console.error('卡项扣费失败:', err);
+				throw err; // 重新抛出错误
+			}
+		}
 
 		data.JOIN_STATUS = JoinModel.STATUS.SUCC;
 		data.JOIN_CODE = dataUtil.genRandomIntString(15);
@@ -446,7 +565,7 @@ class MeetService extends BaseService {
 	/**  预约前获取关键信息 */
 	async detailForJoin(userId, meetId, timeMark) {
 
-		let fields = 'MEET_DAYS_SET,MEET_FORM_SET, MEET_TITLE';
+		let fields = 'MEET_DAYS_SET,MEET_FORM_SET,MEET_TITLE,MEET_CANCEL_SET,MEET_COST_SET';
 
 		let where = {
 			_id: meetId,
@@ -548,6 +667,12 @@ class MeetService extends BaseService {
 			if (usefulTimes.length == 0) continue;
 
 			let node = {};
+			// 返回完整的时间段数组，供前端显示
+			node.times = usefulTimes.map(t => ({
+				start: t.start,
+				end: t.end
+			}));
+			// 保留兼容性的 timeDesc
 			node.timeDesc = usefulTimes.length > 1 ? usefulTimes.length + '个时段' : usefulTimes[0].start;
 			node.title = list[k].MEET_TITLE;
 			node.pic = list[k].MEET_STYLE_SET.pic;
@@ -669,6 +794,34 @@ class MeetService extends BaseService {
 		if (now > startTime)
 			this.AppError('该预约已经开始，无法取消');
 
+		// 检查取消时间限制
+		let cancelSet = meet.MEET_CANCEL_SET || {};
+		if (cancelSet.isLimit) {
+			if (cancelSet.days === -1) {
+				// 不能取消
+				this.AppError('该预约设定为不可取消');
+			} else {
+				// 计算取消限制时间
+				let limitSeconds = 0;
+				if (cancelSet.days) limitSeconds += cancelSet.days * 24 * 3600;
+				if (cancelSet.hours) limitSeconds += cancelSet.hours * 3600;
+				if (cancelSet.minutes) limitSeconds += cancelSet.minutes * 60;
+
+				let limitTime = startTime - limitSeconds * 1000; // 转换为毫秒
+
+				if (now >= limitTime) {
+					// 超过取消限制时间
+					let limitDesc = '';
+					if (cancelSet.days > 0) limitDesc += cancelSet.days + '天';
+					if (cancelSet.hours > 0) limitDesc += cancelSet.hours + '小时';
+					if (cancelSet.minutes > 0) limitDesc += cancelSet.minutes + '分钟';
+					this.AppError('该预约需要在开始前' + limitDesc + '取消，现已超过限制时间');
+				}
+			}
+		}
+
+		// 返还卡项
+		await this._refundCard(join);
 
 		let data = {
 			JOIN_STATUS: JoinModel.STATUS.CANCEL,
@@ -680,6 +833,119 @@ class MeetService extends BaseService {
 
 	}
 
+	/** 返还卡项（内部方法）*/
+	async _refundCard(join, refundBy = 'user') {
+		// 检查是否有卡项扣费记录
+		if (!join.JOIN_CARD_DEDUCT || join.JOIN_CARD_DEDUCT.refunded) {
+			return; // 没有扣费记录或已经返还过
+		}
+
+		const UserCardModel = require('../model/user_card_model.js');
+		const CardRecordModel = require('../model/card_record_model.js');
+
+		let deduct = join.JOIN_CARD_DEDUCT;
+		let cardId = deduct.cardId;
+
+		// 获取卡项
+		let card = await UserCardModel.getOne({ _id: cardId });
+		if (!card) {
+			console.error('返还卡项失败：卡项不存在', cardId);
+			return; // 卡项不存在，可能已被删除，静默失败
+		}
+
+		// 记录返还前的余额
+		let beforeTimes = card.USER_CARD_REMAIN_TIMES;
+		let beforeAmount = card.USER_CARD_REMAIN_AMOUNT;
+
+		// 计算返还金额
+		let refundData = {};
+		if (deduct.cardType === 'times') {
+			refundData.USER_CARD_REMAIN_TIMES = card.USER_CARD_REMAIN_TIMES + deduct.deductAmount;
+			refundData.USER_CARD_USED_TIMES = Math.max(0, card.USER_CARD_USED_TIMES - deduct.deductAmount);
+			// 如果返还后有余额，恢复为使用中状态
+			if (refundData.USER_CARD_REMAIN_TIMES > 0 && card.USER_CARD_STATUS === UserCardModel.STATUS.USED_UP) {
+				refundData.USER_CARD_STATUS = UserCardModel.STATUS.IN_USE;
+			}
+		} else if (deduct.cardType === 'amount') {
+			refundData.USER_CARD_REMAIN_AMOUNT = card.USER_CARD_REMAIN_AMOUNT + deduct.deductAmount;
+			refundData.USER_CARD_USED_AMOUNT = Math.max(0, card.USER_CARD_USED_AMOUNT - deduct.deductAmount);
+			// 如果返还后有余额，恢复为使用中状态
+			if (refundData.USER_CARD_REMAIN_AMOUNT > 0 && card.USER_CARD_STATUS === UserCardModel.STATUS.USED_UP) {
+				refundData.USER_CARD_STATUS = UserCardModel.STATUS.IN_USE;
+			}
+		}
+
+		// 更新卡项余额
+		await UserCardModel.edit(cardId, refundData);
+
+		// 创建返还记录（使用管理员调整类型）
+		let afterTimes = refundData.USER_CARD_REMAIN_TIMES || beforeTimes;
+		let afterAmount = refundData.USER_CARD_REMAIN_AMOUNT || beforeAmount;
+
+		await CardRecordModel.insert({
+			RECORD_USER_CARD_ID: cardId,
+			RECORD_USER_ID: join.JOIN_USER_ID,
+			RECORD_TYPE: CardRecordModel.TYPE.ADMIN_ADJUST, // 使用管理员调整类型表示退款
+			RECORD_CHANGE_TIMES: deduct.cardType === 'times' ? deduct.deductAmount : 0, // 正数表示增加
+			RECORD_CHANGE_AMOUNT: deduct.cardType === 'amount' ? deduct.deductAmount : 0, // 正数表示增加
+			RECORD_BEFORE_TIMES: beforeTimes,
+			RECORD_AFTER_TIMES: afterTimes,
+			RECORD_BEFORE_AMOUNT: beforeAmount,
+			RECORD_AFTER_AMOUNT: afterAmount,
+			RECORD_REASON: '预约取消退还 - ' + (join.JOIN_MEET_TITLE || '预约'),
+			RECORD_RELATED_ID: join._id
+		});
+
+		// 更新预约记录中的退款状态
+		deduct.refunded = true;
+		deduct.refundTime = timeUtil.time();
+		deduct.refundReason = refundBy === 'admin' ? 'Admin取消预约' : '用户取消预约';
+		deduct.refundBy = refundBy;
+
+		await JoinModel.edit(join._id, {
+			JOIN_CARD_DEDUCT: deduct
+		});
+
+		console.log('卡项返还成功:', {
+			joinId: join._id,
+			cardId: cardId,
+			amount: deduct.deductAmount,
+			type: deduct.cardType
+		});
+	}
+
+	/** 清理已取消和已过期的预约 */
+	async clearMyJoin(userId) {
+		let now = timeUtil.time('Y-M-D H:i:s');
+
+		// 查询已取消的记录（状态为10或99）
+		let canceledWhere = {
+			JOIN_USER_ID: userId,
+			JOIN_STATUS: ['in', [JoinModel.STATUS.CANCEL, JoinModel.STATUS.ADMIN_CANCEL]]
+		};
+
+		// 查询已过期的记录（预约成功但时间已过）
+		let expiredWhere = {
+			JOIN_USER_ID: userId,
+			JOIN_STATUS: JoinModel.STATUS.SUCC,
+			JOIN_MEET_DAY: ['<', now]
+		};
+
+		// 删除已取消的记录
+		let canceledCount = await JoinModel.count(canceledWhere);
+		if (canceledCount > 0) {
+			await JoinModel.del(canceledWhere);
+		}
+
+		// 删除已过期的记录
+		let expiredCount = await JoinModel.count(expiredWhere);
+		if (expiredCount > 0) {
+			await JoinModel.del(expiredWhere);
+		}
+
+		return canceledCount + expiredCount;
+	}
+
 	/** 取得我的预约详情 */
 	async getMyJoinDetail(userId, joinId) {
 
@@ -689,7 +955,17 @@ class MeetService extends BaseService {
 			_id: joinId,
 			JOIN_USER_ID: userId
 		};
-		return await JoinModel.getOne(where, fields);
+		let join = await JoinModel.getOne(where, fields);
+
+		// 获取预约项目的取消设置
+		if (join && join.JOIN_MEET_ID) {
+			let meet = await MeetModel.getOne({ _id: join.JOIN_MEET_ID }, 'MEET_CANCEL_SET');
+			if (meet) {
+				join.meet = meet;
+			}
+		}
+
+		return join;
 	}
 
 	/** 取得我的预约分页列表 */

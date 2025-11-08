@@ -42,7 +42,7 @@
 	justify-content: center;
 }
 
-.editor-add-wrapper>view {
+.editor-add-wrapper .editor-add-item {
 	width: 250rpx;
 	line-height: 2;
 	text-align: center;

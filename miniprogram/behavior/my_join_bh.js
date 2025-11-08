@@ -151,6 +151,33 @@ module.exports = Behavior({
 			}
 
 			pageHelper.showConfirm('确认取消该预约?', callback);
+		},
+
+		// 清理已取消和已过期的预约
+		bindCleanupTap: async function (e) {
+			let callback = async () => {
+				try {
+					let params = {}
+					let opts = {
+						title: '清理中'
+					}
+
+					await cloudHelper.callCloudSumbit('my/my_join_clear', params, opts).then(res => {
+						let count = res.data.count || 0;
+						pageHelper.showSuccToast('已清理' + count + '条记录');
+
+						// 刷新列表
+						this.setData({
+							isLoad: false
+						});
+						pageHelper.getDataList(this);
+					});
+				} catch (err) {
+					console.log(err);
+				}
+			}
+
+			pageHelper.showConfirm('确认清理所有已取消和已过期的预约吗？', callback);
 		}
 	}
 })

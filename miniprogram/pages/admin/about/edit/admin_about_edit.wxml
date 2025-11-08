@@ -1,0 +1,25 @@
+<view wx:if="{{isLoad==false}}" class="margin-top load loading text-l text-grey"></view>
+<view wx:elif="{{isLoad==null}}" class="margin-top load text-grey">
+	<text class="icon-warn"></text> 无此数据
+</view>
+<view class="main-admin" wx:elif="{{isAdmin&&isLoad}}">
+
+	<view class="form-box shadow">
+		<view class="form-group">
+			<view class="title">标题<text class="text-grey text-normal margin-left-xs">(可选)</text></view>
+			<input placeholder="请输入标题" placeholder-class="phc" value="{{formTitle}}" bindinput="model" data-item="formTitle" maxlength="50"></input>
+		</view>
+
+		<view class="form-group arrow align-start" bindtap="url" data-url="../../content/admin_content">
+			<view class="title-wrapper">
+				<view class="title">内容编辑</view>
+				<view class="text-grey text-sm margin-top-xs">点击进入富文本编辑器，可自由添加文字和图片</view>
+			</view>
+			<view class="form-text {{contentDesc=='未填写'?'text-orange':''}}">{{contentDesc}}</view>
+		</view>
+
+	</view>
+
+	<button bindtap="bindFormSubmit" class="btn-admin margin-top-xs">提交</button>
+
+</view>

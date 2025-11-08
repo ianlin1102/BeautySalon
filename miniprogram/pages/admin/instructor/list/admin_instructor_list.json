@@ -1,0 +1,9 @@
+{
+	"usingComponents": {
+		"cmpt-comm-list": "/cmpts/public/list/comm_list_cmpt"
+	},
+	"navigationBarTitleText": "导师团队管理",
+	"navigationBarBackgroundColor": "#2499f2",
+	"navigationBarTextStyle": "white",
+	"enablePullDownRefresh": false
+}

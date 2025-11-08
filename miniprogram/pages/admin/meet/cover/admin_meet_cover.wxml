@@ -38,24 +38,37 @@
 
 		<view class="meet-list-box">
 
-			<!--左大图 Begin-->
-			<view class="item shadow item-leftbig {{!pic?'nopic':''}} margin-top-xs">
-				<image wx:if="{{pic}}" mode="aspectFill" lazy-load="{{true}}" class="leftbig-left loading" src="{{pic}}">
-				</image>
-				<view class="leftbig-right">
-					<view class="leftbig-title content-cut-one">{{title||'演示标题'}}</view>
-					<view class="leftbig-desc">
-						<text class="content-cut-three">{{desc||'简要描述未填写'}}</text>
-					</view>
-					<view class="data"> 
-						<view class="meet-status"><text class="icon-remind margin-right-xxs"></text>{{status||'9天可预约'}}</view>
-					</view>
-
+			<!-- 新的背景图片卡片预览样式 -->
+			<view class="preview-card-new">
+				<!-- 背景图片层 -->
+				<view class="preview-bg">
+					<image wx:if="{{pic}}"
+						   class="preview-bg-img"
+						   src="{{pic}}"
+						   mode="aspectFill" />
+					<view wx:else class="preview-bg-placeholder"></view>
+					<!-- 白色渐变遮罩 - 下半部分 -->
+					<view class="preview-gradient-mask"></view>
 				</view>
 
+				<!-- 内容层：左右分割 -->
+				<view class="preview-layout">
+					<!-- 左侧：标题和时间段 -->
+					<view class="preview-left">
+						<view class="preview-title">{{title||'演示标题'}}</view>
+						<!-- 时间段标签示例 -->
+						<view class="preview-time-slots">
+							<view class="preview-time-tag">14:00 - 16:00</view>
+							<view class="preview-time-tag">18:00 - 20:00</view>
+						</view>
+					</view>
 
+					<!-- 右侧：可预约按钮 -->
+					<view class="preview-right">
+						<view class="preview-btn">可预约</view>
+					</view>
+				</view>
 			</view>
-			<!--左大图 END-->
 
 		</view>
 

@@ -1,0 +1,333 @@
+<view class="container">
+	<view class="header">
+		<text class="title">卡项搜索</text>
+	</view>
+
+	<!-- 搜索区域 -->
+	<view class="section">
+		<view class="section-title">搜索方式</view>
+
+		<!-- 搜索类型选择 -->
+		<view class="search-type-tabs">
+			<view class="tab {{searchType === 'uniqueId' ? 'active' : ''}}" bindtap="switchSearchType" data-type="uniqueId">
+				识别码搜索
+			</view>
+			<view class="tab {{searchType === 'phone' ? 'active' : ''}}" bindtap="switchSearchType" data-type="phone">
+				手机号搜索
+			</view>
+		</view>
+
+		<!-- 识别码搜索 -->
+		<view wx:if="{{searchType === 'uniqueId'}}">
+			<input
+				class="search-input"
+				placeholder="输入卡项识别码 (如: UC12345678)"
+				value="{{uniqueId}}"
+				bindinput="onUniqueIdInput"
+				maxlength="20"
+			/>
+			<button class="btn btn-primary" bindtap="searchByUniqueId" loading="{{searching}}">
+				{{searching ? '搜索中...' : '搜索卡项'}}
+			</button>
+			<view class="hint">通过唯一识别码快速查找卡项</view>
+		</view>
+
+		<!-- 手机号搜索 -->
+		<view wx:if="{{searchType === 'phone'}}">
+			<input
+				class="search-input"
+				placeholder="输入手机号"
+				value="{{phone}}"
+				bindinput="onPhoneInput"
+				type="number"
+				maxlength="11"
+			/>
+			<button class="btn btn-primary" bindtap="searchByPhone" loading="{{searching}}">
+				{{searching ? '搜索中...' : '搜索用户'}}
+			</button>
+			<view class="hint">通过手机号查找用户的所有卡项</view>
+		</view>
+	</view>
+
+	<!-- 搜索结果 - 识别码搜索 -->
+	<view wx:if="{{searchResult && searchType === 'uniqueId'}}" class="section">
+		<view class="section-title">卡项详情</view>
+
+		<!-- 用户信息 -->
+		<view class="user-info" wx:if="{{searchResult.user}}">
+			<view class="info-row">
+				<text class="label">用户姓名</text>
+				<text class="value">{{searchResult.user.USER_NAME || '未设置'}}</text>
+			</view>
+			<view class="info-row">
+				<text class="label">手机号</text>
+				<text class="value">{{searchResult.user.USER_MOBILE}}</text>
+			</view>
+		</view>
+
+		<!-- 卡项信息 -->
+		<view class="card-detail" wx:if="{{searchResult.userCard}}">
+			<view class="card-header">
+				<text class="card-name">{{searchResult.userCard.USER_CARD_CARD_NAME}}</text>
+				<view class="card-status status-{{searchResult.userCard.USER_CARD_STATUS}}">
+					{{searchResult.userCard.USER_CARD_STATUS_DESC}}
+				</view>
+			</view>
+
+			<!-- 唯一识别码 -->
+			<view class="card-unique-id">
+				<text class="unique-id-label">识别码:</text>
+				<text class="unique-id-value">{{searchResult.userCard.USER_CARD_UNIQUE_ID}}</text>
+				<text class="copy-btn" bindtap="copyUniqueId" data-id="{{searchResult.userCard.USER_CARD_UNIQUE_ID}}">复制</text>
+			</view>
+
+			<!-- 卡项数据 -->
+			<view class="card-info">
+				<view class="info-row">
+					<view class="info-item">
+						<text class="info-label">类型</text>
+						<text class="info-value">{{searchResult.userCard.USER_CARD_TYPE_DESC}}</text>
+					</view>
+					<view class="info-item" wx:if="{{searchResult.userCard.USER_CARD_TYPE === 1}}">
+						<text class="info-label">剩余次数</text>
+						<text class="info-value times">{{searchResult.userCard.USER_CARD_REMAIN_TIMES}}</text>
+					</view>
+					<view class="info-item" wx:if="{{searchResult.userCard.USER_CARD_TYPE === 2}}">
+						<text class="info-label">剩余余额</text>
+						<text class="info-value balance">${{searchResult.userCard.USER_CARD_REMAIN_AMOUNT}}</text>
+					</view>
+				</view>
+			</view>
+
+			<!-- 时间信息 -->
+			<view class="card-footer">
+				<text class="footer-text">充值时间: {{searchResult.userCard.USER_CARD_ADD_TIME}}</text>
+				<text class="footer-text" wx:if="{{searchResult.userCard.USER_CARD_EXPIRE_TIME}}">
+					过期时间: {{searchResult.userCard.USER_CARD_EXPIRE_TIME}}
+				</text>
+			</view>
+
+			<!-- 操作按钮 -->
+			<view class="action-buttons">
+				<button class="btn-action btn-deduct" bindtap="adjustCard" data-type="deduct">扣减</button>
+				<button class="btn-action btn-add" bindtap="adjustCard" data-type="add">增加</button>
+				<button class="btn-action btn-records" bindtap="viewRecords">查看记录</button>
+			</view>
+		</view>
+	</view>
+
+	<!-- 搜索结果 - 手机号搜索 -->
+	<view wx:if="{{searchResult && searchType === 'phone'}}" class="section">
+		<view class="section-title">用户信息</view>
+
+		<!-- 用户基本信息 -->
+		<view class="user-info" wx:if="{{searchResult.user}}">
+			<view class="info-row">
+				<text class="label">用户姓名</text>
+				<text class="value">{{searchResult.user.USER_NAME || '未设置'}}</text>
+			</view>
+			<view class="info-row">
+				<text class="label">手机号</text>
+				<text class="value">{{searchResult.user.USER_MOBILE}}</text>
+			</view>
+		</view>
+
+		<!-- 汇总信息 -->
+		<view class="summary-card">
+			<view class="summary-title">汇总信息</view>
+			<view class="summary-row">
+				<view class="summary-item">
+					<text class="summary-label">总次数</text>
+					<text class="summary-value">{{searchResult.totalTimes}}</text>
+				</view>
+				<view class="summary-item">
+					<text class="summary-label">总余额</text>
+					<text class="summary-value">${{searchResult.totalAmount || searchResult.totalBalance || 0}}</text>
+				</view>
+				<view class="summary-item">
+					<text class="summary-label">卡项数量</text>
+					<text class="summary-value">{{searchResult.cards ? searchResult.cards.total : 0}}</text>
+				</view>
+			</view>
+			<!-- 添加卡项按钮 -->
+			<button class="btn-add-card" bindtap="showAddCardModal">+ 添加卡项</button>
+		</view>
+
+		<!-- 卡项列表 -->
+		<view wx:if="{{searchResult.cards && searchResult.cards.list}}" class="card-list">
+			<view class="section-title">用户卡项列表</view>
+			<view class="card-item" wx:for="{{searchResult.cards.list}}" wx:key="_id">
+				<view class="card-header">
+					<text class="card-name">{{item.USER_CARD_CARD_NAME}}</text>
+					<view class="card-status status-{{item.USER_CARD_STATUS}}">
+						{{item.USER_CARD_STATUS_DESC}}
+					</view>
+				</view>
+
+				<!-- 唯一识别码 -->
+				<view class="card-unique-id">
+					<text class="unique-id-label">识别码:</text>
+					<text class="unique-id-value">{{item.USER_CARD_UNIQUE_ID}}</text>
+					<text class="copy-btn" bindtap="copyUniqueId" data-id="{{item.USER_CARD_UNIQUE_ID}}">复制</text>
+				</view>
+
+				<!-- 卡项数据 -->
+				<view class="card-info">
+					<view class="info-row">
+						<view class="info-item">
+							<text class="info-label">类型</text>
+							<text class="info-value">{{item.USER_CARD_TYPE_DESC}}</text>
+						</view>
+						<view class="info-item" wx:if="{{item.USER_CARD_TYPE === 1}}" bindtap="showRecordsSheet" data-index="{{index}}">
+							<text class="info-label">剩余</text>
+							<text class="info-value times clickable">{{item.USER_CARD_REMAIN_TIMES}}次</text>
+						</view>
+						<view class="info-item" wx:if="{{item.USER_CARD_TYPE === 2}}" bindtap="showRecordsSheet" data-index="{{index}}">
+							<text class="info-label">剩余</text>
+							<text class="info-value balance clickable">${{item.USER_CARD_REMAIN_AMOUNT}}</text>
+						</view>
+					</view>
+				</view>
+
+				<!-- 时间 -->
+				<view class="card-footer">
+					<text class="footer-text">{{item.USER_CARD_ADD_TIME}}</text>
+				</view>
+
+				<!-- 操作按钮 -->
+				<view class="action-buttons">
+					<button class="btn-action btn-deduct" bindtap="adjustCardFromList" data-index="{{index}}" data-type="deduct">扣减</button>
+					<button class="btn-action btn-add" bindtap="adjustCardFromList" data-index="{{index}}" data-type="add">增加</button>
+					<button class="btn-action btn-delete" bindtap="deleteCardFromList" data-index="{{index}}">删除</button>
+				</view>
+			</view>
+
+			<view wx:if="{{searchResult.cards.list.length === 0}}" class="empty-state">
+				<text class="empty-text">该用户暂无卡项</text>
+			</view>
+		</view>
+	</view>
+
+	<!-- 空状态 -->
+	<view wx:if="{{!searchResult && hasSearched}}" class="section empty-state">
+		<text class="empty-text">未找到相关信息</text>
+	</view>
+
+	<!-- 返回按钮 -->
+	<view class="footer-nav">
+		<button class="btn-nav" bindtap="goBack">← 返回测试页</button>
+	</view>
+
+	<!-- 使用记录弹窗 -->
+	<view class="modal-overlay" wx:if="{{showRecordsModal}}" bindtap="hideRecordsModal" catchtouchmove="preventTouchMove">
+		<view class="modal-container" catchtap="preventClose" catchtouchmove="preventTouchMove">
+			<view class="modal-header">
+				<text class="modal-title">使用记录</text>
+				<text class="modal-close" bindtap="hideRecordsModal">×</text>
+			</view>
+			<scroll-view class="modal-content" scroll-y>
+				<view wx:if="{{recordsList && recordsList.length > 0}}">
+					<view class="record-item" wx:for="{{recordsList}}" wx:key="_id">
+						<view class="record-row">
+							<text class="record-label">时间</text>
+							<text class="record-value">{{item.RECORD_ADD_TIME}}</text>
+						</view>
+						<view class="record-row">
+							<text class="record-label">类型</text>
+							<text class="record-value">{{item.RECORD_REASON}}</text>
+						</view>
+						<view class="record-row" wx:if="{{item.RECORD_CHANGE_TIMES}}">
+							<text class="record-label">次数变动</text>
+							<text class="record-value {{item.RECORD_CHANGE_TIMES > 0 ? 'positive' : 'negative'}}">
+								{{item.RECORD_CHANGE_TIMES > 0 ? '+' : ''}}{{item.RECORD_CHANGE_TIMES}}
+							</text>
+						</view>
+						<view class="record-row" wx:if="{{item.RECORD_CHANGE_AMOUNT}}">
+							<text class="record-label">余额变动</text>
+							<text class="record-value {{item.RECORD_CHANGE_AMOUNT > 0 ? 'positive' : 'negative'}}">
+								{{item.RECORD_CHANGE_AMOUNT > 0 ? '+' : ''}}${{item.RECORD_CHANGE_AMOUNT}}
+							</text>
+						</view>
+					</view>
+				</view>
+				<view wx:else class="empty-records">
+					<text class="empty-text">暂无使用记录</text>
+				</view>
+			</scroll-view>
+		</view>
+	</view>
+
+	<!-- 添加卡项弹窗 -->
+	<view class="modal-overlay" wx:if="{{showAddCardModal}}" bindtap="hideAddCardModal" catchtouchmove="preventTouchMove">
+		<view class="modal-container add-card-modal" catchtap="preventClose" catchtouchmove="preventTouchMove">
+			<view class="modal-header">
+				<text class="modal-title">添加卡项</text>
+				<text class="modal-close" bindtap="hideAddCardModal">×</text>
+			</view>
+			<scroll-view class="modal-content" scroll-y>
+				<!-- 选择卡项 -->
+				<view class="form-group">
+					<text class="form-label">选择卡项</text>
+					<picker mode="selector" range="{{availableCards}}" range-key="CARD_NAME" bindchange="onCardSelect">
+						<view class="picker-input">
+							<text wx:if="{{selectedCard}}">{{selectedCard.CARD_NAME}}</text>
+							<text wx:else class="placeholder">请选择卡项</text>
+						</view>
+					</picker>
+				</view>
+
+				<!-- 卡项信息预览 -->
+				<view wx:if="{{selectedCard}}" class="card-preview">
+					<view class="preview-row">
+						<text class="preview-label">类型</text>
+						<text class="preview-value">{{selectedCard.CARD_TYPE === 1 ? '次数卡' : '余额卡'}}</text>
+					</view>
+					<view class="preview-row" wx:if="{{selectedCard.CARD_TYPE === 1}}">
+						<text class="preview-label">赋予次数</text>
+						<text class="preview-value">{{customValue || selectedCard.CARD_TIMES}} 次</text>
+					</view>
+					<view class="preview-row" wx:if="{{selectedCard.CARD_TYPE === 2}}">
+						<text class="preview-label">赋予金额</text>
+						<text class="preview-value">${{customValue || selectedCard.CARD_AMOUNT}}</text>
+					</view>
+					<view class="preview-row">
+						<text class="preview-label">有效期</text>
+						<text class="preview-value">
+							{{customValidityDays === '' ? (selectedCard.CARD_VALIDITY_DAYS > 0 ? selectedCard.CARD_VALIDITY_DAYS + ' 天' : '永久有效') : (customValidityDays == 0 || customValidityDays === '' ? '永久有效' : customValidityDays + ' 天')}}
+						</text>
+					</view>
+				</view>
+
+				<!-- 自定义次数/金额 -->
+				<view wx:if="{{selectedCard}}" class="form-group">
+					<text class="form-label">{{selectedCard.CARD_TYPE === 1 ? '自定义次数' : '自定义金额'}}</text>
+					<input
+						class="form-input"
+						type="digit"
+						placeholder="{{selectedCard.CARD_TYPE === 1 ? '输入次数，默认为 ' + selectedCard.CARD_TIMES : '输入金额，默认为 ' + selectedCard.CARD_AMOUNT}}"
+						value="{{customValue}}"
+						bindinput="onCustomValueInput"
+					/>
+				</view>
+
+				<!-- 自定义有效期 -->
+				<view wx:if="{{selectedCard}}" class="form-group">
+					<text class="form-label">自定义有效期 (天)</text>
+					<input
+						class="form-input"
+						type="number"
+						placeholder="输入天数，留空则永久有效"
+						value="{{customValidityDays}}"
+						bindinput="onCustomValidityInput"
+					/>
+					<text class="form-hint">留空表示永久有效</text>
+				</view>
+
+				<!-- 确认按钮 -->
+				<button class="btn-confirm" bindtap="confirmAddCard" disabled="{{!selectedCard}}">
+					确认添加
+				</button>
+			</scroll-view>
+		</view>
+	</view>
+</view>

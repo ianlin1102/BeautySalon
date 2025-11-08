@@ -4,7 +4,7 @@
 	position: relative;
 }
 
-.bg-img>image {
+.bg-img .bg-image {
 	top: 0;
 	left: 0;
 	position: absolute;

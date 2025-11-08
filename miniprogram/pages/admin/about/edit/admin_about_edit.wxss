@@ -1,0 +1,35 @@
+@import '../../../../style/project/base/admin.wxss';
+
+page {
+	background-color: #f8f8f8;
+}
+
+/* 修复内容编辑区域的布局 */
+.form-group.arrow.align-start {
+	display: flex;
+	align-items: flex-start;
+	padding: 30rpx;
+	position: relative;
+	min-height: 100rpx;
+}
+
+.form-group .title-wrapper {
+	flex: 1;
+	padding-right: 20rpx;
+}
+
+.form-group .title-wrapper .title {
+	height: auto;
+	margin-top: 0;
+	margin-bottom: 10rpx;
+}
+
+.form-group.arrow .form-text {
+	flex: 0 0 auto;
+	width: auto;
+	min-width: 80rpx;
+	text-align: right;
+	height: auto;
+	line-height: 1.5;
+	margin-top: 0;
+}

@@ -20,8 +20,27 @@ module.exports = Behavior({
 		},
 
 		_loadTodayList: async function () {
+			const CACHE_KEY = 'MY_JOIN_LIST';
+			const CACHE_TIME = 60 * 30; // 30分钟
+			const CACHE_TIMESTAMP_KEY = 'MY_JOIN_LIST_TIMESTAMP';
+
 			try {
-				// 获取用户所有预约
+				// 1. 先尝试从缓存读取并显示
+				let cachedData = cacheHelper.get(CACHE_KEY);
+				let cacheTimestamp = cacheHelper.get(CACHE_TIMESTAMP_KEY);
+				let now = Date.now();
+
+				// 如果有缓存,先处理并显示缓存内容
+				if (cachedData) {
+					this._processTodayList(cachedData);
+
+					// 如果缓存还在有效期内(30分钟),直接返回
+					if (cacheTimestamp && (now - cacheTimestamp < CACHE_TIME * 1000)) {
+						return;
+					}
+				}
+
+				// 2. 从云端获取最新数据(缓存过期或无缓存时)
 				let params = {
 					search: '',
 					sortType: '',
@@ -36,59 +55,92 @@ module.exports = Behavior({
 				}
 				await cloudHelper.callCloudSumbit('my/my_join_list', params, opts).then(res => {
 					let allJoins = res.data.list || [];
-					let now = new Date();
-					let nowDateStr = timeHelper.time('Y-M-D');
-					let nowTimeStr = timeHelper.time('Y-M-D h:m');
-					
-					// 过滤出未过期的预约（状态为成功且时间未过期）
-					let futureJoins = allJoins.filter(join => {
-						if (join.JOIN_STATUS !== 1) return false; // 只看成功的预约
-						if (!join.JOIN_MEET_DAY || !join.JOIN_MEET_TIME_END) return false; // 检查必要字段
-						
-						try {
-							let joinDateTime = join.JOIN_MEET_DAY + ' ' + join.JOIN_MEET_TIME_END;
-							return joinDateTime > nowTimeStr;
-						} catch (e) {
-							console.error('时间比较错误:', e, join);
-							return false;
-						}
-					});
-					
-					// 按日期排序，最近的在前
-					futureJoins.sort((a, b) => {
-						let dateTimeA = a.JOIN_MEET_DAY + ' ' + a.JOIN_MEET_TIME_START;
-						let dateTimeB = b.JOIN_MEET_DAY + ' ' + b.JOIN_MEET_TIME_START;
-						return dateTimeA.localeCompare(dateTimeB);
-					});
-					
-					// 构造显示信息
-					let joinDisplayInfo = '';
-					if (futureJoins.length === 0) {
-						joinDisplayInfo = '暂无预约';
-					} else if (futureJoins.length === 1) {
-						let join = futureJoins[0];
-						let dayName = this._getDayName(join.JOIN_MEET_DAY);
-						let title = join.JOIN_MEET_TITLE || '未知项目';
-						joinDisplayInfo = `${dayName}有预约：${title}`;
+
+					// 3. 对比数据是否有变化
+					let hasChanged = false;
+					if (!cachedData || cachedData.length !== allJoins.length) {
+						hasChanged = true;
 					} else {
-						let nextJoin = futureJoins[0];
-						let dayName = this._getDayName(nextJoin.JOIN_MEET_DAY);
-						let title = nextJoin.JOIN_MEET_TITLE || '未知项目';
-						joinDisplayInfo = `未来有${futureJoins.length}个预约，最近：${dayName} ${title}`;
+						// 简单对比:检查ID列表是否一致
+						let cachedIds = cachedData.map(item => item._id).sort().join(',');
+						let newIds = allJoins.map(item => item._id).sort().join(',');
+						if (cachedIds !== newIds) {
+							hasChanged = true;
+						}
 					}
-					
-					this.setData({
-						myTodayList: futureJoins.filter(join => join.JOIN_MEET_DAY === nowDateStr), // 今天的预约
-						myFutureJoins: futureJoins,
-						joinDisplayInfo: joinDisplayInfo
-					});
+
+					// 4. 如果数据有变化,更新界面和缓存
+					if (hasChanged || !cachedData) {
+						this._processTodayList(allJoins);
+
+						if (allJoins.length > 0) {
+							cacheHelper.set(CACHE_KEY, allJoins, CACHE_TIME);
+							cacheHelper.set(CACHE_TIMESTAMP_KEY, now, CACHE_TIME);
+						}
+					} else {
+						// 数据没变化,只更新时间戳
+						cacheHelper.set(CACHE_TIMESTAMP_KEY, now, CACHE_TIME);
+					}
 				});
 			} catch (err) {
 				console.log(err);
-				this.setData({
-					joinDisplayInfo: '暂无预约'
-				});
+				// 如果有缓存,继续使用缓存
+				if (!this.data.joinDisplayInfo) {
+					this.setData({
+						joinDisplayInfo: '暂无预约'
+					});
+				}
 			}
+		},
+
+		// 抽取处理预约列表的逻辑为独立方法
+		_processTodayList: function(allJoins) {
+			let now = new Date();
+			let nowDateStr = timeHelper.time('Y-M-D');
+			let nowTimeStr = timeHelper.time('Y-M-D h:m');
+
+			// 过滤出未过期的预约（状态为成功且时间未过期）
+			let futureJoins = allJoins.filter(join => {
+				if (join.JOIN_STATUS !== 1) return false; // 只看成功的预约
+				if (!join.JOIN_MEET_DAY || !join.JOIN_MEET_TIME_END) return false; // 检查必要字段
+
+				try {
+					let joinDateTime = join.JOIN_MEET_DAY + ' ' + join.JOIN_MEET_TIME_END;
+					return joinDateTime > nowTimeStr;
+				} catch (e) {
+					console.error('时间比较错误:', e, join);
+					return false;
+				}
+			});
+
+			// 按日期排序，最近的在前
+			futureJoins.sort((a, b) => {
+				let dateTimeA = a.JOIN_MEET_DAY + ' ' + a.JOIN_MEET_TIME_START;
+				let dateTimeB = b.JOIN_MEET_DAY + ' ' + b.JOIN_MEET_TIME_START;
+				return dateTimeA.localeCompare(dateTimeB);
+			});
+
+			// 构造显示信息
+			let joinDisplayInfo = '';
+			if (futureJoins.length === 0) {
+				joinDisplayInfo = '暂无预约';
+			} else if (futureJoins.length === 1) {
+				let join = futureJoins[0];
+				let dayName = this._getDayName(join.JOIN_MEET_DAY);
+				let title = join.JOIN_MEET_TITLE || '未知项目';
+				joinDisplayInfo = `${dayName}有预约：${title}`;
+			} else {
+				let nextJoin = futureJoins[0];
+				let dayName = this._getDayName(nextJoin.JOIN_MEET_DAY);
+				let title = nextJoin.JOIN_MEET_TITLE || '未知项目';
+				joinDisplayInfo = `未来有${futureJoins.length}个预约，最近：${dayName} ${title}`;
+			}
+
+			this.setData({
+				myTodayList: futureJoins.filter(join => join.JOIN_MEET_DAY === nowDateStr), // 今天的预约
+				myFutureJoins: futureJoins,
+				joinDisplayInfo: joinDisplayInfo
+			});
 		},
 
 		// 获取日期的友好显示名称
@@ -185,6 +237,10 @@ module.exports = Behavior({
 		 * 页面相关事件处理函数--监听用户下拉动作
 		 */
 		onPullDownRefresh: async function () {
+			// 清除缓存，强制重新加载
+			cacheHelper.remove('MY_JOIN_LIST');
+			cacheHelper.remove('MY_JOIN_LIST_TIMESTAMP');
+
 			await this._loadTodayList();
 			await this._loadUser();
 			wx.stopPullDownRefresh();

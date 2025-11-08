@@ -106,7 +106,7 @@ class BaseAdminService extends BaseService {
 	/** 日志操作前获取名称 */
 	async getNameBeforeLog(type, oid) {
 		let name = '';
-		switch (type) { 
+		switch (type) {
 			case 'news': {
 				let news = await NewsModel.getOne(oid, 'NEWS_TITLE');
 				name = news.NEWS_TITLE;
@@ -127,6 +127,12 @@ class BaseAdminService extends BaseService {
 					USER_MINI_OPENID: oid
 				}, 'USER_MOBILE');
 				name = user.USER_MOBILE;
+				break;
+			}
+			case 'card_item': {
+				const CardItemModel = require('../../model/card_item_model.js');
+				let card = await CardItemModel.getOne(oid, 'CARD_NAME');
+				name = card.CARD_NAME;
 				break;
 			}
 		}

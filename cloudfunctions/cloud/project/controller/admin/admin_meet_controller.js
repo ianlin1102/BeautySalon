@@ -250,8 +250,10 @@ class AdminMeetController extends BaseAdminController {
 			typeId: 'must|id|name=分类',
 			typeName: 'must|string|name=分类',
 			order: 'must|int|min:1|max:9999|name=排序号',
-			daysSet: 'must|array|name=预约时间设置', 
-			isShowLimit: 'must|int|in:0,1|name=是否显示可预约人数', 
+			daysSet: 'must|array|name=预约时间设置',
+			isShowLimit: 'must|int|in:0,1|name=是否显示可预约人数',
+			cancelSet: 'object|name=取消限制设置',
+			costSet: 'object|name=消费设置',
 
 			formSet: 'must|array|name=用户资料设置',
 		};
@@ -300,8 +302,10 @@ class AdminMeetController extends BaseAdminController {
 			typeName: 'must|string|name=分类',
 			order: 'must|int|min:1|max:9999|name=排序号',
 			daysSet: 'must|array|name=预约时间设置',
-		 
-			isShowLimit: 'must|int|in:0,1|name=是否显示可预约人数', 
+
+			isShowLimit: 'must|int|in:0,1|name=是否显示可预约人数',
+			cancelSet: 'object|name=取消限制设置',
+			costSet: 'object|name=消费设置',
 
 			formSet: 'must|array|name=用户资料设置',
 		};
@@ -310,7 +314,7 @@ class AdminMeetController extends BaseAdminController {
 		let input = this.validateData(rules);
 
 		let service = new AdminMeetService();
-		let result = service.editMeet(input);
+		let result = await service.editMeet(input);
 
 		// 清空缓存
 		cacheUtil.clear();

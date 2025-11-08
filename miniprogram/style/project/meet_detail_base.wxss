@@ -317,8 +317,8 @@
 	color: #999;
 }
 
-/* New styles for wider left sidebar layout */
-.date-section {
+/* New styles for horizontal layout */
+.date-section-horizontal {
 	width: 100%;
 	display: flex;
 	flex-direction: column;
@@ -329,7 +329,306 @@
 .date-text {
 	font-size: 28rpx;
 	font-weight: bold;
+	margin-bottom: 8rpx;
+}
+
+.status-section-horizontal {
+	width: 100%;
+	max-height: 40rpx;
+}
+
+.joined-times-scroll {
+	width: 100%;
+	height: 40rpx;
+	white-space: nowrap;
+}
+
+.joined-times-container {
+	display: inline-flex;
+	align-items: center;
+	gap: 8rpx;
+	padding-right: 20rpx;
+}
+
+.joined-time-item {
+	display: inline-block;
+}
+
+.joined-status-chip {
+	display: inline-block;
+	font-size: 20rpx;
+	color: #4CAF50;
+	background-color: #e8f5e8;
+	border-radius: 12rpx;
+	padding: 4rpx 8rpx;
+	white-space: nowrap;
+	border: 1rpx solid #c8e6c9;
+}
+
+/* New horizontal layout styles */
+.new-layout-box {
+	width: 100%;
+	background-color: #f5f5f5;
+}
+
+.days-scroll {
+	background-color: #f5f5f5;
+	width: 100%;
+}
+
+.day-container {
+	margin-bottom: 30rpx;
+	background-color: #fff;
+	border-radius: 20rpx;
+	margin: 20rpx;
+	overflow: hidden;
+	box-shadow: 0 4rpx 20rpx rgba(0, 0, 0, 0.08);
+}
+
+/* 居中的日期标题 */
+.centered-date-header {
+	background: linear-gradient(135deg, var(--projectColor, #6c5ce7), var(--projectCompareColor, #a29bfe));
+	padding: 25rpx 20rpx;
+	text-align: center;
+}
+
+.centered-date-title {
+	font-size: 32rpx;
+	font-weight: bold;
+	color: #fff;
+	text-shadow: 0 2rpx 4rpx rgba(0, 0, 0, 0.1);
+}
+
+/* 时间段容器 */
+.times-container {
+	padding: 25rpx 0;
+	background-color: #fff;
+}
+
+.no-times-text {
+	text-align: center;
+	padding: 40rpx 20rpx;
+	font-size: 28rpx;
+	color: #999;
+}
+
+/* 横向滚动时间段 */
+.times-horizontal-scroll {
+	width: 100%;
+	white-space: nowrap;
+}
+
+.times-horizontal-wrapper {
+	display: inline-flex;
+	padding: 0 20rpx;
+	gap: 15rpx;
+}
+
+.time-card {
+	display: inline-flex;
+	flex-direction: column;
+	align-items: center;
+	justify-content: center;
+	background-color: #f8f9fa;
+	border: 2rpx solid #e9ecef;
+	border-radius: 16rpx;
+	padding: 20rpx 25rpx;
+	min-width: 180rpx;
+	text-align: center;
+	transition: all 0.3s ease;
+	box-shadow: 0 2rpx 8rpx rgba(0, 0, 0, 0.05);
+}
+
+.time-card:active {
+	transform: scale(0.95);
+}
+
+/* 已预约状态 - 使用主题色高亮 */
+.time-card.user-joined {
+	background: linear-gradient(135deg, var(--projectColor, #6c5ce7), var(--projectCompareColor, #a29bfe));
+	border-color: var(--projectColor, #6c5ce7);
+	color: #fff;
+	box-shadow: 0 4rpx 15rpx rgba(108, 92, 231, 0.3);
+}
+
+.time-card.user-joined .time-display {
+	color: #fff;
+	font-weight: bold;
+}
+
+.time-card.user-joined .joined-status {
+	color: #fff;
+	font-weight: bold;
+}
+
+/* 错误状态 */
+.time-card.error {
+	background-color: #f1f3f4;
+	border-color: #dadce0;
+	color: #9aa0a6;
+}
+
+.time-card.error .time-display {
+	color: #9aa0a6;
+}
+
+/* 时间显示 */
+.time-display {
+	font-size: 28rpx;
+	font-weight: bold;
+	color: #333;
+	margin-bottom: 8rpx;
+	white-space: nowrap;
+}
+
+/* 状态显示 */
+.status-display {
+	font-size: 22rpx;
+	line-height: 1.2;
+}
+
+.joined-status {
+	color: #fff;
+	font-weight: bold;
+}
+
+.limit-status {
+	color: #666;
+}
+
+.error-status {
+	color: #9aa0a6;
+}
+
+/* 可用状态悬停效果 */
+.time-card:not(.error):not(.user-joined):hover {
+	background-color: #f0f2f5;
+	border-color: var(--projectColor, #6c5ce7);
+	transform: translateY(-2rpx);
+}
+
+/* Legacy single column layout styles for compatibility */
+.single-column-box {
+	width: 100%;
+	background-color: #fff;
+}
+
+.single-main {
+	background-color: #f1f1f1;
+	width: 100%;
+}
+
+.single-main-box {
+	padding: 20rpx;
+	margin-bottom: 20rpx;
+}
+
+.date-header {
+	background-color: #fff;
+	padding: 20rpx;
+	border-radius: 15rpx 15rpx 0 0;
+	border-bottom: 2rpx solid #f1f1f1;
+}
+
+.date-title {
+	font-size: 32rpx;
+	font-weight: bold;
+	color: #333;
+	margin-bottom: 10rpx;
+}
+
+.joined-times-horizontal {
+	margin-top: 10rpx;
+}
+
+.joined-times-wrapper {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 8rpx;
+}
+
+.joined-time-badge {
+	display: inline-block;
+}
+
+.joined-badge {
+	display: inline-block;
+	font-size: 22rpx;
+	color: #4CAF50;
+	background-color: #e8f5e8;
+	border-radius: 12rpx;
+	padding: 6rpx 12rpx;
+	border: 1rpx solid #c8e6c9;
+}
+
+.time-slots-grid {
+	background-color: #fff;
+	padding: 20rpx;
+	border-radius: 0 0 15rpx 15rpx;
+	display: flex;
+	flex-wrap: wrap;
+	gap: 15rpx;
+}
+
+.slot-item {
+	width: calc(50% - 7.5rpx);
+	display: flex;
+	justify-content: center;
+}
+
+.time-slot {
+	width: 100%;
+	border-radius: 15rpx;
+	border: 1rpx solid #ddd;
+	background-color: #f8f8f8;
+	padding: 20rpx 15rpx;
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	justify-content: center;
+	text-align: center;
+	min-height: 80rpx;
+}
+
+.time-slot.error {
+	background-color: #f1f1f1;
+	color: #aaa;
+	border-color: #ccc;
+}
+
+.time-slot.user-joined {
+	background-color: #e8f5e8;
+	border-color: #4caf50;
+	color: #2e7d32;
+}
+
+.time-range {
+	font-size: 28rpx;
+	font-weight: bold;
 	margin-bottom: 5rpx;
+}
+
+.status-text {
+	font-size: 22rpx;
+	color: #666;
+}
+
+.joined-text {
+	color: #2e7d32;
+	font-weight: bold;
+}
+
+.error-text {
+	color: #999;
+}
+
+/* Legacy styles for backward compatibility */
+.date-section {
+	width: 100%;
+	display: flex;
+	flex-direction: column;
+	align-items: flex-start;
+	justify-content: center;
 }
 
 .status-section {

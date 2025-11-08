@@ -1,0 +1,109 @@
+<template name="cardForm">
+	<view class="form-box shadow">
+		<view class="form-group">
+			<view class="title must">卡项名称</view>
+		</view>
+
+		<view class="form-group">
+			<input placeholder="简短的卡项名称" placeholder-class="phc" model:value="{{formName}}" focus="{{formNameFocus}}" maxlength="50"></input>
+		</view>
+		<view wx:if="{{formNameFocus}}" class="hint-desc error">{{formNameFocus}}</view>
+
+		<view class="form-group">
+			<view class="title must">卡项类型</view>
+			<view class="text-grey text-s margin-left-s">{{formType==1?'次数卡':'余额卡'}}</view>
+		</view>
+
+		<view class="form-group">
+			<view class="type-switch">
+				<button class="type-btn {{formType==1?'active':''}}" bindtap="bindTypeChange" data-type="1">次数卡</button>
+				<button class="type-btn {{formType==2?'active':''}}" bindtap="bindTypeChange" data-type="2">余额卡</button>
+			</view>
+		</view>
+
+		<view class="form-group">
+			<view class="title must">售价 ($)</view>
+			<input placeholder="卡项售价" type="digit" placeholder-class="phc" model:value="{{formPrice}}" focus="{{formPriceFocus}}" maxlength="10"></input>
+		</view>
+		<view wx:if="{{formPriceFocus}}" class="hint-desc error">{{formPriceFocus}}</view>
+
+		<block wx:if="{{formType==1}}">
+			<view class="form-group">
+				<view class="title must">包含次数</view>
+				<input placeholder="卡项包含的使用次数" type="digit" placeholder-class="phc" model:value="{{formTimes}}" focus="{{formTimesFocus}}" maxlength="10"></input>
+			</view>
+			<view wx:if="{{formTimesFocus}}" class="hint-desc error">{{formTimesFocus}}</view>
+		</block>
+
+		<block wx:if="{{formType==2}}">
+			<view class="form-group">
+				<view class="title must">充值金额 ($)</view>
+				<input placeholder="卡项充值金额" type="digit" placeholder-class="phc" model:value="{{formAmount}}" focus="{{formAmountFocus}}" maxlength="10"></input>
+			</view>
+			<view wx:if="{{formAmountFocus}}" class="hint-desc error">{{formAmountFocus}}</view>
+		</block>
+
+		<view class="form-group">
+			<view class="title">有效期 (天)</view>
+			<input placeholder="不填则永久有效" type="number" placeholder-class="phc" model:value="{{formValidityDays}}" focus="{{formValidityDaysFocus}}" maxlength="5"></input>
+		</view>
+		<view wx:if="{{formValidityDaysFocus}}" class="hint-desc error">{{formValidityDaysFocus}}</view>
+		<view class="title-desc text-grey"><text class="icon-info margin-right-xs"></text>留空表示永久有效，填写数字表示自购买日起N天内有效</view>
+
+		<view class="form-group">
+			<view class="title must">排序号<text class="text-grey text-normal margin-left-xs">(小的先显示)</text></view>
+			<input placeholder="排序号，小的先显示" type="digit" placeholder-class="phc" model:value="{{formOrder}}" focus="{{formOrderFocus}}" maxlength="4"></input>
+		</view>
+		<view wx:if="{{formOrderFocus}}" class="hint-desc error">{{formOrderFocus}}</view>
+
+		<view class="form-group">
+			<view class="action text-bold text-l">卡项描述 (可选)</view>
+			<view class="action text-grey text-s">{{formDesc.length}} 字</view>
+		</view>
+
+		<view class="form-group align-start">
+			<textarea name="content" placeholder-class="phc" placeholder="请输入卡项描述，若不填写则直接取内容前100个字作为描述" style="min-height:150rpx" model:value="{{formDesc}}" maxlength="-1" focus="{{formDescFocus}}" auto-height="true"></textarea>
+		</view>
+		<view wx:if="{{formDescFocus}}" class="hint-desc error">{{formDescFocus}}</view>
+
+		<view class="form-group arrow" bindtap="url" data-url="../../content/admin_content">
+			<view class="title">详细内容 (可选)</view>
+			<view class="form-text {{contentDesc=='未填写'?'text-grey':'text-black'}}">{{contentDesc}}</view>
+		</view>
+		<view wx:if="{{formContentFocus}}" class="hint-desc error">{{formContentFocus}}</view>
+
+	</view>
+
+	<view class="form-box shadow">
+		<!-- img upload begin -->
+		<cmpt-img-upload imgMax="{{1}}" title="封面图上传 (可选)" isCheck="{{false}}" imgUploadSize="{{10}}" imgList="{{imgList}}" bind:upload="bindImgUploadCmpt" />
+		<!-- img upload end -->
+	</view>
+
+	<view class="form-box shadow">
+		<view class="form-group">
+			<view class="title text-bold text-l">支付信息 (可选)</view>
+		</view>
+
+		<view class="form-group">
+			<view class="title">Zelle 账号</view>
+			<input placeholder="Zelle 收款账号" placeholder-class="phc" model:value="{{formPaymentZelle}}" maxlength="100"></input>
+		</view>
+
+		<view class="form-group">
+			<view class="title">支付二维码</view>
+			<input placeholder="支付宝/微信 收款二维码链接" placeholder-class="phc" model:value="{{formPaymentQr}}" maxlength="300"></input>
+		</view>
+
+		<view class="form-group">
+			<view class="title">支付说明</view>
+		</view>
+
+		<view class="form-group align-start">
+			<textarea name="instructions" placeholder-class="phc" placeholder="其他支付说明或注意事项" style="min-height:100rpx" model:value="{{formPaymentInstructions}}" maxlength="500" auto-height="true"></textarea>
+		</view>
+	</view>
+
+	<button bindtap="bindFormSubmit" class="btn-admin margin-top-xs">提交</button>
+
+</template>

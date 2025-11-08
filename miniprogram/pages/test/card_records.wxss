@@ -1,0 +1,247 @@
+.container {
+	min-height: 100vh;
+	background-color: #f5f5f5;
+	padding: 20rpx;
+}
+
+.header {
+	background: #fff;
+	border-radius: 16rpx;
+	padding: 24rpx 30rpx;
+	margin-bottom: 20rpx;
+	box-shadow: 0 2rpx 10rpx rgba(0, 0, 0, 0.05);
+}
+
+.title {
+	color: #333;
+	font-size: 32rpx;
+	font-weight: bold;
+}
+
+.section {
+	background: #fff;
+	border-radius: 16rpx;
+	padding: 30rpx;
+	margin-bottom: 20rpx;
+	box-shadow: 0 2rpx 10rpx rgba(0, 0, 0, 0.05);
+}
+
+.section-title {
+	color: #333;
+	font-size: 28rpx;
+	font-weight: bold;
+	margin-bottom: 20rpx;
+}
+
+/* 用户信息 */
+.user-info {
+	background: #f9f9f9;
+}
+
+.user-info .info-row {
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+	padding: 12rpx 0;
+}
+
+.user-info .label {
+	font-size: 24rpx;
+	color: #666;
+}
+
+.user-info .value {
+	font-size: 26rpx;
+	color: #333;
+	font-weight: bold;
+}
+
+/* 记录列表 */
+.records-list {
+	display: flex;
+	flex-direction: column;
+	gap: 16rpx;
+}
+
+.record-item {
+	background: #f9f9f9;
+	border-radius: 12rpx;
+	padding: 20rpx;
+	border-left: 4rpx solid #667eea;
+}
+
+.record-header {
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+	margin-bottom: 12rpx;
+}
+
+.record-type {
+	padding: 6rpx 14rpx;
+	border-radius: 20rpx;
+	font-size: 22rpx;
+	color: #fff;
+}
+
+.type-1 {
+	background: #67c23a;
+}
+
+.type-2 {
+	background: #f56c6c;
+}
+
+.type-3 {
+	background: #e6a23c;
+}
+
+.type-4 {
+	background: #909399;
+}
+
+.record-time {
+	font-size: 22rpx;
+	color: #999;
+}
+
+.record-content {
+	display: flex;
+	flex-direction: column;
+	gap: 8rpx;
+}
+
+.record-change {
+	display: flex;
+	align-items: center;
+	gap: 8rpx;
+}
+
+.change-label {
+	font-size: 24rpx;
+	color: #666;
+}
+
+.change-value {
+	font-size: 28rpx;
+	font-weight: bold;
+}
+
+.change-value.positive {
+	color: #67c23a;
+}
+
+.change-value.negative {
+	color: #f56c6c;
+}
+
+.record-balance {
+	display: flex;
+	align-items: center;
+	gap: 8rpx;
+	font-size: 22rpx;
+	color: #666;
+}
+
+.balance-label {
+	font-size: 20rpx;
+	color: #999;
+}
+
+.balance-value {
+	font-size: 22rpx;
+	color: #333;
+	font-weight: bold;
+}
+
+.balance-arrow {
+	color: #999;
+	margin: 0 4rpx;
+}
+
+.record-reason {
+	display: flex;
+	gap: 8rpx;
+	padding-top: 8rpx;
+	border-top: 1rpx solid #e0e0e0;
+}
+
+.reason-label {
+	font-size: 22rpx;
+	color: #999;
+}
+
+.reason-text {
+	flex: 1;
+	font-size: 22rpx;
+	color: #666;
+	line-height: 1.6;
+}
+
+.record-admin {
+	display: flex;
+	gap: 8rpx;
+	padding-top: 8rpx;
+	align-items: center;
+}
+
+.admin-label {
+	font-size: 20rpx;
+	color: #999;
+}
+
+.admin-name {
+	font-size: 22rpx;
+	color: #667eea;
+	font-weight: bold;
+}
+
+/* 空状态 */
+.empty-state {
+	text-align: center;
+	padding: 100rpx 0;
+}
+
+.empty-icon {
+	font-size: 120rpx;
+	display: block;
+	margin-bottom: 20rpx;
+}
+
+.empty-text {
+	font-size: 26rpx;
+	color: #999;
+}
+
+/* 加载状态 */
+.loading,
+.no-more {
+	text-align: center;
+	padding: 30rpx 0;
+	font-size: 24rpx;
+	color: #999;
+}
+
+.load-more {
+	text-align: center;
+	padding: 30rpx 0;
+	font-size: 26rpx;
+	color: #667eea;
+	cursor: pointer;
+}
+
+/* 底部导航 */
+.footer-nav {
+	padding: 20rpx 0;
+}
+
+.btn-nav {
+	width: 100%;
+	height: 80rpx;
+	line-height: 80rpx;
+	border-radius: 10rpx;
+	border: none;
+	font-size: 28rpx;
+	background-color: #909399;
+	color: white;
+}

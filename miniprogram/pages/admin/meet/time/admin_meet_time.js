@@ -145,7 +145,10 @@ Page({
 	_checkHasJoinCnt: function (times) {
 		if (!times) return false;
 		for (let k in times) {
-			if (times[k].stat.succCnt || times[k].stat.waitCheckCnt) return true;
+			if (!times[k].stat) continue;
+			let succCnt = times[k].stat.succCnt || 0;
+			let waitCheckCnt = times[k].stat.waitCheckCnt || 0;
+			if (succCnt > 0 || waitCheckCnt > 0) return true;
 		}
 		return false;
 	},
@@ -210,7 +213,12 @@ Page({
 		let days = this.data.days;
 		let node = days[idx].times[timesIdx];
 
-		if (node.stat.succCnt || node.stat.waitCheckCnt) {
+		// 安全获取统计数据
+		let succCnt = (node.stat && node.stat.succCnt) || 0;
+		let waitCheckCnt = (node.stat && node.stat.waitCheckCnt) || 0;
+		let totalCnt = succCnt + waitCheckCnt;
+
+		if (totalCnt > 0) {
 			let callback = async () => {
 				this.setData({
 					formReason: '',
@@ -219,7 +227,7 @@ Page({
 					cancelModalShow: true //显示对话框
 				});
 			};
-			pageHelper.showConfirm('该时段已有「' + (node.stat.succCnt + node.stat.waitCheckCnt) + '人」预约/预约待审核，若选择删除则将取消所有预约，请仔细确认！ 若不想取消，可以选择停止该时段', callback);
+			pageHelper.showConfirm('该时段已有「' + totalCnt + '人」预约/预约待审核，若选择删除则将取消所有预约，请仔细确认！ 若不想取消，可以选择停止该时段', callback);
 		} else {
 			let callback = () => {
 				days[idx].times.splice(timesIdx, 1);
@@ -577,8 +585,10 @@ Page({
 		} else
 			getDays = days;
 
+		// 确保都是数组并创建新数组
+		let lastHasDays = Array.isArray(this.data.lastHasDays) ? this.data.lastHasDays : [];
+		let formDaysSet = [...lastHasDays, ...getDays];
 
-		let formDaysSet = this.data.lastHasDays.concat(getDays);
 		parent.setData({
 			formDaysSet
 		});

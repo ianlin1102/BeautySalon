@@ -69,14 +69,6 @@ Page({
 		pageHelper.model(this, e);
 	},
 
-	bindSaveTap: function (e) {
-		let parent = pageHelper.getPrevPage(2);
-		if (!parent) return;
-		parent.setData({
-			formContent: this.data.formContent
-		});
-	},
-
 	url: function (e) {
 		pageHelper.url(e, this);
 	},
@@ -94,7 +86,7 @@ Page({
 		});
 
 		wx.navigateBack({
-			delta: 0,
+			delta: 1,
 		});
 	}
 })

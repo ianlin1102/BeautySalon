@@ -9,6 +9,7 @@ const AdminBiz = require('./admin_biz.js');
 const setting = require('../setting/setting.js');
 const dataHelper = require('../helper/data_helper.js');
 const cloudHelper = require('../helper/cloud_helper.js');
+const cacheHelper = require('../helper/cache_helper.js');
 
 class PassportBiz extends BaseBiz {
 
@@ -93,56 +94,90 @@ class PassportBiz extends BaseBiz {
 
 	// 新增：获取积分信息
 	static async getPointsInfo() {
+		const CACHE_KEY = 'USER_POINTS_INFO';
+		const CACHE_TIME = 60 * 30; // 30分钟
+
+		const DEFAULT_POINTS = {
+			totalPoints: 0,
+			currentLevel: { name: '新手会员', color: '#95a5a6' },
+			needPoints: 100,
+			progressPercent: 0,
+			recentHistory: []
+		};
+
 		try {
+			// 1. 尝试从缓存读取
+			let cachedData = cacheHelper.get(CACHE_KEY);
+			if (cachedData) {
+				console.log('📦 从缓存加载积分信息');
+				return cachedData;
+			}
+
+			// 2. 从云端获取
 			let res = await cloudHelper.callCloudSumbit('points/my_info', {});
-			console.log('PassportBiz 收到的积分信息:', res);
-			
-			// 检查返回数据格式，可能是 { code: 200, data: {...} } 或直接是数据
+			console.log('💰 从云端加载积分信息');
+
+			// 检查返回数据格式
 			let pointsData = res;
 			if (res && res.data) {
 				pointsData = res.data;
 			}
-			
+
 			// 确保返回数据格式正确
 			if (pointsData && pointsData.totalPoints !== undefined) {
-				console.log('PassportBiz 返回积分数据:', pointsData);
+				// 3. 保存到缓存
+				cacheHelper.set(CACHE_KEY, pointsData, CACHE_TIME);
 				return pointsData;
 			} else {
-				console.log('PassportBiz 数据格式不正确，使用默认值. 原始数据:', res);
-				// 如果返回数据格式不正确，使用默认值
-				return {
-					totalPoints: 0,
-					currentLevel: { name: '新手会员', color: '#95a5a6' },
-					needPoints: 100,
-					progressPercent: 0,
-					recentHistory: []
-				};
+				console.log('积分数据格式不正确，使用默认值');
+				return DEFAULT_POINTS;
 			}
 		} catch (e) {
 			console.error('获取积分信息失败:', e);
-			// 云函数不可用时返回默认值
-			return {
-				totalPoints: 0,
-				currentLevel: { name: '新手会员', color: '#95a5a6' },
-				needPoints: 100,
-				progressPercent: 0,
-				recentHistory: []
-			};
+			return DEFAULT_POINTS;
 		}
 	}
 
 	// 新增：获取积分历史
 	static async getPointsHistory(page = 1, size = 20) {
+		const CACHE_KEY_PREFIX = 'USER_POINTS_HISTORY_';
+		const CACHE_TIME = 60 * 30; // 30分钟
+
+		// 按页码和大小缓存
+		let cacheKey = CACHE_KEY_PREFIX + page + '_' + size;
+
 		try {
+			// 1. 尝试从缓存读取
+			let cachedData = cacheHelper.get(cacheKey);
+			if (cachedData) {
+				console.log('📦 从缓存加载积分历史: page', page);
+				return cachedData;
+			}
+
+			// 2. 从云端获取
 			let res = await cloudHelper.callCloudSumbit('points/my_history', {
 				page: page,
 				size: size
 			});
+			console.log('💰 从云端加载积分历史: page', page);
+
+			// 3. 保存到缓存
+			if (res && res.list && res.list.length > 0) {
+				cacheHelper.set(cacheKey, res, CACHE_TIME);
+			}
+
 			return res;
 		} catch (e) {
 			console.error('获取积分历史失败:', e);
 			return { list: [], total: 0 };
 		}
+	}
+
+	// 新增：清除积分缓存
+	static clearPointsCache() {
+		cacheHelper.remove('USER_POINTS_INFO');
+		cacheHelper.remove('USER_POINTS_HISTORY_'); // 清除所有历史记录缓存
+		console.log('🗑️ 已清除积分缓存');
 	}
 
 	// 新增：测试云函数时间

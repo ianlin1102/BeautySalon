@@ -1,7 +1,8 @@
 {
-	"usingComponents": { 
-	},  
-	"enablePullDownRefresh": true, 
-	"navigationStyle": "custom",
-	"navigationBarTitleText": "首页"
+	"usingComponents": {
+	},
+	"enablePullDownRefresh": true,
+	"navigationBarTitleText": "首页",
+	"navigationBarBackgroundColor": "#ffffff",
+	"navigationBarTextStyle": "black"
 }

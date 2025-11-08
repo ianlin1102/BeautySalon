@@ -2,6 +2,7 @@ const AdminBiz = require('../../../../biz/admin_biz.js');
 const AdminMeetBiz = require('../../../../biz/admin_meet_biz.js');
 const pageHelper = require('../../../../helper/page_helper.js');
 const cloudHelper = require('../../../../helper/cloud_helper.js');
+const cacheHelper = require('../../../../helper/cache_helper.js');
 
 Page({
 
@@ -33,7 +34,10 @@ Page({
 	onShow: async function () {
 		// 页面显示时刷新列表数据
 		if (this.data.dataList) {
-			this.selectComponent('#comm-list')._refresh();
+			let commListComponent = this.selectComponent('#comm-list');
+			if (commListComponent && commListComponent._refresh) {
+				commListComponent._refresh();
+			}
 		}
 	},
 
@@ -181,6 +185,9 @@ Page({
 				that.setData({
 					dataList: that.data.dataList
 				});
+				// 清除前端缓存
+				cacheHelper.remove('MEET_HAS_DAYS');
+				cacheHelper.remove('MEET_LIST_');
 				pageHelper.showSuccToast('设置成功');
 			});
 		} catch (e) {
@@ -207,6 +214,9 @@ Page({
 					that.setData({
 						dataList: that.data.dataList
 					});
+					// 清除前端缓存
+					cacheHelper.remove('MEET_HAS_DAYS');
+					cacheHelper.remove('MEET_LIST_');
 					pageHelper.showSuccToast('删除成功');
 				});
 			} catch (e) {
@@ -231,6 +241,9 @@ Page({
 				that.setData({
 					dataList: that.data.dataList
 				});
+				// 清除前端缓存
+				cacheHelper.remove('MEET_HAS_DAYS');
+				cacheHelper.remove('MEET_LIST_');
 				pageHelper.showSuccToast('设置成功');
 			});
 		} catch (e) {

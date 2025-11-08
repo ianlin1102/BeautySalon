@@ -1,0 +1,67 @@
+<wxs src="../../../../tpls/wxs/tools.wxs" module="tools" />
+<view class="scroll-calendar-wrapper">
+	<!-- 头部操作栏 -->
+	<view class="scroll-header">
+		<view class="scroll-title">选择预约日期</view>
+		<view class="scroll-actions">
+			<view class="scroll-btn" bindtap="bindTodayTap">
+				<text class="icon-homefill"></text>
+				<text class="btn-text">今天</text>
+			</view>
+			<view class="scroll-btn" bindtap="bindToggleCalendar">
+				<text class="icon-calendar"></text>
+				<text class="btn-text">日历</text>
+			</view>
+		</view>
+	</view>
+
+	<!-- 横向滚动日期条 -->
+	<scroll-view class="scroll-container"
+				 scroll-x="{{true}}"
+				 scroll-into-view="{{scrollIntoView}}"
+				 show-scrollbar="{{false}}">
+		<view class="scroll-days">
+			<view class="day-item {{item.full === selectedDayData ? 'selected' : ''}} {{item.isToday ? 'is-today' : ''}}"
+				  wx:for="{{scrollDays}}"
+				  wx:key="full"
+				  id="day-{{index}}"
+				  data-day="{{item.full}}"
+				  data-item="{{item}}"
+				  bindtap="bindDayTap">
+
+				<!-- 月份分隔标识 -->
+				<view class="month-divider" wx:if="{{item.day === 1}}">
+					{{item.month}}月
+				</view>
+
+				<!-- 日期主体 -->
+				<view class="day-content">
+					<!-- 两周内显示星期，两周后显示月份 -->
+					<view class="day-week" wx:if="{{!item.showMonth}}">周{{item.weekDay}}</view>
+					<view class="day-month" wx:else>{{item.month}}月</view>
+					<view class="day-num">{{item.day}}</view>
+					<!-- 数据点 -->
+					<view class="has-dot" wx:if="{{tools.includes(hasDays, item.full)}}"></view>
+				</view>
+			</view>
+		</view>
+	</scroll-view>
+
+	<!-- 完整日历弹窗 -->
+	<view class="calendar-popup" wx:if="{{showCalendar}}" bindtap="bindToggleCalendar">
+		<view class="popup-content" catchtap="stopPropagation">
+			<view class="popup-header">
+				<text class="popup-title">选择日期</text>
+				<view class="popup-close" bindtap="bindToggleCalendar">
+					<text class="icon-close"></text>
+				</view>
+			</view>
+			<cmpt-calendar mode="one"
+						   year="{{calendarYear}}"
+						   month="{{calendarMonth}}"
+						   hasDays="{{hasDays}}"
+						   oneDoDay="{{selectedDayData}}"
+						   bind:click="bindFullCalendarClick" />
+		</view>
+	</view>
+</view>

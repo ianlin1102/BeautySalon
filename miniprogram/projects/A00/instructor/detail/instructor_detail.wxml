@@ -1,0 +1,27 @@
+<view wx:if="{{isLoad===null}}" class="margin-top load notexist text-l"></view>
+<view wx:if="{{isLoad===false}}" class="margin-top load loading text-l"></view>
+
+<view wx:if="{{isLoad && instructor}}" class="instructor-detail-page">
+	<!-- 导师头像和基本信息 -->
+	<view class="instructor-header">
+		<view class="instructor-avatar-wrapper">
+			<image src="{{instructor.INSTRUCTOR_PIC}}" mode="aspectFill" class="instructor-avatar" />
+		</view>
+		<view class="instructor-basic-info">
+			<view class="instructor-name">{{instructor.INSTRUCTOR_NAME}}</view>
+		</view>
+	</view>
+
+	<!-- 导师简介 -->
+	<view class="instructor-content">
+		<view class="content-section" wx:if="{{instructor.INSTRUCTOR_DESC}}">
+			<view class="section-title">个人简介</view>
+			<view class="section-text">{{instructor.INSTRUCTOR_DESC}}</view>
+		</view>
+
+		<!-- 如果没有简介 -->
+		<view class="empty-content" wx:if="{{!instructor.INSTRUCTOR_DESC}}">
+			<text class="empty-text">暂无更多信息</text>
+		</view>
+	</view>
+</view>

@@ -1,0 +1,89 @@
+<block wx:if="{{isAdmin}}">
+	<cmpt-comm-list type="admin-card" search="{{search}}" _menus="{{sortMenus}}" _items="{{sortItems}}" route="admin/card_list" sortMenusDefaultIndex="0" topBottom="50" placeholder="搜索卡项名称" bind:list="bindCommListCmpt">
+
+		<view slot="searchEnd">
+			<button bindtap="url" data-url="../add/admin_card_add" class="btn radius bg-admin text-white margin-right-s"><text class="icon-roundadd margin-right-xxs"></text>新增卡项</button>
+		</view>
+		<!-- List Begin -->
+		<view class="admin-comm-list">
+			<view wx:if="{{dataList && dataList.total }}" class="load text-grey">共有{{dataList.total}}条符合条件记录</view>
+
+			<view class="item" wx:for="{{dataList.list}}" wx:key="key">
+				<view class="header">
+					<view class="left text-cut">
+						<text wx:if="{{item.CARD_TYPE==1}}" class="text-blue margin-right-xxs" style="font-weight:normal;font-size:24rpx">[次数卡]</text>
+						<text wx:elif="{{item.CARD_TYPE==2}}" class="text-green margin-right-xxs" style="font-weight:normal;font-size:24rpx">[余额卡]</text>
+						{{item.CARD_NAME}}
+					</view>
+					<view class="right">
+						<text wx:if="{{item.CARD_STATUS==1}}" class="text-black">正常</text>
+						<text wx:elif="{{item.CARD_STATUS==0}}" class="text-orange">停用</text>
+					</view>
+				</view>
+
+				<view class="info">
+					<view class="info-item">
+						<view class="title">售价</view>
+						<view class="mao">：</view>
+						<view class="content text-red text-bold">${{item.CARD_PRICE}}</view>
+					</view>
+
+					<view class="info-item" wx:if="{{item.CARD_TYPE==1}}">
+						<view class="title">包含次数</view>
+						<view class="mao">：</view>
+						<view class="content">{{item.CARD_TIMES}} 次</view>
+					</view>
+
+					<view class="info-item" wx:if="{{item.CARD_TYPE==2}}">
+						<view class="title">充值金额</view>
+						<view class="mao">：</view>
+						<view class="content">${{item.CARD_AMOUNT}}</view>
+					</view>
+
+					<view class="info-item" wx:if="{{item.CARD_VALIDITY_DAYS && item.CARD_VALIDITY_DAYS > 0}}">
+						<view class="title">有效期</view>
+						<view class="mao">：</view>
+						<view class="content">{{item.CARD_VALIDITY_DAYS}} 天</view>
+					</view>
+
+					<view class="info-item" wx:else>
+						<view class="title">有效期</view>
+						<view class="mao">：</view>
+						<view class="content text-grey">永久有效</view>
+					</view>
+
+					<view class="info-item">
+						<view class="title">排序号</view>
+						<view class="mao">：</view>
+						<view class="content">{{item.CARD_ORDER}} <text class="margin-left-xxs text-grey">(小的先显示)</text></view>
+					</view>
+
+					<view class="info-item">
+						<view class="title">创建</view>
+						<view class="mao">：</view>
+						<view class="content">{{item.CARD_ADD_TIME}}</view>
+					</view>
+
+					<view class="oprt">
+						<view bindtap="url" data-url="../edit/admin_card_edit?id={{item._id}}" class="btn round margin-right-s">编辑内容</view>
+
+						<view bindtap="bindStatusSelectTap" data-id="{{item._id}}" class="btn margin-right-s">状态修改</view>
+
+						<view bindtap="bindReviewTap" data-id="{{item._id}}" class="btn margin-right-s"><text class="icon-attention margin-right-xxs"></text>预览</view>
+
+					</view>
+				</view>
+			</view>
+
+		</view>
+		<!-- List END -->
+
+		<!--load begin-->
+		<import src="../../../../tpls/public/list_load_tpl.wxml" />
+		<template is="listLoadTpl" data="{{dataList,skin:'text-grey'}}" />
+		<!--load end-->
+
+
+	</cmpt-comm-list>
+
+</block>

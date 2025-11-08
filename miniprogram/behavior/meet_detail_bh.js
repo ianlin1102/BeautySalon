@@ -69,15 +69,32 @@ module.exports = Behavior({
 					);
 				}
 
+
 				// 标记已预约的时间段
 				if (meet.MEET_DAYS_SET) {
 					for (let daySet of meet.MEET_DAYS_SET) {
 						if (daySet.times) {
 							for (let timeSlot of daySet.times) {
 								// 检查这个时间段是否已被用户预约
-								let isJoined = currentMeetJoins.some(join => 
-									join.JOIN_MEET_TIME_MARK === timeSlot.mark
-								);
+								// 由于JOIN_MEET_TIME_MARK字段不存在，使用日期和时间来匹配
+								let dayFormatted = daySet.day; // 格式: 2025-10-22
+								let isJoined = currentMeetJoins.some(join => {
+									// 从格式化的日期中提取原始日期 (去掉年月日和星期信息)
+									let joinDay = join.JOIN_MEET_DAY; // 格式: "2025年10月22日 (周三)"
+									let joinDateMatch = joinDay.match(/(\d{4})年(\d{1,2})月(\d{1,2})日/);
+									if (joinDateMatch) {
+										let year = joinDateMatch[1];
+										let month = joinDateMatch[2].padStart(2, '0');
+										let day = joinDateMatch[3].padStart(2, '0');
+										let joinDayFormatted = `${year}-${month}-${day}`;
+										
+										// 检查日期和开始时间是否匹配
+										return joinDayFormatted === dayFormatted && 
+											   join.JOIN_MEET_TIME_START === timeSlot.start;
+									}
+									return false;
+								});
+								
 								if (isJoined) {
 									timeSlot.userJoined = true;
 								}
@@ -86,19 +103,23 @@ module.exports = Behavior({
 					}
 				}
 
+				// 重新设置数据以触发页面更新
 				this.setData({
-					userJoins: currentMeetJoins
+					isLoad: true,
+					meet,
+					userJoins: currentMeetJoins,
+					canNullTime: setting.MEET_CAN_NULL_TIME
 				});
+				
 			} catch (e) {
 				console.error('加载用户预约状态失败:', e);
+				// 即使预约状态检查失败，也要显示基本数据
+				this.setData({
+					isLoad: true,
+					meet, 
+					canNullTime: setting.MEET_CAN_NULL_TIME
+				});
 			}
-
-			this.setData({
-				isLoad: true,
-				meet, 
-
-				canNullTime: setting.MEET_CAN_NULL_TIME
-			});
 
 		},
 

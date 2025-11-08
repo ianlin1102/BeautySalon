@@ -1,0 +1,30 @@
+<view wx:if="{{isLoad==false}}" class="margin-top load loading text-l text-grey"></view>
+<view wx:elif="{{isLoad==null}}" class="margin-top load text-grey">
+	<text class="icon-warn"></text> 无此数据
+</view>
+<view class="main-admin" wx:elif="{{isAdmin&&isLoad}}">
+
+	<view class="form-box shadow">
+		<view class="form-group">
+			<view class="title must">轮播图片</view>
+		</view>
+
+		<view class="form-group">
+			<cmpt-img-upload imgMax="{{1}}" title="轮播图上传" isCheck="{{false}}" imgUploadSize="{{10}}" imgList="{{imgList}}" bind:upload="bindImgUploadCmpt" />
+		</view>
+
+		<view class="form-group">
+			<view class="title">跳转链接<text class="text-grey text-normal margin-left-xs">(可选)</text></view>
+			<input placeholder="例如：/pages/about/detail/about_detail" placeholder-class="phc" value="{{formUrl}}" bindinput="model" data-item="formUrl"></input>
+		</view>
+
+		<view class="form-group">
+			<view class="title must">排序号<text class="text-grey text-normal margin-left-xs">(数字越小越靠前)</text></view>
+			<input placeholder="1-9999" type="digit" placeholder-class="phc" value="{{formOrder}}" bindinput="model" data-item="formOrder"></input>
+		</view>
+
+	</view>
+
+	<button bindtap="bindFormSubmit" class="btn-admin margin-top-xs">提交</button>
+
+</view>

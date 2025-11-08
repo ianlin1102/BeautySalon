@@ -25,6 +25,7 @@ module.exports = {
 
 	'my/my_join_list': 'meet_controller@getMyJoinList',
 	'my/my_join_cancel': 'meet_controller@cancelMyJoin',
+	'my/my_join_clear': 'meet_controller@clearMyJoin',
 	'my/my_join_detail': 'meet_controller@getMyJoinDetail',
 	'my/my_join_someday': 'meet_controller@getMyJoinSomeday',
 	'my/my_join_checkin': 'meet_controller@userSelfCheckin',
@@ -99,5 +100,70 @@ module.exports = {
 	'admin/points_user_info': 'admin/admin_points_controller@getUserPointsInfo',      // 查看用户积分
 	'admin/points_adjust': 'admin/admin_points_controller@adjustUserPoints#noDemo',   // 调整用户积分
 
+	//***########### CARD SYSTEM ################## */
+	// 前端 - 卡项商城
+	'card/list': 'card_controller@getCardList',                    // 获取卡项列表
+	'card/home_list': 'card_controller@getHomeCardList',           // 首页推荐卡项
+	'card/view': 'card_controller@viewCard',                       // 查看卡项详情
+
+	// 前端 - 用户卡项
+	'card/my_cards': 'card_controller@getMyCards',                 // 我的卡项列表
+	'card/my_card_detail': 'card_controller@getMyCardDetail',      // 我的卡项详情
+	'card/my_card_records': 'card_controller@getMyCardRecords',    // 我的使用记录
+	'card/my_card_summary': 'card_controller@getMyCardSummary',    // 我的卡项汇总
+
+	// 管理后台 - 卡项商品管理
+	'admin/card_list': 'admin/admin_card_controller@getCardList',
+	'admin/card_insert': 'admin/admin_card_controller@insertCard#noDemo',
+	'admin/card_edit': 'admin/admin_card_controller@editCard#noDemo',
+	'admin/card_del': 'admin/admin_card_controller@delCard#noDemo',
+	'admin/card_sort': 'admin/admin_card_controller@sortCard#noDemo',
+	'admin/card_status': 'admin/admin_card_controller@statusCard#noDemo',
+	'admin/card_detail': 'admin/admin_card_controller@getCardDetail',
+	'admin/card_update_pic': 'admin/admin_card_controller@updateCardPic#noDemo',
+	'admin/card_update_content': 'admin/admin_card_controller@updateCardContent#noDemo',
+
+	// 前端 - 轮播图
+	'carousel/list': 'carousel_controller@getCarouselList',
+
+	// 管理后台 - 轮播图管理
+	'admin/carousel_list': 'admin/admin_carousel_controller@getCarouselList',
+	'admin/carousel_insert': 'admin/admin_carousel_controller@insertCarousel#noDemo',
+	'admin/carousel_edit': 'admin/admin_carousel_controller@editCarousel#noDemo',
+	'admin/carousel_del': 'admin/admin_carousel_controller@delCarousel#noDemo',
+	'admin/carousel_sort': 'admin/admin_carousel_controller@sortCarousel#noDemo',
+	'admin/carousel_status': 'admin/admin_carousel_controller@statusCarousel#noDemo',
+	'admin/carousel_detail': 'admin/admin_carousel_controller@getCarouselDetail',
+
+	// 前端 - 导师团队
+	'instructor/list': 'instructor_controller@getInstructorList',
+	'instructor/detail': 'instructor_controller@getInstructorDetail',
+
+	// 管理后台 - 导师团队管理
+	'admin/instructor_list': 'admin/admin_instructor_controller@getInstructorList',
+	'admin/instructor_insert': 'admin/admin_instructor_controller@insertInstructor#noDemo',
+	'admin/instructor_edit': 'admin/admin_instructor_controller@editInstructor#noDemo',
+	'admin/instructor_del': 'admin/admin_instructor_controller@delInstructor#noDemo',
+	'admin/instructor_sort': 'admin/admin_instructor_controller@sortInstructor#noDemo',
+	'admin/instructor_status': 'admin/admin_instructor_controller@statusInstructor#noDemo',
+	'admin/instructor_detail': 'admin/admin_instructor_controller@getInstructorDetail',
+
+	// 前端 - 关于我们
+	'about/detail': 'about_controller@getAboutDetail',
+
+	// 管理后台 - 关于我们管理
+	'admin/about_detail': 'admin/admin_about_controller@getAboutDetail',
+	'admin/about_edit': 'admin/admin_about_controller@editAbout#noDemo',
+	'admin/about_update_pic': 'admin/admin_about_controller@updateAboutPic#noDemo',
+	'admin/about_update_content': 'admin/admin_about_controller@updateAboutContent#noDemo',
+
+	// 管理后台 - 用户卡项管理
+	'admin/user_card_search': 'admin/admin_user_card_controller@searchUserByPhone',           // 通过手机号搜索用户
+	'admin/user_card_search_by_id': 'admin/admin_user_card_controller@searchByUniqueId',      // 通过卡项识别码搜索
+	'admin/user_card_list': 'admin/admin_user_card_controller@getUserCardList',               // 用户卡项列表
+	'admin/user_card_add': 'admin/admin_user_card_controller@addUserCard#noDemo',             // 给用户充值/添加卡
+	'admin/user_card_adjust': 'admin/admin_user_card_controller@adjustUserCard#noDemo',       // 调整用户卡（扣减/增加）
+	'admin/user_card_records': 'admin/admin_user_card_controller@getUserCardRecords',         // 用户使用记录
+	'admin/user_card_info': 'admin/admin_user_card_controller@getUserInfo',                   // 获取用户信息（含卡项汇总）
 
 }

@@ -1,0 +1,32 @@
+<view wx:if="{{!isLoad}}" class="margin-top load loading text-l text-grey"></view>
+<view class="main-admin" wx:if="{{isAdmin&&isLoad}}">
+
+	<view class="form-box shadow">
+		<view class="form-group">
+			<view class="title must">导师姓名</view>
+			<input placeholder="请输入导师姓名" placeholder-class="phc" value="{{formName}}" bindinput="model" data-item="formName" maxlength="20"></input>
+		</view>
+
+		<view class="form-group">
+			<view class="title must">导师头像</view>
+		</view>
+
+		<view class="form-group">
+			<cmpt-img-upload imgMax="{{1}}" title="头像上传" isCheck="{{false}}" imgUploadSize="{{10}}" imgList="{{imgList}}" bind:upload="bindImgUploadCmpt" />
+		</view>
+
+		<view class="form-group align-start">
+			<view class="title">简介<text class="text-grey text-normal margin-left-xs">(可选)</text></view>
+			<textarea placeholder="请输入简介" placeholder-class="phc" value="{{formDesc}}" bindinput="model" data-item="formDesc" maxlength="100" style="min-height:120rpx" auto-height="true"></textarea>
+		</view>
+
+		<view class="form-group">
+			<view class="title must">排序号<text class="text-grey text-normal margin-left-xs">(数字越小越靠前)</text></view>
+			<input placeholder="1-9999" type="digit" placeholder-class="phc" value="{{formOrder}}" bindinput="model" data-item="formOrder"></input>
+		</view>
+
+	</view>
+
+	<button bindtap="bindFormSubmit" class="btn-admin margin-top-xs">提交</button>
+
+</view>

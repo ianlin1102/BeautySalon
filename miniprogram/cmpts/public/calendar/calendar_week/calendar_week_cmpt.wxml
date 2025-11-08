@@ -1,0 +1,57 @@
+<wxs src="../../../../tpls/wxs/tools.wxs" module="tools" />
+<view class="week-calendar-wrapper">
+	<!-- 头部 -->
+	<view class="week-header">
+		<view class="week-month">{{currentMonth}}</view>
+		<view class="week-actions">
+			<view class="week-btn" bindtap="bindTodayTap">
+				<text class="icon-homefill"></text>
+			</view>
+			<view class="week-btn" bindtap="bindToggleCalendar">
+				<text class="icon-unfold"></text>
+			</view>
+		</view>
+	</view>
+
+	<!-- 周日期条 -->
+	<view class="week-container">
+		<view class="week-nav" bindtap="bindPrevWeek">
+			<text class="icon-back"></text>
+		</view>
+
+		<view class="week-days">
+			<view class="week-day-item {{item.isSelected ? 'selected' : ''}} {{item.isToday ? 'is-today' : ''}}"
+				  wx:for="{{weekDays}}"
+				  wx:key="full"
+				  data-day="{{item.full}}"
+				  bindtap="bindDayTap">
+				<view class="week-label">周{{item.weekDay}}</view>
+				<view class="day-num">{{item.day}}</view>
+				<view class="has-dot" wx:if="{{tools.includes(hasDays, item.full)}}"></view>
+			</view>
+		</view>
+
+		<view class="week-nav" bindtap="bindNextWeek">
+			<text class="icon-right"></text>
+		</view>
+	</view>
+
+	<!-- 完整日历弹窗 -->
+	<view class="calendar-popup" wx:if="{{showCalendar}}" bindtap="bindToggleCalendar">
+		<view class="popup-content" catchtap="stopPropagation">
+			<view class="popup-header">
+				<text class="popup-title">选择日期</text>
+				<view class="popup-close" bindtap="bindToggleCalendar">
+					<text class="icon-close"></text>
+				</view>
+			</view>
+
+			<cmpt-calendar mode="one"
+						   year="{{year}}"
+						   month="{{month}}"
+						   oneDoDay="{{oneDoDay}}"
+						   hasDays="{{hasDays}}"
+						   bind:click="bindFullCalendarClick" />
+		</view>
+	</view>
+</view>

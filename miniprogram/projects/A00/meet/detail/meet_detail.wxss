@@ -205,7 +205,7 @@
 }
 
 .vertical-nav.nav {
-	width: 200rpx;
+	width: 400rpx;
 	white-space: initial;
 }
 
@@ -319,14 +319,30 @@
 	color: #999;
 }
 
-/* 用户已预约的时间段样式 */
+/* 用户已预约的时间段样式 - 使用淡紫色 */
 .vertical-main .text-list .item .time-text.user-joined {
-	background-color: #e8f5e8;
-	border-color: #4caf50;
-	color: #2e7d32;
+	background-color: #F6F7FF;
+	border-color: var(--projectColor, #5756B3);
+	color: var(--projectColor, #5756B3);
+	font-weight: bold;
 }
 
-.vertical-main .text-list .item .time-text .joined-text {
-	color: #2e7d32;
+.vertical-main .text-list .item .time-text.user-joined .joined-text {
+	color: var(--projectColor, #5756B3);
 	font-weight: bold;
+}
+
+/* 覆盖日期标题样式 - 使用淡紫色背景 */
+.centered-date-header {
+	background-color: #F6F7FF !important;
+	background: #F6F7FF !important;
+	padding: 25rpx 20rpx;
+	text-align: center;
+}
+
+.centered-date-title {
+	font-size: 32rpx;
+	font-weight: bold;
+	color: var(--projectColor, #5756B3) !important;
+	text-shadow: none !important;
 }

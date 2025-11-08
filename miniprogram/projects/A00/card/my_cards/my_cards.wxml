@@ -1,0 +1,120 @@
+<view class="main">
+	<!-- 卡项汇总 -->
+	<view class="summary-card">
+		<view class="summary-title">我的卡项汇总</view>
+		<view class="summary-row">
+			<view class="summary-item">
+				<view class="summary-value">{{summary.totalTimes}}</view>
+				<view class="summary-label">总次数</view>
+			</view>
+			<view class="summary-divider"></view>
+			<view class="summary-item">
+				<view class="summary-value">${{summary.totalAmount}}</view>
+				<view class="summary-label">总余额</view>
+			</view>
+			<view class="summary-divider"></view>
+			<view class="summary-item">
+				<view class="summary-value">{{summary.totalCardsCount}}</view>
+				<view class="summary-label">卡项数量</view>
+			</view>
+		</view>
+	</view>
+
+	<!-- 筛选器 -->
+	<view class="filter-bar">
+		<view class="filter-group">
+			<text class="filter-label">类型:</text>
+			<view class="filter-item {{currentType === -1 ? 'active' : ''}}" bindtap="onTypeChange" data-type="-1">全部</view>
+			<view class="filter-item {{currentType === 1 ? 'active' : ''}}" bindtap="onTypeChange" data-type="1">次数卡</view>
+			<view class="filter-item {{currentType === 2 ? 'active' : ''}}" bindtap="onTypeChange" data-type="2">余额卡</view>
+		</view>
+		<view class="filter-group">
+			<text class="filter-label">状态:</text>
+			<view class="filter-item {{currentStatus === -1 ? 'active' : ''}}" bindtap="onStatusChange" data-status="-1">全部</view>
+			<view class="filter-item {{currentStatus === 1 ? 'active' : ''}}" bindtap="onStatusChange" data-status="1">使用中</view>
+			<view class="filter-item {{currentStatus === 0 ? 'active' : ''}}" bindtap="onStatusChange" data-status="0">已用完</view>
+			<view class="filter-item {{currentStatus === 2 ? 'active' : ''}}" bindtap="onStatusChange" data-status="2">已过期</view>
+		</view>
+	</view>
+
+	<!-- 卡项列表 -->
+	<view class="card-list">
+		<view wx:for="{{dataList}}" wx:key="_id" class="card-item" bindtap="onCardTap" data-id="{{item._id}}">
+			<!-- 卡项头部 -->
+			<view class="card-header">
+				<view class="card-name">{{item.USER_CARD_CARD_NAME}}</view>
+				<view class="card-status status-{{item.USER_CARD_STATUS}}">
+					<text wx:if="{{item.USER_CARD_STATUS === 0}}">已用完</text>
+					<text wx:elif="{{item.USER_CARD_STATUS === 1}}">使用中</text>
+					<text wx:elif="{{item.USER_CARD_STATUS === 2}}">已过期</text>
+				</view>
+			</view>
+
+			<!-- 唯一识别码 -->
+			<view class="card-unique-id">
+				<text class="unique-id-label">识别码:</text>
+				<text class="unique-id-value">{{item.USER_CARD_UNIQUE_ID}}</text>
+				<text class="copy-btn" catchtap="onCopyId" data-id="{{item.USER_CARD_UNIQUE_ID}}">复制</text>
+			</view>
+
+			<!-- 卡项信息 -->
+			<view class="card-info">
+				<!-- 次数卡 -->
+				<view wx:if="{{item.USER_CARD_TYPE === 1}}" class="info-row">
+					<view class="info-item">
+						<text class="info-label">剩余次数</text>
+						<text class="info-value times">{{item.USER_CARD_REMAIN_TIMES}}次</text>
+					</view>
+					<view class="info-item">
+						<text class="info-label">总次数</text>
+						<text class="info-value">{{item.USER_CARD_TOTAL_TIMES}}次</text>
+					</view>
+				</view>
+
+				<!-- 余额卡 -->
+				<view wx:else class="info-row">
+					<view class="info-item">
+						<text class="info-label">剩余余额</text>
+						<text class="info-value balance">${{item.USER_CARD_REMAIN_AMOUNT}}</text>
+					</view>
+					<view class="info-item">
+						<text class="info-label">总余额</text>
+						<text class="info-value">${{item.USER_CARD_TOTAL_AMOUNT}}</text>
+					</view>
+				</view>
+			</view>
+
+			<!-- 进度条 -->
+			<view class="progress-bar">
+				<view class="progress-fill"
+					wx:if="{{item.USER_CARD_TYPE === 1}}"
+					style="width: {{item.USER_CARD_REMAIN_TIMES / item.USER_CARD_TOTAL_TIMES * 100}}%"></view>
+				<view class="progress-fill"
+					wx:else
+					style="width: {{item.USER_CARD_REMAIN_AMOUNT / item.USER_CARD_TOTAL_AMOUNT * 100}}%"></view>
+			</view>
+
+			<!-- 卡项底部 -->
+			<view class="card-footer">
+				<text class="footer-text">添加时间: {{item.USER_CARD_ADD_TIME}}</text>
+				<text wx:if="{{item.USER_CARD_EXPIRE_TIME}}" class="footer-text">过期时间: {{item.USER_CARD_EXPIRE_TIME}}</text>
+			</view>
+		</view>
+
+		<!-- 空状态 -->
+		<view wx:if="{{dataList.length === 0 && !isLoad}}" class="empty-state">
+			<text class="empty-icon">📦</text>
+			<text class="empty-text">暂无卡项</text>
+		</view>
+
+		<!-- 加载中 -->
+		<view wx:if="{{isLoad}}" class="loading">
+			<text>加载中...</text>
+		</view>
+
+		<!-- 没有更多 -->
+		<view wx:if="{{!isLoadMore && dataList.length > 0}}" class="no-more">
+			<text>没有更多了</text>
+		</view>
+	</view>
+</view>

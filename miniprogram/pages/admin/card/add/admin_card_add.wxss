@@ -1,0 +1,26 @@
+@import '../../../../style/project/base/admin.wxss';
+
+page {
+	background-color: #f8f8f8;
+}
+
+.type-switch {
+	display: flex;
+	width: 100%;
+	gap: 20rpx;
+}
+
+.type-btn {
+	flex: 1;
+	background-color: #f0f0f0;
+	color: #666;
+	border: none;
+	border-radius: 8rpx;
+	padding: 20rpx;
+	font-size: 28rpx;
+}
+
+.type-btn.active {
+	background-color: #5756B3;
+	color: #fff;
+}
