@@ -1,0 +1,250 @@
+/* 周范围日历容器 */
+.week-range-calendar-wrapper {
+	width: 100%;
+	background: #fff;
+	border-radius: 16rpx;
+	overflow: hidden;
+	box-shadow: 0 2rpx 12rpx rgba(0, 0, 0, 0.06);
+}
+
+/* 头部 */
+.week-range-header {
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+	padding: 24rpx 32rpx 16rpx;
+	border-bottom: 1rpx solid #f0f0f0;
+}
+
+.week-range-title {
+	font-size: 32rpx;
+	font-weight: 600;
+	color: #333;
+}
+
+.week-range-actions {
+	display: flex;
+	gap: 16rpx;
+}
+
+.week-range-btn {
+	display: flex;
+	align-items: center;
+	gap: 8rpx;
+	padding: 8rpx 16rpx;
+	background: #f5f5f5;
+	border-radius: 20rpx;
+	font-size: 24rpx;
+	color: #666;
+	transition: all 0.3s;
+}
+
+.week-range-btn:active {
+	background: #e8e8e8;
+	transform: scale(0.95);
+}
+
+.week-range-btn .btn-text {
+	font-size: 24rpx;
+}
+
+/* 滚动容器 */
+.week-range-container {
+	width: 100%;
+	white-space: nowrap;
+	padding: 20rpx 0;
+}
+
+.week-range-items {
+	display: inline-flex;
+	gap: 16rpx;
+	padding: 0 32rpx;
+}
+
+/* 周范围卡片 */
+.week-range-item {
+	position: relative;
+	display: inline-flex;
+	flex-direction: column;
+	min-width: 180rpx;
+	padding: 20rpx 24rpx;
+	background: #f8f9fa;
+	border-radius: 16rpx;
+	border: 2rpx solid transparent;
+	transition: all 0.3s;
+}
+
+.week-range-item.selected {
+	background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+	border-color: #667eea;
+	box-shadow: 0 8rpx 24rpx rgba(102, 126, 234, 0.3);
+}
+
+.week-range-item.is-current-week {
+	border-color: #ffa726;
+}
+
+.week-range-item.is-current-week::before {
+	content: '';
+	position: absolute;
+	top: -4rpx;
+	right: -4rpx;
+	width: 16rpx;
+	height: 16rpx;
+	background: #ffa726;
+	border-radius: 50%;
+	box-shadow: 0 0 8rpx rgba(255, 167, 38, 0.6);
+}
+
+/* 月份分隔标识 */
+.month-divider {
+	position: absolute;
+	top: -32rpx;
+	left: 0;
+	font-size: 24rpx;
+	color: #999;
+	font-weight: 500;
+}
+
+/* 周范围内容 */
+.week-range-content {
+	display: flex;
+	flex-direction: column;
+	gap: 8rpx;
+	position: relative;
+}
+
+/* 周标签 */
+.week-label {
+	font-size: 22rpx;
+	color: #999;
+	font-weight: 500;
+}
+
+.week-range-item.selected .week-label {
+	color: rgba(255, 255, 255, 0.9);
+}
+
+.week-text {
+	font-size: 22rpx;
+}
+
+/* 日期范围 */
+.date-range {
+	font-size: 28rpx;
+	font-weight: 600;
+	color: #333;
+	white-space: nowrap;
+}
+
+.week-range-item.selected .date-range {
+	color: #fff;
+}
+
+/* 跨月提示 */
+.cross-month-hint {
+	display: inline-flex;
+	align-items: center;
+	padding: 2rpx 8rpx;
+	background: rgba(255, 152, 0, 0.15);
+	border-radius: 8rpx;
+	margin-top: 4rpx;
+}
+
+.hint-text {
+	font-size: 20rpx;
+	color: #ff9800;
+}
+
+.week-range-item.selected .cross-month-hint {
+	background: rgba(255, 255, 255, 0.25);
+}
+
+.week-range-item.selected .hint-text {
+	color: rgba(255, 255, 255, 0.95);
+}
+
+/* 数据点 */
+.has-dot {
+	position: absolute;
+	bottom: 4rpx;
+	right: 4rpx;
+	width: 12rpx;
+	height: 12rpx;
+	background: #4caf50;
+	border-radius: 50%;
+	box-shadow: 0 0 8rpx rgba(76, 175, 80, 0.5);
+}
+
+.week-range-item.selected .has-dot {
+	background: #ffd700;
+	box-shadow: 0 0 8rpx rgba(255, 215, 0, 0.7);
+}
+
+/* 日历弹窗 */
+.calendar-popup {
+	position: fixed;
+	top: 0;
+	left: 0;
+	right: 0;
+	bottom: 0;
+	background: rgba(0, 0, 0, 0.5);
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	z-index: 9999;
+	animation: fadeIn 0.3s;
+}
+
+@keyframes fadeIn {
+	from {
+		opacity: 0;
+	}
+	to {
+		opacity: 1;
+	}
+}
+
+.popup-content {
+	width: 90%;
+	max-width: 700rpx;
+	background: #fff;
+	border-radius: 24rpx;
+	overflow: hidden;
+	animation: slideUp 0.3s;
+}
+
+@keyframes slideUp {
+	from {
+		transform: translateY(100rpx);
+		opacity: 0;
+	}
+	to {
+		transform: translateY(0);
+		opacity: 1;
+	}
+}
+
+.popup-header {
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+	padding: 32rpx;
+	border-bottom: 1rpx solid #f0f0f0;
+}
+
+.popup-title {
+	font-size: 32rpx;
+	font-weight: 600;
+	color: #333;
+}
+
+.popup-close {
+	padding: 8rpx;
+	color: #999;
+	font-size: 32rpx;
+}
+
+.popup-close:active {
+	opacity: 0.6;
+}

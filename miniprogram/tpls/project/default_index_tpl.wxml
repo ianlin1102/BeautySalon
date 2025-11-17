@@ -21,7 +21,7 @@
 					</view>
 				</view>
 
-				<view bindtap="url" data-url="/pages/test/card_store" class="menu-item">
+				<view bindtap="url" data-url="/pages/card/store/card_store" class="menu-item">
 					<view class="menu-item-inner">
 						<view class="menu-icon"><image src="../../skin/images/menu_icon/银行卡_bank-card-one.png" /></view>
 						<view class="menu-title">卡项</view>
@@ -44,7 +44,19 @@
 			</view>
 		</view>
 
-		<!-- Instructor Team Section -->
+		<!-- 核销排行榜 - 领奖台样式 -->
+		<view class="rank-section-wrapper">
+			<cmpt-rank-list id="rankList" type="all" limit="{{3}}" />
+		</view>
+
+		<!-- 海报区域 - 占位，待添加 -->
+		<view class="poster-section">
+			<view class="poster-placeholder">
+				<text class="placeholder-text">海报区域（待添加）</text>
+			</view>
+		</view>
+
+		<!-- 导师团队 -->
 		<view class="instructor-section">
 			<view class="section-header">
 				<view class="section-title">导师团队</view>

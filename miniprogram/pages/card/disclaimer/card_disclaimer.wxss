@@ -1,0 +1,96 @@
+page {
+	background-color: #f8f8f8;
+	height: 100%;
+}
+
+.disclaimer-page {
+	min-height: 100%;
+	display: flex;
+	flex-direction: column;
+	padding-bottom: 180rpx;
+}
+
+/* 头部 */
+.disclaimer-header {
+	background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+	padding: 60rpx 30rpx 40rpx;
+	text-align: center;
+	color: #fff;
+}
+
+.header-title {
+	font-size: 40rpx;
+	font-weight: bold;
+	margin-bottom: 15rpx;
+}
+
+.header-subtitle {
+	font-size: 26rpx;
+	opacity: 0.9;
+}
+
+/* 内容区域 */
+.disclaimer-content {
+	flex: 1;
+	padding: 20rpx;
+}
+
+.section {
+	background: #fff;
+	margin-bottom: 20rpx;
+	border-radius: 12rpx;
+	padding: 30rpx;
+	box-shadow: 0 2rpx 8rpx rgba(0, 0, 0, 0.05);
+}
+
+.section-title {
+	font-size: 32rpx;
+	font-weight: bold;
+	color: #333;
+	margin-bottom: 20rpx;
+	padding-left: 20rpx;
+	border-left: 6rpx solid #667eea;
+}
+
+.section-text {
+	font-size: 28rpx;
+	color: #666;
+	line-height: 2;
+	white-space: pre-line;
+}
+
+/* 底部按钮 */
+.disclaimer-footer {
+	position: fixed;
+	bottom: 0;
+	left: 0;
+	right: 0;
+	background: #fff;
+	padding: 20rpx 30rpx;
+	box-shadow: 0 -2rpx 10rpx rgba(0, 0, 0, 0.1);
+	display: flex;
+	gap: 20rpx;
+}
+
+.btn-agree {
+	flex: 1;
+	background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+	color: #fff;
+	border: none;
+	border-radius: 50rpx;
+	padding: 24rpx;
+	font-size: 32rpx;
+	font-weight: bold;
+	line-height: 1.5;
+}
+
+.btn-cancel {
+	flex: 1;
+	background: #fff;
+	color: #999;
+	border: 2rpx solid #e0e0e0;
+	border-radius: 50rpx;
+	padding: 24rpx;
+	font-size: 32rpx;
+	line-height: 1.5;
+}

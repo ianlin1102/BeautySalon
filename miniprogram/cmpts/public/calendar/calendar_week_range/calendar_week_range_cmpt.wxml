@@ -1,0 +1,73 @@
+<wxs src="../../../../tpls/wxs/tools.wxs" module="tools" />
+<view class="week-range-calendar-wrapper">
+	<!-- 头部操作栏 -->
+	<view class="week-range-header">
+		<view class="week-range-title">选择预约周期</view>
+		<view class="week-range-actions">
+			<view class="week-range-btn" bindtap="bindTodayTap">
+				<text class="icon-homefill"></text>
+				<text class="btn-text">本周</text>
+			</view>
+			<view class="week-range-btn" bindtap="bindToggleCalendar">
+				<text class="icon-calendar"></text>
+				<text class="btn-text">日历</text>
+			</view>
+		</view>
+	</view>
+
+	<!-- 横向滚动周范围条 -->
+	<scroll-view class="week-range-container"
+				 scroll-x="{{true}}"
+				 scroll-into-view="{{scrollIntoView}}"
+				 show-scrollbar="{{false}}">
+		<view class="week-range-items">
+			<view class="week-range-item {{item.range === selectedWeekData ? 'selected' : ''}} {{item.isCurrentWeek ? 'is-current-week' : ''}}"
+				  wx:for="{{scrollWeeks}}"
+				  wx:key="range"
+				  id="week-{{index}}"
+				  data-week="{{item.range}}"
+				  data-item="{{item}}"
+				  bindtap="bindWeekTap">
+
+				<!-- 月份分隔标识 -->
+				<view class="month-divider" wx:if="{{index === 0 || item.startMonth !== scrollWeeks[index-1].startMonth}}">
+					{{item.startMonth}}月
+				</view>
+
+				<!-- 周范围主体 -->
+				<view class="week-range-content">
+					<!-- 周标签 -->
+					<view class="week-label">
+						<text class="week-text">{{item.isCurrentWeek ? '本周' : '第' + (index + 1) + '周'}}</text>
+					</view>
+					<!-- 日期范围 -->
+					<view class="date-range">{{item.displayText}}</view>
+					<!-- 跨月提示 -->
+					<view class="cross-month-hint" wx:if="{{item.isCrossMonth}}">
+						<text class="hint-text">跨月</text>
+					</view>
+					<!-- 数据点 - 如果这周有数据 -->
+					<view class="has-dot" wx:if="{{tools.includes(hasWeeks, item.range)}}"></view>
+				</view>
+			</view>
+		</view>
+	</scroll-view>
+
+	<!-- 完整日历弹窗 -->
+	<view class="calendar-popup" wx:if="{{showCalendar}}" bindtap="bindToggleCalendar">
+		<view class="popup-content" catchtap="stopPropagation">
+			<view class="popup-header">
+				<text class="popup-title">选择日期</text>
+				<view class="popup-close" bindtap="bindToggleCalendar">
+					<text class="icon-close"></text>
+				</view>
+			</view>
+			<cmpt-calendar mode="one"
+						   year="{{calendarYear}}"
+						   month="{{calendarMonth}}"
+						   hasDays="{{[]}}"
+						   oneDoDay="{{todayFull}}"
+						   bind:click="bindFullCalendarClick" />
+		</view>
+	</view>
+</view>

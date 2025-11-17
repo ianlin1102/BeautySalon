@@ -79,12 +79,25 @@
 		</view>
 	</view>
 
+	<!-- 免责声明勾选 -->
+	<view class="disclaimer-section">
+		<checkbox-group bindchange="bindAgreeDisclaimer">
+			<label class="disclaimer-checkbox">
+				<checkbox value="agreed" color="#667eea" checked="{{agreedDisclaimer}}"/>
+				<text class="disclaimer-text">我已阅读并同意</text>
+				<text class="disclaimer-link" catchtap="bindViewDisclaimer">《购买免责声明》</text>
+			</label>
+		</checkbox-group>
+	</view>
+
 	<!-- 购买按钮 -->
 	<view class="purchase-bar">
 		<view class="purchase-price">
 			<text class="currency">$</text>
 			<text class="amount">{{card.CARD_PRICE}}</text>
 		</view>
-		<button class="purchase-btn" bindtap="bindPurchaseTap">立即购买</button>
+		<button class="purchase-btn" bindtap="bindPurchaseTap" disabled="{{!agreedDisclaimer}}">
+			{{agreedDisclaimer ? '立即购买' : '请先同意免责声明'}}
+		</button>
 	</view>
 </view>

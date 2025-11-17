@@ -204,24 +204,53 @@ page {
 	border: 1rpx solid #eee;
 }
 
+/* 免责声明勾选 */
+.disclaimer-section {
+	background: #fff;
+	padding: 30rpx;
+	margin: 0 20rpx 20rpx 20rpx;
+	border-radius: 12rpx;
+}
+
+.disclaimer-checkbox {
+	display: flex;
+	align-items: center;
+	font-size: 28rpx;
+	line-height: 1.8;
+}
+
+.disclaimer-text {
+	color: #666;
+	margin-left: 10rpx;
+}
+
+.disclaimer-link {
+	color: #667eea;
+	text-decoration: underline;
+	margin-left: 5rpx;
+}
+
 /* 购买按钮 */
 .purchase-bar {
 	position: fixed;
 	bottom: 0;
 	left: 0;
 	right: 0;
-	display: flex;
-	align-items: center;
-	justify-content: space-between;
 	background: #fff;
-	padding: 20rpx 30rpx;
+	padding: 20rpx 0;
 	box-shadow: 0 -2rpx 10rpx rgba(0, 0, 0, 0.05);
 	z-index: 100;
+	height: 100rpx;
 }
 
 .purchase-price {
 	display: flex;
 	align-items: baseline;
+	position: absolute;
+	left: 30rpx;
+	top: 50%;
+	transform: translateY(-50%);
+	z-index: 1;
 }
 
 .purchase-price .currency {
@@ -237,7 +266,6 @@ page {
 }
 
 .purchase-btn {
-	flex-shrink: 0;
 	background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
 	color: #fff;
 	border: none;
@@ -245,4 +273,14 @@ page {
 	padding: 20rpx 60rpx;
 	font-size: 32rpx;
 	font-weight: bold;
+	line-height: 1.5;
+	position: absolute;
+	left: 50%;
+	top: 50%;
+	transform: translate(-50%, -50%);
+}
+
+.purchase-btn[disabled] {
+	background: #e0e0e0;
+	color: #999;
 }

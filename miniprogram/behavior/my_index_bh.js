@@ -31,13 +31,18 @@ module.exports = Behavior({
 				let now = Date.now();
 
 				// 如果有缓存,先处理并显示缓存内容
-				if (cachedData) {
+				if (cachedData && Array.isArray(cachedData)) {
 					this._processTodayList(cachedData);
 
 					// 如果缓存还在有效期内(30分钟),直接返回
 					if (cacheTimestamp && (now - cacheTimestamp < CACHE_TIME * 1000)) {
 						return;
 					}
+				} else if (cachedData && !Array.isArray(cachedData)) {
+					// 缓存数据格式错误，清除缓存
+					console.warn('缓存数据格式错误，清除缓存', cachedData);
+					cacheHelper.remove(CACHE_KEY);
+					cacheHelper.remove(CACHE_TIMESTAMP_KEY);
 				}
 
 				// 2. 从云端获取最新数据(缓存过期或无缓存时)
@@ -95,6 +100,16 @@ module.exports = Behavior({
 
 		// 抽取处理预约列表的逻辑为独立方法
 		_processTodayList: function(allJoins) {
+			// 数据类型检查：确保 allJoins 是数组
+			if (!Array.isArray(allJoins)) {
+				console.error('_processTodayList: allJoins 不是数组', allJoins);
+				this.setData({
+					todayJoinCnt: 0,
+					joinDisplayInfo: '暂无预约'
+				});
+				return;
+			}
+
 			let now = new Date();
 			let nowDateStr = timeHelper.time('Y-M-D');
 			let nowTimeStr = timeHelper.time('Y-M-D h:m');

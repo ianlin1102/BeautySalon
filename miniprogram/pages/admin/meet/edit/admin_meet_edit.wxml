@@ -16,6 +16,17 @@
 			</view>
 			<view wx:if="{{formTypeIdFocus}}" class="hint-desc error">{{formTypeIdFocus}}</view>
 
+
+		<view class="form-group arrow">
+			<view class="title must">导师</view>
+			<picker value="{{formInstructorIndex}}" range="{{instructorOptions}}" range-key="INSTRUCTOR_NAME" bindchange="bindInstructorChange">
+				<view class="form-text">
+					<text wx:if="{{formInstructorName}}">{{formInstructorName}}</text>
+					<text wx:else class="text-grey">请选择导师</text>
+				</view>
+			</picker>
+		</view>
+		<view wx:if="{{formInstructorIdFocus}}" class="hint-desc error">{{formInstructorIdFocus}}</view>
 			<view id="formStyleSet" class="form-group arrow" bindtap="url" data-url="../cover/admin_meet_cover">
 				<view class="title must">封面设置<text class="text-grey text-normal margin-left-xs">(必填)</text></view>
 				<view wx:if="{{formStyleSet.pic}}" class="form-text"></view>

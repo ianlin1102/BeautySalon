@@ -17,7 +17,9 @@ module.exports = {
 
 	'meet/list': 'meet_controller@getMeetList',
 	'meet/list_by_day': 'meet_controller@getMeetListByDay',
+	'meet/list_by_week': 'meet_controller@getMeetListByWeek',
 	'meet/list_has_day': 'meet_controller@getHasDaysFromDay',
+	'meet/list_has_week': 'meet_controller@getHasWeeksFromDay',
 	'meet/view': 'meet_controller@viewMeet',
 	'meet/detail_for_join': 'meet_controller@detailForJoin',
 	'meet/before_join': 'meet_controller@beforeJoin',
@@ -29,6 +31,10 @@ module.exports = {
 	'my/my_join_detail': 'meet_controller@getMyJoinDetail',
 	'my/my_join_someday': 'meet_controller@getMyJoinSomeday',
 	'my/my_join_checkin': 'meet_controller@userSelfCheckin',
+
+	// 核销排行榜路由
+	'checkin/rank_list': 'checkin_controller@getRankList',            // 获取核销排行榜
+	'checkin/clear_cache': 'checkin_controller@clearRankCache',       // 清除排行榜缓存
 
 	// 积分系统路由
 	'points/test': 'points_controller@test',                         // 测试积分系统

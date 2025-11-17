@@ -41,7 +41,7 @@
 		</view>
 		<view class="item" bindtap="url" data-url="../../card/list/admin_card_list"> <text class="icon-cart text-red"></text> <text class="text-black">卡项商城管理</text>
 		</view>
-		<view class="item" bindtap="url" data-url="../../../pages/admin/user_card/manage/admin_user_card_manage"> <text class="icon-favorfill text-purple"></text> <text class="text-black">管理用户卡项</text>
+		<view class="item" bindtap="url" data-url="/pages/admin/user_card/manage/admin_user_card_manage"> <text class="icon-favorfill text-purple"></text> <text class="text-black">管理用户卡项</text>
 		</view>
 		<view class="item" bindtap="url" data-url="../../carousel/list/admin_carousel_list"> <text class="icon-picfill text-orange"></text> <text class="text-black">轮播图管理</text>
 		</view>

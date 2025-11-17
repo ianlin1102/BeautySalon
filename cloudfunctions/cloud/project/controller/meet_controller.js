@@ -13,6 +13,8 @@ const config = require('../../config/config.js');
 
 const CACHE_CALENDAR_INDEX = 'cache_calendar_index';
 const CACHE_CALENDAR_HAS_DAY = 'cache_calendar_has_day';
+const CACHE_CALENDAR_WEEK_INDEX = 'cache_calendar_week_index';
+const CACHE_CALENDAR_HAS_WEEK = 'cache_calendar_has_week';
 
 class MeetController extends BaseController {
 
@@ -77,6 +79,56 @@ class MeetController extends BaseController {
 		} else {
 			let service = new MeetService();
 			let list = await service.getHasDaysFromDay(input.day);
+			cacheUtil.set(cacheKey, list, config.CACHE_CALENDAR_TIME);
+			return list;
+		}
+
+	}
+
+	/** 按周范围获取预约项目 */
+	async getMeetListByWeek() {
+
+		// 数据校验
+		let rules = {
+			startDate: 'must|date|name=开始日期',
+			endDate: 'must|date|name=结束日期',
+		};
+
+		// 取得数据
+		let input = this.validateData(rules);
+
+		let cacheKey = CACHE_CALENDAR_WEEK_INDEX + '_' + input.startDate + '_' + input.endDate;
+		let list = await cacheUtil.get(cacheKey);
+		if (list) {
+			return list;
+		} else {
+			let service = new MeetService();
+			let list = await service.getMeetListByWeek(input.startDate, input.endDate);
+			cacheUtil.set(cacheKey, list, config.CACHE_CALENDAR_TIME);
+			return list;
+		}
+
+	}
+
+	/** 获取从某天开始可预约的周范围 */
+	async getHasWeeksFromDay() {
+
+		// 数据校验
+		let rules = {
+			day: 'must|date|name=日期',
+			monthCount: 'int|default=3|name=月数',
+		};
+
+		// 取得数据
+		let input = this.validateData(rules);
+
+		let cacheKey = CACHE_CALENDAR_HAS_WEEK + '_' + input.day + '_' + input.monthCount;
+		let list = await cacheUtil.get(cacheKey);
+		if (list) {
+			return list;
+		} else {
+			let service = new MeetService();
+			let list = await service.getHasWeeksFromDay(input.day, input.monthCount);
 			cacheUtil.set(cacheKey, list, config.CACHE_CALENDAR_TIME);
 			return list;
 		}

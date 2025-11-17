@@ -25,7 +25,7 @@
 /* Main Menu */
 .main-menu {
 	padding: 0;
-	margin: 0 auto 40rpx;
+	margin: 0 auto;
 	width: 95%;
 }
 
@@ -163,4 +163,39 @@
 
 .shadow-project {
     box-shadow: 6rpx 6rpx 8rpx rgba(0, 0, 0, 0.1);
+}
+
+/* Rank Section */
+.rank-section {
+	width: 90%;
+	margin: 0 auto 40rpx;
+}
+
+/* Rank Section Wrapper - 直接在页面中 */
+.rank-section-wrapper {
+	width: 90%;
+	margin: 0 auto 40rpx;
+}
+
+/* Poster Section - 海报区域 */
+.poster-section {
+	width: 90%;
+	margin: 0 auto 40rpx;
+}
+
+.poster-placeholder {
+	width: 100%;
+	height: 300rpx;
+	background: linear-gradient(135deg, #f5f7fa 0%, #e3e9f0 100%);
+	border-radius: 20rpx;
+	border: 2rpx dashed #c0c4cc;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+}
+
+.placeholder-text {
+	font-size: 28rpx;
+	color: #909399;
+	font-weight: 500;
 }

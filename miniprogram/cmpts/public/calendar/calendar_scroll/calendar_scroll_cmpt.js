@@ -1,5 +1,5 @@
 /**
- * 横向滚动日历组件 - 显示未来4个月
+ * 横向滚动日历组件 - 显示未来2个月
  */
 const timeHelper = require('../../../../helper/time_helper.js');
 
@@ -16,11 +16,16 @@ Component({
 		selectedDay: { // 选中的日期
 			type: String,
 			value: ''
+		},
+		mode: { // 显示模式: 'day' 或 'week'
+			type: String,
+			value: 'week' // 默认按周模式
 		}
 	},
 
 	data: {
-		scrollDays: [], // 所有可滚动的日期
+		scrollDays: [], // 所有可滚动的日期（按天模式）
+		scrollWeeks: [], // 所有可滚动的周（按周模式）
 		currentMonth: '', // 当前月份显示
 		todayFull: '', // 今天的完整日期
 		selectedDayData: null, // 选中日期的完整信息
@@ -36,6 +41,19 @@ Component({
 
 	observers: {
 		'hasDays': function(hasDays) {
+			console.log('====== hasDays 变化 ======');
+			console.log('hasDays:', hasDays);
+			console.log('hasDays 长度:', hasDays ? hasDays.length : 0);
+
+			// 当hasDays变化时，重新生成周数据（仅在week模式下）
+			if (this.data.mode === 'week' && this.data.scrollWeeks.length > 0) {
+				console.log('重新生成周数据，标记哪些周有预约');
+				const scrollWeeks = this._generateFutureWeeks(2);
+				this.setData({
+					scrollWeeks
+				});
+				console.log('更新后的周数据:', scrollWeeks);
+			}
 		}
 	},
 
@@ -44,26 +62,47 @@ Component({
 			const today = new Date();
 			const todayFull = this._formatDate(today);
 
-			// 默认选中今天
-			const selectedDay = this.data.selectedDay || todayFull;
-
-			// 生成未来4个月的日期
-			const scrollDays = this._generateFutureMonths(4);
-
 			// 设置弹窗日历的年月
 			const calendarYear = today.getFullYear();
 			const calendarMonth = today.getMonth() + 1;
 
-			this.setData({
-				scrollDays,
-				todayFull,
-				selectedDayData: selectedDay,
-				calendarYear,
-				calendarMonth
-			});
+			if (this.data.mode === 'week') {
+				// 按周模式
+				const scrollWeeks = this._generateFutureWeeks(2);
+				// 找到包含今天的周
+				const currentWeek = scrollWeeks.find(week =>
+					week.startDate <= todayFull && week.endDate >= todayFull
+				);
+				const selectedDay = currentWeek ? currentWeek.startDate : todayFull;
 
-			// 滚动到今天的位置
-			this._scrollToDay(selectedDay);
+				this.setData({
+					scrollWeeks,
+					todayFull,
+					selectedDayData: selectedDay,
+					calendarYear,
+					calendarMonth
+				}, () => {
+					// 滚动到当前周的位置 - 在setData完成后执行
+					if (currentWeek) {
+						this._scrollToWeek(currentWeek.range);
+					}
+				});
+			} else {
+				// 按天模式
+				const selectedDay = this.data.selectedDay || todayFull;
+				const scrollDays = this._generateFutureMonths(2);
+
+				this.setData({
+					scrollDays,
+					todayFull,
+					selectedDayData: selectedDay,
+					calendarYear,
+					calendarMonth
+				});
+
+				// 滚动到今天的位置
+				this._scrollToDay(selectedDay);
+			}
 		},
 
 		/**
@@ -114,6 +153,81 @@ Component({
 		},
 
 		/**
+		 * 生成未来N个月的所有周
+		 */
+		_generateFutureWeeks(monthCount) {
+			const today = new Date();
+			const todayFormatted = this._formatDate(today);
+			const weeks = [];
+
+			// 找到当前周的周一（作为开始）
+			const currentDay = today.getDay(); // 0=周日, 1=周一, ..., 6=周六
+			const daysToMonday = currentDay === 0 ? -6 : 1 - currentDay; // 周日需要回退6天
+			let weekMonday = new Date(today);
+			weekMonday.setDate(today.getDate() + daysToMonday);
+
+			// 从本周周一开始，生成未来的周
+			const endDate = new Date(today.getFullYear(), today.getMonth() + monthCount, 1);
+
+			while (weekMonday < endDate) {
+				const weekSunday = new Date(weekMonday);
+				weekSunday.setDate(weekMonday.getDate() + 6); // 周日
+
+				const startFormatted = this._formatDate(weekMonday);
+				const endFormatted = this._formatDate(weekSunday);
+				const range = `${startFormatted}~${endFormatted}`;
+
+				// 判断这周是否包含今天
+				const isCurrentWeek = startFormatted <= todayFormatted && endFormatted >= todayFormatted;
+
+				// 获取月份信息
+				const startMonth = weekMonday.getMonth() + 1;
+				const endMonth = weekSunday.getMonth() + 1;
+				const startDay = weekMonday.getDate();
+				const endDay = weekSunday.getDate();
+
+				// 判断这周是否跨月
+				const isCrossMonth = startMonth !== endMonth;
+
+				// 检查这周是否有预约数据
+				let hasData = false;
+				let matchedDays = []; // 记录这周哪些天有数据
+				for (let d = new Date(weekMonday); d <= weekSunday; d.setDate(d.getDate() + 1)) {
+					const dayStr = this._formatDate(d);
+					if (this.data.hasDays && this.data.hasDays.includes(dayStr)) {
+						hasData = true;
+						matchedDays.push(dayStr);
+					}
+				}
+
+				if (matchedDays.length > 0) {
+					console.log(`周 ${range} 有数据，匹配的天:`, matchedDays);
+				}
+
+				weeks.push({
+					range: range,
+					startDate: startFormatted,
+					endDate: endFormatted,
+					startDay: startDay,
+					endDay: endDay,
+					startMonth: startMonth,
+					endMonth: endMonth,
+					isCrossMonth: isCrossMonth,
+					isCurrentWeek: isCurrentWeek,
+					hasData: hasData,
+					// 周的显示格式: "1/6 - 1/12" 或 "1/30 - 2/5" (跨月)
+					displayText: `${startMonth}/${startDay} - ${endMonth}/${endDay}`
+				});
+
+				// 下一周
+				weekMonday.setDate(weekMonday.getDate() + 7);
+			}
+
+			console.log('生成的周数据:', weeks);
+			return weeks;
+		},
+
+		/**
 		 * 格式化日期为 YYYY-MM-DD
 		 */
 		_formatDate(date) {
@@ -152,19 +266,43 @@ Component({
 		},
 
 		/**
-		 * 滚动到今天
+		 * 滚动到今天/本周
 		 */
 		bindTodayTap() {
 			const today = this._formatDate(new Date());
-			this.setData({
-				selectedDayData: today
-			});
-			this._scrollToDay(today);
 
-			// 触发父组件事件
-			this.triggerEvent('click', {
-				day: today
-			});
+			if (this.data.mode === 'week') {
+				// 找到包含今天的周
+				const currentWeek = this.data.scrollWeeks.find(week =>
+					week.startDate <= today && week.endDate >= today
+				);
+				if (currentWeek) {
+					this.setData({
+						selectedDayData: currentWeek.startDate
+					});
+					this._scrollToWeek(currentWeek.range);
+
+					// 触发父组件事件 - 传递整周的日期范围
+					this.triggerEvent('click', {
+						day: currentWeek.startDate,
+						weekRange: currentWeek.range,
+						startDate: currentWeek.startDate,
+						endDate: currentWeek.endDate,
+						isWeekMode: true
+					});
+				}
+			} else {
+				// 按天模式
+				this.setData({
+					selectedDayData: today
+				});
+				this._scrollToDay(today);
+
+				// 触发父组件事件
+				this.triggerEvent('click', {
+					day: today
+				});
+			}
 		},
 
 		/**
@@ -180,6 +318,47 @@ Component({
 					scrollIntoView: `day-${index}`
 				});
 			}
+		},
+
+		/**
+		 * 滚动到指定周
+		 */
+		_scrollToWeek(weekRange) {
+			if (!weekRange) return;
+			// 找到该周的索引
+			const index = this.data.scrollWeeks.findIndex(item => item.range === weekRange);
+			if (index > -1) {
+				this.setData({
+					scrollIntoView: `week-${index}`
+				});
+			}
+		},
+
+		/**
+		 * 点击某一周
+		 */
+		bindWeekTap(e) {
+			const weekData = e.currentTarget.dataset.item;
+			const startDate = weekData.startDate;
+
+			console.log('====== 点击周 ======');
+			console.log('周数据:', weekData);
+			console.log('周范围:', weekData.range);
+			console.log('开始日期 (周一):', weekData.startDate);
+			console.log('结束日期 (周日):', weekData.endDate);
+
+			this.setData({
+				selectedDayData: startDate
+			});
+
+			// 触发父组件事件 - 传递整周的日期范围
+			this.triggerEvent('click', {
+				day: startDate, // 用于显示选中状态
+				weekRange: weekData.range,
+				startDate: weekData.startDate,
+				endDate: weekData.endDate,
+				isWeekMode: true // 标识这是周模式
+			});
 		},
 
 		/**
@@ -202,18 +381,45 @@ Component({
 			const calendarYear = parseInt(dateParts[0]);
 			const calendarMonth = parseInt(dateParts[1]);
 
-			this.setData({
-				selectedDayData: day,
-				showCalendar: false,
-				calendarYear,
-				calendarMonth
-			});
-			this._scrollToDay(day);
+			if (this.data.mode === 'week') {
+				// 周模式：找到包含该日期的周
+				const selectedWeek = this.data.scrollWeeks.find(week =>
+					week.startDate <= day && week.endDate >= day
+				);
 
-			// 触发父组件事件
-			this.triggerEvent('click', {
-				day: day
-			});
+				if (selectedWeek) {
+					this.setData({
+						selectedDayData: selectedWeek.startDate, // 设置为周一的日期
+						showCalendar: false,
+						calendarYear,
+						calendarMonth
+					});
+					this._scrollToWeek(selectedWeek.range);
+
+					// 触发父组件事件 - 传递整周的信息
+					this.triggerEvent('click', {
+						day: selectedWeek.startDate,
+						weekRange: selectedWeek.range,
+						startDate: selectedWeek.startDate,
+						endDate: selectedWeek.endDate,
+						isWeekMode: true
+					});
+				}
+			} else {
+				// 天模式：直接选中该天
+				this.setData({
+					selectedDayData: day,
+					showCalendar: false,
+					calendarYear,
+					calendarMonth
+				});
+				this._scrollToDay(day);
+
+				// 触发父组件事件
+				this.triggerEvent('click', {
+					day: day
+				});
+			}
 		}
 	}
 })

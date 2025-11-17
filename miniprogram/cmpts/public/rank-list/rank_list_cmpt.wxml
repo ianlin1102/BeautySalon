@@ -1,0 +1,82 @@
+<!-- 核销排行榜组件 - 领奖台样式 -->
+<view class="rank-list-container">
+	<!-- 榜单标题和切换 -->
+	<view class="rank-header">
+		<view class="rank-title">核销排行榜</view>
+		<view class="rank-tabs">
+			<view class="rank-tab {{currentType === 'all' ? 'active' : ''}}" bindtap="switchType" data-type="all">
+				总榜
+			</view>
+			<view class="rank-tab {{currentType === 'month' ? 'active' : ''}}" bindtap="switchType" data-type="month">
+				月榜
+			</view>
+		</view>
+	</view>
+
+	<!-- 领奖台 - 只显示前三名 -->
+	<view class="podium-container" wx:if="{{rankList && rankList.length > 0}}">
+		<view class="podium">
+			<!-- 第二名（左侧，银牌） -->
+			<view class="podium-item podium-2" wx:if="{{rankList[1]}}">
+				<!-- <view class="podium-rank">
+					<text class="medal-icon">🥈</text>
+				</view> -->
+				<view class="podium-avatar">
+					<text class="avatar-text">{{rankList[1].userName.substring(0, 2)}}</text>
+				</view>
+				<view class="podium-name">{{rankList[1].userName}}</view>
+				<view class="podium-count">
+					<text class="count-num">{{rankList[1].checkinCount}}</text>
+					<text class="count-unit">次</text>
+				</view>
+				<view class="podium-base podium-base-2">
+					<text class="base-rank">2</text>
+				</view>
+			</view>
+
+			<!-- 第一名（中间，金牌） -->
+			<view class="podium-item podium-1" wx:if="{{rankList[0]}}">
+				<view class="podium-crown">👑</view>
+				<!-- <view class="podium-rank">
+					<text class="medal-icon">🥇</text>
+				</view> -->
+				<view class="podium-avatar podium-avatar-1">
+					<text class="avatar-text">{{rankList[0].userName.substring(0, 2)}}</text>
+				</view>
+				<view class="podium-name">{{rankList[0].userName}}</view>
+				<view class="podium-count">
+					<text class="count-num">{{rankList[0].checkinCount}}</text>
+					<text class="count-unit">次</text>
+				</view>
+				<view class="podium-base podium-base-1">
+					<text class="base-rank">1</text>
+				</view>
+			</view>
+
+			<!-- 第三名（右侧，铜牌） -->
+			<view class="podium-item podium-3" wx:if="{{rankList[2]}}">
+				<!-- <view class="podium-rank">
+					<text class="medal-icon">🥉</text>
+				</view> -->
+				<view class="podium-avatar">
+					<text class="avatar-text">{{rankList[2].userName.substring(0, 2)}}</text>
+				</view>
+				<view class="podium-name">{{rankList[2].userName}}</view>
+				<view class="podium-count">
+					<text class="count-num">{{rankList[2].checkinCount}}</text>
+					<text class="count-unit">次</text>
+				</view>
+				<view class="podium-base podium-base-3">
+					<text class="base-rank">3</text>
+				</view>
+			</view>
+		</view>
+	</view>
+
+	<!-- 空状态 -->
+	<view class="rank-empty" wx:if="{{!rankList || rankList.length === 0}}">
+		<text class="empty-icon">🏆</text>
+		<text class="empty-text">暂无排行数据</text>
+	</view>
+
+</view>

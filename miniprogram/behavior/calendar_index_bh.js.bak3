@@ -7,7 +7,7 @@ const setting = require('../setting/setting.js');
 // ========== 配置选项 ==========
 // true  = 使用后端一次性查询整周（快速，需要重启云函数使修改生效）
 // false = 使用前端循环查询每天然后合并（稳定，但需要7次API调用）
-const USE_BACKEND_WEEK_QUERY = true;
+const USE_BACKEND_WEEK_QUERY = false;
 // ================================
 
 module.exports = Behavior({
@@ -116,57 +116,11 @@ module.exports = Behavior({
 			let opts = { title: 'bar' };
 
 			let res = await cloudHelper.callCloudSumbit('meet/list_by_week', params, opts);
-			let weekData = res.data || [];
+			let weekMeetList = res.data || [];
 
-			console.log('【后端查询】返回', weekData.length, '个预约项目');
+			console.log('【后端查询】返回', weekMeetList.length, '个预约项目');
+			console.log('【后端查询】详细数据:', weekMeetList);
 
-			// 展开数据：将每个预约的多个时间段展开成独立卡片
-			let weekMeetList = [];
-			for (let meet of weekData) {
-				if (meet.times && meet.times.length > 0) {
-					for (let time of meet.times) {
-						// 使用时间段中的day字段，如果没有则从daysWithData推断
-						let day = time.day || meet.daysWithData[0];
-
-						// 格式化日期显示（避免时区问题）
-						let dateParts = day.split('-');
-						let month = parseInt(dateParts[1]);
-						let dayNum = parseInt(dateParts[2]);
-						let dateObj = new Date(parseInt(dateParts[0]), month - 1, dayNum);
-						let weekDays = ['周日', '周一', '周二', '周三', '周四', '周五', '周六'];
-						let weekDay = weekDays[dateObj.getDay()];
-
-						weekMeetList.push({
-							_id: `${meet._id}_${day}_${time.start}`,
-							meetId: meet._id,
-							title: meet.title,
-							pic: meet.pic,
-							day: day,
-							dayText: `${month}月${dayNum}日`,
-							weekDay: weekDay,
-							time: time,
-							timeStart: time.start,
-							timeEnd: time.end,
-							duration: time.duration || '90分钟',
-							// 分类信息
-							typeId: meet.typeId || '',
-							typeName: meet.typeName || '',
-							// 导师信息
-							instructorId: meet.instructorId || "",
-							instructorName: meet.instructorName || "尚未决定",
-							instructorAvatar: meet.instructorPic || meet.pic,
-							// 预约人数信息
-							bookedCount: time.cnt || 0,
-							maxCount: time.limit || 20,
-							// 其他信息
-							tag: meet.tag || '',
-							type: meet.type || 'Group Class'
-						});
-					}
-				}
-			}
-
-			console.log('【后端查询】展开后卡片数:', weekMeetList.length);
 			return weekMeetList;
 		},
 
@@ -178,11 +132,8 @@ module.exports = Behavior({
 
 			// 2. 生成这周的每一天日期数组
 			let days = [];
-			// 手动解析日期以避免时区问题
-			let startParts = startDate.split('-');
-			let endParts = endDate.split('-');
-			let currentDate = new Date(parseInt(startParts[0]), parseInt(startParts[1]) - 1, parseInt(startParts[2]));
-			let endDateObj = new Date(parseInt(endParts[0]), parseInt(endParts[1]) - 1, parseInt(endParts[2]));
+			let currentDate = new Date(startDate);
+			let endDateObj = new Date(endDate);
 
 			while (currentDate <= endDateObj) {
 				let year = currentDate.getFullYear();
@@ -242,11 +193,10 @@ module.exports = Behavior({
 						for (let t = 0; t < meet.times.length; t++) {
 							let time = meet.times[t];
 
-							// 格式化日期显示（避免时区问题）
-							let dateParts = day.split('-');
-							let month = parseInt(dateParts[1]);
-							let dayNum = parseInt(dateParts[2]);
-							let dateObj = new Date(parseInt(dateParts[0]), month - 1, dayNum);
+							// 格式化日期显示
+							let dateObj = new Date(day);
+							let month = dateObj.getMonth() + 1;
+							let dayNum = dateObj.getDate();
 							let weekDays = ['周日', '周一', '周二', '周三', '周四', '周五', '周六'];
 							let weekDay = weekDays[dateObj.getDay()];
 
@@ -262,13 +212,9 @@ module.exports = Behavior({
 								timeStart: time.start,
 								timeEnd: time.end,
 								duration: time.duration || '90分钟',
-								// 分类信息
-								typeId: meet.typeId || '',
-								typeName: meet.typeName || '',
 								// 导师信息
-								instructorId: meet.instructorId || "",
-								instructorName: meet.instructorName || "尚未决定",
-								instructorAvatar: meet.instructorPic || meet.pic,
+								instructorName: meet.instructorName || 'QQ',
+								instructorAvatar: meet.instructorAvatar || meet.pic,
 								// 预约人数信息
 								bookedCount: time.cnt || 0,
 								maxCount: time.limit || 20,
@@ -490,10 +436,7 @@ module.exports = Behavior({
 			console.log('本周范围:', startDate, '到', endDate);
 
 			this.setData({
-				day: startDate, // 设置为周一
-				selectedDate: startDate,
-				selectedStartDate: startDate,
-				selectedEndDate: endDate
+				day: startDate // 设置为周一
 			});
 
 			await this._loadHasList();
@@ -523,17 +466,8 @@ module.exports = Behavior({
 			cacheHelper.remove('MEET_HAS_DAYS');
 			cacheHelper.remove('MEET_HAS_DAYS_TIMESTAMP');
 
-			// 清除周缓存
-			let startDate = this.data.selectedStartDate;
-			let endDate = this.data.selectedEndDate;
-			if (startDate && endDate) {
-				let weekCacheKey = 'MEET_LIST_WEEK_' + startDate + '_' + endDate;
-				let weekTimestampKey = 'MEET_LIST_WEEK_TIMESTAMP_' + startDate + '_' + endDate;
-				cacheHelper.remove(weekCacheKey);
-				cacheHelper.remove(weekTimestampKey);
-			}
-
-			// 清除单天缓存（兼容旧逻辑）
+			// 清除所有日期的预约列表缓存(需要手动清除,因为是按日期的key)
+			// 这里只清除当前日期的缓存,其他日期的缓存会在30分钟后自动失效
 			let currentDay = this.data.day;
 			if (currentDay) {
 				cacheHelper.remove('MEET_LIST_' + currentDay);
@@ -541,14 +475,7 @@ module.exports = Behavior({
 			}
 
 			await this._loadHasList();
-
-			// 根据是否有周范围来决定调用哪个加载函数
-			if (startDate && endDate) {
-				await this._loadWeekData(startDate, endDate);
-			} else {
-				await this._loadList();
-			}
-
+			await this._loadList();
 			wx.stopPullDownRefresh();
 		},
 
