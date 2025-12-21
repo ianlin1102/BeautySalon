@@ -5,5 +5,6 @@
 		"cmpt-calendar-scroll": "/cmpts/public/calendar/calendar_scroll/calendar_scroll_cmpt"
 	},
 	"enablePullDownRefresh": true,
-	"navigationBarTitleText": "预约日历"
+  "navigationBarTitleText": "预约日历",
+  "navigationBarBackgroundColor": "#0d1528"
 }

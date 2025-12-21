@@ -22,6 +22,7 @@ class CardController extends BaseController {
 			node.price = list[k].CARD_PRICE;
 			node.times = list[k].CARD_TIMES;
 			node.amount = list[k].CARD_AMOUNT;
+			node.validDays = list[k].CARD_VALIDITY_DAYS || 0; // 有效期天数
 			node.ext = list[k].CARD_ADD_TIME;
 			node.pic = list[k].CARD_PIC[0];
 			ret.push(node);

@@ -11,7 +11,8 @@ module.exports = Behavior({
 	data: {
 		isLoading: false,
 		carouselList: [],
-		instructorList: []
+		instructorList: [],
+		currentCarouselIndex: 0
 	},
 
 	methods: {
@@ -193,6 +194,78 @@ module.exports = Behavior({
 			let url = e.currentTarget.dataset.url;
 			if (url) {
 				pageHelper.url(e, this);
+			}
+		},
+
+		/**
+		 * 轮播图切换事件
+		 */
+		onCarouselChange: function (e) {
+			this.setData({
+				currentCarouselIndex: e.detail.current
+			});
+		},
+
+		/**
+		 * 轮播图按钮点击事件
+		 * 支持跳转到页面或外部链接
+		 */
+		onCarouselButtonTap: function (e) {
+			// 获取当前显示的轮播图数据
+			let currentIndex = this.data.currentCarouselIndex || 0;
+			let carouselList = this.data.carouselList || [];
+
+			if (carouselList.length === 0) {
+				wx.showToast({
+					title: '敬请期待',
+					icon: 'none',
+					duration: 2000
+				});
+				return;
+			}
+
+			let currentCarousel = carouselList[currentIndex];
+			let url = currentCarousel.CAROUSEL_URL;
+
+			if (!url) {
+				// 如果没有设置跳转链接，默认跳转到预约页面
+				wx.navigateTo({
+					url: '/projects/A00/meet/index/meet_index'
+				});
+				return;
+			}
+
+			// 判断是外部链接还是小程序页面路径
+			if (url.startsWith('http://') || url.startsWith('https://')) {
+				// 外部链接 - 复制到剪贴板
+				wx.setClipboardData({
+					data: url,
+					success: function () {
+						wx.showToast({
+							title: '链接已复制',
+							icon: 'success',
+							duration: 2000
+						});
+					}
+				});
+			} else {
+				// 内部页面路径
+				wx.navigateTo({
+					url: url,
+					fail: function () {
+						// 如果跳转失败，可能是 tabBar 页面，使用 switchTab
+						wx.switchTab({
+							url: url,
+							fail: function () {
+								wx.showToast({
+									title: '页面不存在',
+									icon: 'none',
+									duration: 2000
+								});
+							}
+						});
+					}
+				});
 			}
 		},
 

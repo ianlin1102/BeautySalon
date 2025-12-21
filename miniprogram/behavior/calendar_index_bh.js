@@ -23,7 +23,12 @@ module.exports = Behavior({
 		hasDays: [],
 		selectedDate: '', // 当前选中的日期（用于高亮匹配的卡片）
 		selectedStartDate: '', // 选中周的开始日期
-		selectedEndDate: '' // 选中周的结束日期
+		selectedEndDate: '', // 选中周的结束日期
+
+		// 课程信息弹窗
+		showCourseInfoModal: false,
+		courseInfoTitle: '',
+		courseInfoContent: ''
 	},
 
 	methods: {
@@ -136,6 +141,10 @@ module.exports = Behavior({
 						let weekDays = ['周日', '周一', '周二', '周三', '周四', '周五', '周六'];
 						let weekDay = weekDays[dateObj.getDay()];
 
+						// 调试：检查课程信息
+						if (meet.courseInfo) {
+							console.log('【课程信息】发现课程信息:', meet.title, meet.courseInfo);
+						}
 						weekMeetList.push({
 							_id: `${meet._id}_${day}_${time.start}`,
 							meetId: meet._id,
@@ -155,6 +164,8 @@ module.exports = Behavior({
 							instructorId: meet.instructorId || "",
 							instructorName: meet.instructorName || "尚未决定",
 							instructorAvatar: meet.instructorPic || meet.pic,
+							// 课程信息
+							courseInfo: meet.courseInfo || '',
 							// 预约人数信息
 							bookedCount: time.cnt || 0,
 							maxCount: time.limit || 20,
@@ -269,6 +280,8 @@ module.exports = Behavior({
 								instructorId: meet.instructorId || "",
 								instructorName: meet.instructorName || "尚未决定",
 								instructorAvatar: meet.instructorPic || meet.pic,
+								// 课程信息
+								courseInfo: meet.courseInfo || '',
 								// 预约人数信息
 								bookedCount: time.cnt || 0,
 								maxCount: time.limit || 20,
@@ -599,6 +612,31 @@ module.exports = Behavior({
 
 		url: async function (e) {
 			pageHelper.url(e, this);
+		},
+
+		// 显示课程信息弹窗
+		bindShowCourseInfo: function (e) {
+			let info = e.currentTarget.dataset.info || '';
+			let title = e.currentTarget.dataset.title || '课程信息';
+			this.setData({
+				showCourseInfoModal: true,
+				courseInfoTitle: title,
+				courseInfoContent: info
+			});
+		},
+
+		// 关闭课程信息弹窗
+		bindCloseCourseInfo: function () {
+			this.setData({
+				showCourseInfoModal: false,
+				courseInfoTitle: '',
+				courseInfoContent: ''
+			});
+		},
+
+		// 阻止弹窗内容区域点击关闭
+		preventClose: function () {
+			// 空函数，用于阻止事件冒泡
 		},
 	}
 })

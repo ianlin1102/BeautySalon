@@ -1,10 +1,40 @@
-/* 核销排行榜组件样式 - 领奖台版本 */
+/* 上课排行榜组件样式 - 霓虹蓝紫粉风格 */
 .rank-list-container {
-	background: #fff;
-	border-radius: 16rpx;
-	padding: 24rpx;
+	background: linear-gradient(160deg, rgba(20, 30, 80, 0.6) 0%, rgba(50, 20, 60, 0.6) 100%);
+	backdrop-filter: blur(15px);
+	-webkit-backdrop-filter: blur(15px);
+	border-radius: 40rpx;
+	padding: 40rpx;
 	margin: 20rpx 0;
-	box-shadow: 0 4rpx 12rpx rgba(0, 0, 0, 0.08);
+	border: 1px solid rgba(138, 43, 226, 0.3);
+	box-shadow: 0 16rpx 64rpx 0 rgba(0, 0, 0, 0.4), inset 0 0 40rpx rgba(138, 43, 226, 0.1);
+	position: relative;
+	overflow: hidden;
+}
+
+/* 氛围背景光斑 */
+.rank-list-container::before {
+	content: '';
+	position: absolute;
+	top: -100rpx;
+	left: -100rpx;
+	width: 300rpx;
+	height: 300rpx;
+	background: radial-gradient(circle, rgba(0, 242, 255, 0.2), transparent 70%);
+	z-index: 0;
+	pointer-events: none;
+}
+
+.rank-list-container::after {
+	content: '';
+	position: absolute;
+	bottom: -100rpx;
+	right: -100rpx;
+	width: 300rpx;
+	height: 300rpx;
+	background: radial-gradient(circle, rgba(255, 0, 222, 0.15), transparent 70%);
+	z-index: 0;
+	pointer-events: none;
 }
 
 /* 榜单标题和切换 */
@@ -12,59 +42,80 @@
 	display: flex;
 	justify-content: space-between;
 	align-items: center;
-	margin-bottom: 24rpx;
-	padding-bottom: 16rpx;
-	border-bottom: 1px solid #f0f0f0;
+	margin-bottom: 40rpx;
+	position: relative;
+	z-index: 1;
 }
 
 .rank-title {
-	font-size: 32rpx;
+	font-size: 36rpx;
 	font-weight: bold;
-	color: #333;
+	color: #fff;
+	display: flex;
+	align-items: center;
+	gap: 16rpx;
+	text-shadow: 0 0 20rpx rgba(0, 242, 255, 0.5);
+}
+
+.rank-title::before {
+	content: '';
+	display: block;
+	width: 8rpx;
+	height: 32rpx;
+	background: linear-gradient(to bottom, #00f2ff, #7d00ff);
+	border-radius: 4rpx;
+	box-shadow: 0 0 16rpx #00f2ff;
 }
 
 .rank-tabs {
 	display: flex;
-	background: #f5f5f5;
+	background: rgba(0, 0, 0, 0.4);
 	border-radius: 40rpx;
-	padding: 4rpx;
+	padding: 6rpx;
+	border: 1px solid rgba(255, 255, 255, 0.1);
 }
 
 .rank-tab {
 	padding: 8rpx 24rpx;
 	font-size: 24rpx;
-	color: #666;
-	border-radius: 40rpx;
+	color: rgba(255, 255, 255, 0.6);
+	border-radius: 32rpx;
 	transition: all 0.3s;
 }
 
 .rank-tab.active {
-	background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+	background: linear-gradient(90deg, #00c6ff, #b721ff);
 	color: #fff;
-	font-weight: bold;
+	font-weight: 600;
+	box-shadow: 0 4rpx 20rpx rgba(183, 33, 255, 0.4);
 }
 
 /* 领奖台容器 */
 .podium-container {
+	display: flex;
+	justify-content: center;
+	align-items: flex-end;
+	min-height: 360rpx;
+	gap: 24rpx;
 	position: relative;
-	padding: 40rpx 0 20rpx;
+	z-index: 1;
+	padding-bottom: 20rpx;
 }
 
 .podium {
 	display: flex;
 	justify-content: center;
 	align-items: flex-end;
-	gap: 20rpx;
-	min-height: 400rpx;
-	padding: 0 20rpx;
+	width: 100%;
+	gap: 24rpx;
 }
 
 /* 领奖台项目 */
 .podium-item {
-	flex: 1;
 	display: flex;
 	flex-direction: column;
 	align-items: center;
+	width: 30%;
 	position: relative;
 	animation: fadeInUp 0.6s ease-out;
 }
@@ -72,7 +123,7 @@
 @keyframes fadeInUp {
 	from {
 		opacity: 0;
-		transform: translateY(30rpx);
+		transform: translateY(60rpx);
 	}
 	to {
 		opacity: 1;
@@ -80,62 +131,33 @@
 	}
 }
 
-/* 皇冠 - 只有第一名有 */
-.podium-crown {
+/* 皇冠图标 - 第一名专属 */
+.crown-icon {
 	position: absolute;
-	top: -45rpx;
-	font-size: 48rpx;
-	animation: bounce 2s ease-in-out infinite;
+	top: -36rpx;
+	font-size: 32rpx;
+	filter: drop-shadow(0 0 10rpx rgba(255, 215, 0, 0.8));
+	animation: float-crown 3s ease-in-out infinite;
+	z-index: 3;
 }
 
-@keyframes bounce {
-	0%, 100% {
-		transform: translateY(0);
-	}
-	50% {
-		transform: translateY(-10rpx);
-	}
-}
-
-/* 排名徽章 */
-.podium-rank {
-	margin-bottom: 12rpx;
-}
-
-.medal-icon {
-	font-size: 48rpx;
-	display: inline-block;
-	animation: swing 3s ease-in-out infinite;
-}
-
-@keyframes swing {
-	0%, 100% {
-		transform: rotate(-5deg);
-	}
-	50% {
-		transform: rotate(5deg);
-	}
+@keyframes float-crown {
+	0%, 100% { transform: translateY(0); }
+	50% { transform: translateY(-6rpx); }
 }
 
 /* 头像 */
 .podium-avatar {
-	width: 100rpx;
-	height: 100rpx;
+	width: 88rpx;
+	height: 88rpx;
 	border-radius: 50%;
-	background: linear-gradient(135deg, #e0e0e0 0%, #bdbdbd 100%);
+	margin-bottom: -24rpx;
+	z-index: 2;
+	background: #333;
 	display: flex;
 	align-items: center;
 	justify-content: center;
-	margin-bottom: 12rpx;
-	box-shadow: 0 4rpx 12rpx rgba(0, 0, 0, 0.15);
-	border: 4rpx solid #fff;
-}
-
-.podium-avatar-1 {
-	width: 120rpx;
-	height: 120rpx;
-	background: linear-gradient(135deg, #FFD700 0%, #FFA500 100%);
-	box-shadow: 0 6rpx 16rpx rgba(255, 215, 0, 0.4);
+	transition: transform 0.3s;
 }
 
 .avatar-text {
@@ -144,95 +166,150 @@
 	color: #fff;
 }
 
-.podium-avatar-1 .avatar-text {
-	font-size: 40rpx;
+/* 领奖台条 - 动态高度 */
+.podium-bar {
+	width: 100%;
+	border-radius: 16rpx 16rpx 8rpx 8rpx;
+	display: flex;
+	justify-content: center;
+	align-items: flex-end;
+	padding-bottom: 16rpx;
+	font-weight: 800;
+	font-size: 48rpx;
+	position: relative;
+	color: #fff;
+	/* 玻璃质感条纹 */
+	background-image: repeating-linear-gradient(
+		45deg,
+		rgba(255, 255, 255, 0.05) 0px,
+		rgba(255, 255, 255, 0.05) 4rpx,
+		transparent 4rpx,
+		transparent 16rpx
+	);
+	transition: height 0.5s ease-out;
 }
 
-/* 用户名 */
+.bar-rank {
+	opacity: 0.4;
+}
+
+/* 底部信息 */
+.podium-info {
+	margin-top: 10rpx;
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	gap: 4rpx;
+}
+
 .podium-name {
-	font-size: 24rpx;
-	color: #333;
-	font-weight: 500;
-	margin-bottom: 8rpx;
-	max-width: 120rpx;
+	font-size: 20rpx;
+	color: rgba(255, 255, 255, 0.8);
+	text-align: center;
+	white-space: nowrap;
 	overflow: hidden;
 	text-overflow: ellipsis;
-	white-space: nowrap;
-}
-
-/* 核销次数 */
-.podium-count {
-	display: flex;
-	align-items: baseline;
-	gap: 4rpx;
-	margin-bottom: 16rpx;
-}
-
-.count-num {
-	font-size: 32rpx;
-	font-weight: bold;
-	color: #667eea;
-}
-
-.count-unit {
-	font-size: 20rpx;
-	color: #999;
-}
-
-/* 领奖台底座 */
-.podium-base {
 	width: 100%;
-	border-radius: 12rpx 12rpx 0 0;
-	display: flex;
-	align-items: center;
-	justify-content: center;
-	font-weight: bold;
+	max-width: 140rpx;
+}
+
+.podium-count {
+	font-size: 24rpx;
+	font-weight: 600;
 	color: #fff;
-	position: relative;
-	box-shadow: 0 -4rpx 12rpx rgba(0, 0, 0, 0.1);
 }
 
-.base-rank {
-	font-size: 48rpx;
-	opacity: 0.3;
-}
-
-/* 第一名（金牌）- 最高 */
-.podium-1 {
+/* === 第一名（冠军）: 粉紫霓虹 (Pink/Magenta) === */
+.rank-1 {
 	animation-delay: 0.2s;
 }
 
-.podium-base-1 {
-	height: 200rpx;
-	background: linear-gradient(135deg, #FFD700 0%, #FFA500 100%);
+.rank-1 .podium-avatar {
+	border: 4rpx solid #ff00de;
+	box-shadow: 0 0 30rpx rgba(255, 0, 222, 0.6);
+	width: 108rpx;
+	height: 108rpx;
 }
 
-/* 第二名（银牌）- 中等 */
-.podium-2 {
+.rank-1 .avatar-text {
+	font-size: 40rpx;
+}
+
+.rank-1 .podium-bar {
+	background-color: rgba(255, 0, 222, 0.2);
+	border: 1px solid rgba(255, 0, 222, 0.5);
+	border-bottom: none;
+	box-shadow: 0 0 40rpx rgba(255, 0, 222, 0.3), inset 0 0 40rpx rgba(255, 0, 222, 0.2);
+	text-shadow: 0 0 20rpx rgba(255, 0, 222, 0.8);
+}
+
+.rank-1 .podium-bar::before {
+	content: '';
+	position: absolute;
+	bottom: 0;
+	left: 10%;
+	width: 80%;
+	height: 4rpx;
+	background: #ff00de;
+	box-shadow: 0 0 20rpx #ff00de;
+}
+
+/* === 第二名（亚军）: 赛博青蓝 (Cyan/Blue) === */
+.rank-2 {
 	animation-delay: 0s;
 }
 
-.podium-base-2 {
-	height: 150rpx;
-	background: linear-gradient(135deg, #C0C0C0 0%, #A8A8A8 100%);
+.rank-2 .podium-avatar {
+	border: 4rpx solid #00f2ff;
+	box-shadow: 0 0 24rpx rgba(0, 242, 255, 0.5);
 }
 
-.podium-2 .podium-avatar {
-	background: linear-gradient(135deg, #C0C0C0 0%, #A8A8A8 100%);
+.rank-2 .podium-bar {
+	background-color: rgba(0, 242, 255, 0.15);
+	border: 1px solid rgba(0, 242, 255, 0.5);
+	border-bottom: none;
+	box-shadow: 0 0 30rpx rgba(0, 242, 255, 0.2), inset 0 0 30rpx rgba(0, 242, 255, 0.1);
+	text-shadow: 0 0 16rpx rgba(0, 242, 255, 0.8);
 }
 
-/* 第三名（铜牌）- 较低 */
-.podium-3 {
+.rank-2 .podium-bar::before {
+	content: '';
+	position: absolute;
+	bottom: 0;
+	left: 10%;
+	width: 80%;
+	height: 4rpx;
+	background: #00f2ff;
+	box-shadow: 0 0 20rpx #00f2ff;
+}
+
+/* === 第三名（季军）: 深邃电紫 (Deep Purple) === */
+.rank-3 {
 	animation-delay: 0.4s;
 }
 
-.podium-base-3 {
-	height: 120rpx;
-	background: linear-gradient(135deg, #CD7F32 0%, #B8792F 100%);
+.rank-3 .podium-avatar {
+	border: 4rpx solid #7d00ff;
+	box-shadow: 0 0 24rpx rgba(125, 0, 255, 0.5);
 }
 
-.podium-3 .podium-avatar {
-	background: linear-gradient(135deg, #CD7F32 0%, #B8792F 100%);
+.rank-3 .podium-bar {
+	background-color: rgba(125, 0, 255, 0.15);
+	border: 1px solid rgba(125, 0, 255, 0.5);
+	border-bottom: none;
+	box-shadow: 0 0 30rpx rgba(125, 0, 255, 0.2), inset 0 0 30rpx rgba(125, 0, 255, 0.1);
+	text-shadow: 0 0 16rpx rgba(125, 0, 255, 0.8);
+}
+
+.rank-3 .podium-bar::before {
+	content: '';
+	position: absolute;
+	bottom: 0;
+	left: 10%;
+	width: 80%;
+	height: 4rpx;
+	background: #7d00ff;
+	box-shadow: 0 0 20rpx #7d00ff;
 }
 
 /* 空状态 */

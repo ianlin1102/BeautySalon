@@ -6,12 +6,13 @@ Page({
 	behaviors: [behavior],
 
 	data: {
-		pointsInfo: null,  // 新增：积分信息
-		myStats: {  // 新增：统计数据
+		pointsInfo: null,  // 积分信息
+		myStats: {  // 统计数据
 			cardCount: 0,
 			courseCount: 0,
 			appointmentCount: 0
-		}
+		},
+		nextAppointment: null  // 最近一个预约
 	},
 
 	onReady: async function () {
@@ -40,8 +41,9 @@ Page({
 
 			await Promise.all(promises);
 
-			// 3. 加载统计数据(需要等待预约数据加载完成)
+			// 3. 加载统计数据和最近预约
 			await this.loadMyStats();
+			await this.loadNextAppointment();
 
 		} catch (err) {
 			// 静默失败
@@ -67,15 +69,58 @@ Page({
 
 			await Promise.all(promises);
 
-			// 3. 加载统计数据(需要等待预约数据加载完成)
+			// 3. 加载统计数据和最近预约
 			await this.loadMyStats();
+			await this.loadNextAppointment();
 
 		} catch (err) {
 			// 静默失败
 		}
 	},
 
-	// 新增：加载统计数据
+	// 加载最近一个预约
+	async loadNextAppointment() {
+		const cloudHelper = require('../../../../helper/cloud_helper.js');
+		const timeHelper = require('../../../../helper/time_helper.js');
+
+		try {
+			let params = {
+				search: '',
+				sortType: 'timeasc',  // 按时间正序
+				sortVal: '',
+				orderBy: {},
+				page: 1,
+				size: 20,
+				isTotal: false
+			};
+			let opts = { title: 'bar' };
+			let result = await cloudHelper.callCloudSumbit('my/my_join_list', params, opts);
+			let allJoins = result.data.list || [];
+
+			// 过滤有效预约（未过期且状态为成功）
+			let nowTimeStr = timeHelper.time('Y-M-D h:m');
+			let futureJoins = allJoins.filter(join => {
+				if (join.JOIN_STATUS !== 1) return false;
+				if (!join.JOIN_MEET_DAY || !join.JOIN_MEET_TIME_END) return false;
+				// 需要解析日期格式，JOIN_MEET_DAY 可能是 "12月3日 (周二)" 格式
+				// 这里我们使用原始数据，因为后端已格式化
+				return !join.isTimeout;
+			});
+
+			// 获取最近一个
+			let nextAppointment = futureJoins.length > 0 ? futureJoins[0] : null;
+
+			this.setData({
+				nextAppointment: nextAppointment
+			});
+		} catch (e) {
+			this.setData({
+				nextAppointment: null
+			});
+		}
+	},
+
+	// 加载统计数据
 	async loadMyStats() {
 		const cloudHelper = require('../../../../helper/cloud_helper.js');
 		const cacheHelper = require('../../../../helper/cache_helper.js');
@@ -182,7 +227,14 @@ Page({
 			this.setData({
 				pointsInfo: {
 					totalPoints: 0,
-					currentLevel: { name: '新手会员', color: '#95a5a6' },
+					currentLevel: {
+						name: '新手会员',
+						color: '#95a5a6',
+						gradientStart: '#bdc3c7',
+						gradientEnd: '#7f8c8d',
+						shadowColor: 'rgba(149, 165, 166, 0.4)',
+						maxPoints: 99
+					},
 					needPoints: 100,
 					progressPercent: 0,
 					recentHistory: []
@@ -210,6 +262,7 @@ Page({
 		await this._loadUser();
 		await this.getPointsInfo();
 		await this.loadMyStats();
+		await this.loadNextAppointment();
 
 		wx.stopPullDownRefresh();
 	},

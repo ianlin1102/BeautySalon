@@ -132,8 +132,10 @@ Component({
 				});
 
 				if (result && result.list) {
+					// 计算排行榜高度比例
+					const processedList = this.calculateBarHeights(result.list);
 					this.setData({
-						rankList: result.list
+						rankList: processedList
 					});
 				}
 			} catch (err) {
@@ -151,6 +153,46 @@ Component({
 		 */
 		refresh: function() {
 			this.loadRankData();
+		},
+
+		/**
+		 * 计算领奖台高度比例
+		 * 基于核销次数动态计算高度，确保视觉效果成比例
+		 */
+		calculateBarHeights: function(list) {
+			if (!list || list.length === 0) return list;
+
+			// 只处理前三名
+			const topThree = list.slice(0, 3);
+
+			// 找出最大核销次数
+			const maxCount = Math.max(...topThree.map(item => item.checkinCount || 0));
+
+			// 如果所有人都是0次，使用默认高度
+			if (maxCount === 0) {
+				return topThree.map((item, index) => ({
+					...item,
+					barHeight: index === 0 ? 160 : (index === 1 ? 120 : 90)
+				}));
+			}
+
+			// 定义高度范围
+			const MIN_HEIGHT = 60;   // 最小高度 (rpx)
+			const MAX_HEIGHT = 280;  // 最大高度 (rpx)
+
+			// 计算每个人的高度
+			const processedList = topThree.map((item) => {
+				const count = item.checkinCount || 0;
+				// 按比例计算高度：(次数 / 最大次数) * (最大高度 - 最小高度) + 最小高度
+				const barHeight = Math.round((count / maxCount) * (MAX_HEIGHT - MIN_HEIGHT) + MIN_HEIGHT);
+
+				return {
+					...item,
+					barHeight: barHeight
+				};
+			});
+
+			return processedList;
 		}
 	}
 });

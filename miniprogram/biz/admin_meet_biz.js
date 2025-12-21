@@ -421,6 +421,8 @@ class AdminMeetBiz extends BaseBiz {
 				desc: ''
 			},
 
+			formCourseInfo: '', // 课程信息
+
 			formDaysSet: [], // 时间设置
 
 
@@ -535,6 +537,7 @@ AdminMeetBiz.CHECK_FORM = {
 	instructorPic: 'formInstructorPic|string|name=导师头像',
 	instructorName: 'formInstructorName|must|string|name=导师姓名',
 	order: 'formOrder|must|int|min:1|max:9999|name=排序号',
+	courseInfo: 'formCourseInfo|string|max:500|name=课程信息',
 
 	daysSet: 'formDaysSet|must|array|name=预约时间设置',
 	isShowLimit: 'formIsShowLimit|must|int|in:0,1|name=是否显示可预约人数',

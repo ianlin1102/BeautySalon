@@ -129,6 +129,7 @@ class AdminCardBiz {
 			formPrice: 0,
 			formTimes: 0,
 			formAmount: 0,
+			formValidityDays: '', // 有效期，默认为空表示永久有效
 			formOrder: 9999,
 			formPaymentZelle: '',
 			formPaymentQr: '',
@@ -239,7 +240,11 @@ AdminCardBiz.CHECK_FORM = {
 	price: 'formPrice|must|float|min:0|name=售价',
 	times: 'formTimes|int|min:0|name=包含次数',
 	amount: 'formAmount|float|min:0|name=充值金额',
+	validityDays: 'formValidityDays|int|min:0|name=有效期',  // 添加有效期字段
 	order: 'formOrder|must|int|min:1|max:9999|name=排序号',
+	paymentZelle: 'formPaymentZelle|string|name=Zelle账号',  // 添加支付信息字段
+	paymentQr: 'formPaymentQr|string|name=支付二维码',
+	paymentInstructions: 'formPaymentInstructions|string|name=支付说明',
 };
 
 module.exports = AdminCardBiz;

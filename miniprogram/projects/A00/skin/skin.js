@@ -2,7 +2,7 @@ module.exports = {
 	PID: 'A00', //美业
 
 	NAV_COLOR: '#ffffff',
-	NAV_BG: '#333333',
+	NAV_BG: '#0d1528',
 
 	MEET_NAME: '预约',
 

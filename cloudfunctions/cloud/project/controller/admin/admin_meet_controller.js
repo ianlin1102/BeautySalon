@@ -257,6 +257,7 @@ class AdminMeetController extends BaseAdminController {
 			isShowLimit: 'must|int|in:0,1|name=是否显示可预约人数',
 			cancelSet: 'object|name=取消限制设置',
 			costSet: 'object|name=消费设置',
+			courseInfo: 'string|max:500|name=课程信息',
 
 			formSet: 'must|array|name=用户资料设置',
 		};
@@ -312,6 +313,7 @@ class AdminMeetController extends BaseAdminController {
 			isShowLimit: 'must|int|in:0,1|name=是否显示可预约人数',
 			cancelSet: 'object|name=取消限制设置',
 			costSet: 'object|name=消费设置',
+			courseInfo: 'string|max:500|name=课程信息',
 
 			formSet: 'must|array|name=用户资料设置',
 		};

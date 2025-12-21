@@ -70,15 +70,15 @@
 	"window": {
 		"backgroundColor": "#ffffff",
 		"backgroundTextStyle": "dark",
-		"navigationBarBackgroundColor": "#333333",
-		"navigationBarTitleText": "美容店预约小程序",
+		"navigationBarBackgroundColor": "#0d1528",
+		"navigationBarTitleText": "Dplus",
 		"navigationBarTextStyle": "white"
 	},
 	"tabBar": {
 		"custom": false,
-		"backgroundColor": "#ffffff",
+		"backgroundColor": "#000305",
 		"color": "#999999",
-		"selectedColor": "#333333",
+		"selectedColor": "#7878c1",
 		"list": [{
 				"pagePath": "projects/A00/default/index/default_index",
 				"text": "首页",

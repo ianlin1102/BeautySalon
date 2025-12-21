@@ -99,7 +99,14 @@ class PassportBiz extends BaseBiz {
 
 		const DEFAULT_POINTS = {
 			totalPoints: 0,
-			currentLevel: { name: '新手会员', color: '#95a5a6' },
+			currentLevel: {
+				name: '新手会员',
+				color: '#95a5a6',
+				gradientStart: '#bdc3c7',
+				gradientEnd: '#7f8c8d',
+				shadowColor: 'rgba(149, 165, 166, 0.4)',
+				maxPoints: 99
+			},
 			needPoints: 100,
 			progressPercent: 0,
 			recentHistory: []

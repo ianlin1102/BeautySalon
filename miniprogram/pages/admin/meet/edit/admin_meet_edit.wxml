@@ -47,6 +47,11 @@
 			</view>
 			<view wx:if="{{formOrderFocus}}" class="hint-desc error">{{formOrderFocus}}</view>
 
+			<view class="form-group form-group-col">
+				<view class="title" bindtap="url" data-type="hint" data-url="课程信息将显示在预约卡片上，点击可查看详情">课程信息<text class="icon-question margin-left-xxs text-normal"></text><text class="text-grey text-normal margin-left-xs">(选填)</text></view>
+				<textarea placeholder="输入课程相关信息，如内容、注意事项等" placeholder-class="phc" model:value="{{formCourseInfo}}" maxlength="500" auto-height class="course-info-textarea"></textarea>
+			</view>
+
 		</view>
 
 		<view id="formDaysSet" class="form-box shadow">

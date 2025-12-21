@@ -3,7 +3,7 @@
 		"cmpt-rank-list": "/cmpts/public/rank-list/rank_list_cmpt"
 	},
 	"enablePullDownRefresh": true,
-	"navigationBarTitleText": "首页",
-	"navigationBarBackgroundColor": "#ffffff",
-	"navigationBarTextStyle": "black"
+	"navigationBarTitleText": "Dplus Dance Club",
+	"navigationBarBackgroundColor": "#0d1528",
+  "navigationBarTextStyle": "white"
 }

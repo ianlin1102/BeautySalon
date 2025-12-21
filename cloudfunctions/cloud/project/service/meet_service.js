@@ -186,6 +186,10 @@ class MeetService extends BaseService {
 		data.JOIN_MEET_TIME_END = timeSet.end;
 		data.JOIN_MEET_TIME_MARK = timeMark;
 
+		// 冗余存储导师信息
+		data.JOIN_INSTRUCTOR_ID = meet.MEET_INSTRUCTOR_ID || '';
+		data.JOIN_INSTRUCTOR_NAME = meet.MEET_INSTRUCTOR_NAME || '';
+
 		data.JOIN_START_TIME = timeUtil.time2Timestamp(daySet.day + ' ' + timeSet.start + ':00');
 
 		data.JOIN_FORMS = forms;
@@ -689,7 +693,7 @@ class MeetService extends BaseService {
 			'MEET_ADD_TIME': 'desc'
 		};
 
-		let fields = 'MEET_TITLE,MEET_DAYS_SET,MEET_STYLE_SET,MEET_INSTRUCTOR_ID,MEET_INSTRUCTOR_NAME,MEET_INSTRUCTOR_PIC,MEET_TYPE_ID,MEET_TYPE_NAME';
+		let fields = 'MEET_TITLE,MEET_DAYS_SET,MEET_STYLE_SET,MEET_INSTRUCTOR_ID,MEET_INSTRUCTOR_NAME,MEET_INSTRUCTOR_PIC,MEET_TYPE_ID,MEET_TYPE_NAME,MEET_COURSE_INFO';
 
 		let list = await MeetModel.getAll(where, fields, orderBy);
 
@@ -717,6 +721,7 @@ class MeetService extends BaseService {
 			node.instructorId = list[k].MEET_INSTRUCTOR_ID || '';
 			node.instructorPic = list[k].MEET_INSTRUCTOR_PIC || '';
 			node.instructorName = list[k].MEET_INSTRUCTOR_NAME || '尚未决定';
+			node.courseInfo = list[k].MEET_COURSE_INFO || '';
 			node.pic = list[k].MEET_STYLE_SET.pic;
 			node._id = list[k]._id;
 			retList.push(node);
@@ -757,7 +762,7 @@ class MeetService extends BaseService {
 			'MEET_ADD_TIME': 'desc'
 		};
 
-		let fields = 'MEET_TITLE,MEET_DAYS_SET,MEET_STYLE_SET,MEET_INSTRUCTOR_ID,MEET_INSTRUCTOR_NAME,MEET_INSTRUCTOR_PIC,MEET_TYPE_ID,MEET_TYPE_NAME';
+		let fields = 'MEET_TITLE,MEET_DAYS_SET,MEET_STYLE_SET,MEET_INSTRUCTOR_ID,MEET_INSTRUCTOR_NAME,MEET_INSTRUCTOR_PIC,MEET_TYPE_ID,MEET_TYPE_NAME,MEET_COURSE_INFO';
 
 		let list = await MeetModel.getAll(where, fields, orderBy);
 
@@ -838,6 +843,7 @@ class MeetService extends BaseService {
 			node.instructorPic = list[k].MEET_INSTRUCTOR_PIC || '';
 			node.instructorId = list[k].MEET_INSTRUCTOR_ID || '';
 			node.instructorName = list[k].MEET_INSTRUCTOR_NAME || '尚未决定';
+			node.courseInfo = list[k].MEET_COURSE_INFO || '';
 			node.pic = list[k].MEET_STYLE_SET.pic;
 			node._id = list[k]._id;
 			node.daysWithData = weekDaysWithData;
@@ -1190,7 +1196,7 @@ class MeetService extends BaseService {
 			//	'JOIN_MEET_TIME_START': 'desc',
 			'JOIN_ADD_TIME': 'desc'
 		};
-		let fields = 'JOIN_IS_CHECKIN,JOIN_REASON,JOIN_MEET_ID,JOIN_MEET_TITLE,JOIN_MEET_DAY,JOIN_MEET_TIME_START,JOIN_MEET_TIME_END,JOIN_STATUS,JOIN_ADD_TIME';
+		let fields = 'JOIN_IS_CHECKIN,JOIN_REASON,JOIN_MEET_ID,JOIN_MEET_TITLE,JOIN_MEET_DAY,JOIN_MEET_TIME_START,JOIN_MEET_TIME_END,JOIN_INSTRUCTOR_ID,JOIN_INSTRUCTOR_NAME,JOIN_STATUS,JOIN_ADD_TIME';
 
 		let where = {
 			JOIN_USER_ID: userId
@@ -1249,7 +1255,7 @@ class MeetService extends BaseService {
 	/** 取得我的某日预约列表 */
 	async getMyJoinSomeday(userId, day) {
 
-		let fields = 'JOIN_IS_CHECKIN,JOIN_MEET_ID,JOIN_MEET_TITLE,JOIN_MEET_DAY,JOIN_MEET_TIME_START,JOIN_MEET_TIME_END,JOIN_STATUS,JOIN_ADD_TIME';
+		let fields = 'JOIN_IS_CHECKIN,JOIN_MEET_ID,JOIN_MEET_TITLE,JOIN_MEET_DAY,JOIN_MEET_TIME_START,JOIN_MEET_TIME_END,JOIN_INSTRUCTOR_ID,JOIN_INSTRUCTOR_NAME,JOIN_STATUS,JOIN_ADD_TIME';
 
 		let where = {
 			JOIN_USER_ID: userId,

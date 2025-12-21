@@ -190,6 +190,7 @@ Page({
 			formContent: meet.MEET_CONTENT,
 			formOrder: meet.MEET_ORDER,
 			formStyleSet: meet.MEET_STYLE_SET,
+			formCourseInfo: meet.MEET_COURSE_INFO || '',
 
 			formDaysSet: formDaysSet,
 

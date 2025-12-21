@@ -1,5 +1,4 @@
-@import "../../skin/skin.wxss"; 
+@import "../../skin/skin.wxss";
 @import "../../../../style/project/calendar_index_base.wxss";
-page {
-	background-color: #F6F7FF;
-}
+
+/* 页面背景已在 calendar_index_base.wxss 中定义为 #050511 */

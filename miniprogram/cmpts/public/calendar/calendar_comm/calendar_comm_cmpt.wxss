@@ -1,29 +1,31 @@
 @import "./din.wxss";
 
+/* ========== 月历组件 - Dark Neon Theme ========== */
+
 page {
-	/*#### 父组件日历颜色定义*/
-	/* 整体颜色 */
-	--calendarPageColor: #fff;
-	/* 加重颜色*/
-	--calendarMainColor: #1F6ED4;
-	/* 加重的亮颜色 用于选中日期的数据小圆点 */
-	--calendarLightColor: #A2C7FF;
+	/* 父组件日历颜色定义 */
+	--calendarPageColor: #050511;
+	--calendarMainColor: #6366f1;
+	--calendarLightColor: #a5b4fc;
+	--calendarTealColor: #2dd4bf;
 }
 
 .calendar-text {
-	color: var(--calendarMainColor) !important
+	color: var(--calendarMainColor) !important;
 }
 
 .calendar-bg {
-	background-color: var(--calendarMainColor) !important
+	background: linear-gradient(135deg, var(--calendarMainColor), var(--calendarTealColor)) !important;
 }
 
+/* ========== 日历容器 ========== */
 .cal-container {
 	width: 100%;
 	padding-bottom: 10rpx;
-	background-color: var(--calendarPageColor)
+	background-color: transparent;
 }
 
+/* ========== 导航栏 ========== */
 .cal-container .cal-nav {
 	position: relative;
 	width: 100%;
@@ -33,9 +35,10 @@ page {
 	justify-content: center;
 	align-items: center;
 	padding: 0 20rpx;
-	color: #666; 
+	color: #ffffff;
 	font-weight: bold;
-	background-color: #f8f8f8;
+	background: rgba(255, 255, 255, 0.03);
+	border-bottom: 1rpx solid rgba(255, 255, 255, 0.06);
 }
 
 .cal-container .cal-nav .select-item {
@@ -49,6 +52,12 @@ page {
 .cal-container .cal-nav .arrow {
 	width: 150rpx;
 	font-size: 40rpx;
+	color: rgba(255, 255, 255, 0.6);
+	transition: color 0.2s;
+}
+
+.cal-container .cal-nav .arrow:active {
+	color: var(--calendarMainColor);
 }
 
 .cal-container .cal-nav .fold {
@@ -57,18 +66,21 @@ page {
 	width: 100rpx;
 	font-size: 40rpx;
 	font-weight: bold;
+	color: rgba(255, 255, 255, 0.6);
 }
 
 .cal-container .cal-nav .to-now {
 	position: absolute;
 	left: 5rpx;
 	width: 100rpx;
-	font-size: 28rpx; 
+	font-size: 28rpx;
 	display: flex;
 	align-items: center;
 	justify-content: center;
+	color: var(--calendarTealColor);
 }
 
+/* ========== 星期标题 ========== */
 .cal-main {
 	width: 100%;
 	padding: 0rpx 0rpx;
@@ -77,8 +89,8 @@ page {
 .cal-title {
 	display: flex;
 	width: 100%;
-	border-bottom: 2rpx dashed #ccc;
-	background-color: #f8f8f8;
+	border-bottom: 1rpx solid rgba(255, 255, 255, 0.08);
+	background: rgba(255, 255, 255, 0.02);
 }
 
 .cal-title view {
@@ -87,20 +99,22 @@ page {
 	display: flex;
 	justify-content: center;
 	align-items: center;
-	color: #333;
-	font-size: 32rpx;
-	font-weight: bold;
+	color: rgba(255, 255, 255, 0.5);
+	font-size: 28rpx;
+	font-weight: 600;
 }
 
+/* ========== 日期网格 ========== */
 .cal-center {
 	display: flex;
 	flex-direction: row;
-	flex-wrap: wrap; 
+	flex-wrap: wrap;
 	overflow: hidden;
 	justify-content: center;
 	align-items: center;
+	padding: 10rpx 0;
 }
- 
+
 .cal-center .cube {
 	width: 14.28%;
 	display: flex;
@@ -118,9 +132,10 @@ page {
 	display: flex;
 	justify-content: center;
 	align-items: center;
-	color: #333;
+	color: #ffffff;
 	margin-bottom: 2rpx;
-	border-radius: 10rpx;
+	border-radius: 14rpx;
+	transition: all 0.2s;
 }
 
 .cal-center .cube.lunar .num-grid {
@@ -128,17 +143,19 @@ page {
 	height: 90rpx;
 }
 
+/* ========== 今天样式 ========== */
 .cal-center .num-grid.now-day-cur {
-	background-color: #fadbd9;
-	color: orangered;
+	background: linear-gradient(135deg, rgba(99, 102, 241, 0.2), rgba(45, 212, 191, 0.15));
+	border: 1rpx solid rgba(99, 102, 241, 0.4);
+	color: #ffffff;
 	font-weight: bold;
 }
 
 .cal-center .num-grid.now-day-cur.calendar-bg {
-	color: #fbbd08 !important;
+	color: #ffffff !important;
 }
 
-
+/* ========== 日期数字 ========== */
 .cal-center .num {
 	width: 100%;
 	display: flex;
@@ -152,21 +169,21 @@ page {
 .cal-center .num .lunar {
 	font-size: 20rpx;
 	font-weight: normal;
-	color: #aaa;
+	color: rgba(255, 255, 255, 0.4);
 }
 
+/* 非本月日期 */
 .cal-center .text-no-month {
-	color: #333;
-	opacity: .5;
-}
-
-.cal-center .calendar-bg .text-no-month {
-	color: #ccc;
+	color: rgba(255, 255, 255, 0.25);
 	opacity: 1;
 }
 
+.cal-center .calendar-bg .text-no-month {
+	color: rgba(255, 255, 255, 0.6);
+	opacity: 1;
+}
 
-/* 当日有数据 */
+/* ========== 当日有数据标记 ========== */
 .data-has {
 	position: relative;
 	border-radius: 50%;
@@ -178,20 +195,21 @@ page {
 .data-has::before {
 	position: absolute;
 	content: '';
-	width: 12rpx;
-	height: 12rpx;
+	width: 10rpx;
+	height: 10rpx;
 	border-radius: 50%;
-	background-color: var(--calendarMainColor);
-	right: -16rpx;
+	background: linear-gradient(135deg, #f43f5e, #fb7185);
+	right: -14rpx;
 	top: 14rpx;
+	box-shadow: 0 0 6rpx rgba(244, 63, 94, 0.6);
 }
 
 .calendar-bg .data-has::before {
-	background-color: var(--calendarLightColor);
+	background: #ffffff;
+	box-shadow: 0 0 6rpx rgba(255, 255, 255, 0.8);
 }
 
-
-/* 选中某日 */
+/* ========== 选中日期样式 ========== */
 .cube .data-checked {
 	position: relative;
 	display: flex;
@@ -212,4 +230,28 @@ page {
 
 .cube.lunar .data-checked::before {
 	bottom: 38rpx;
+}
+
+/* ========== 选中状态 - Neon Gradient ========== */
+.cal-center .num-grid.calendar-bg {
+	background: linear-gradient(135deg, #6366f1, #2dd4bf) !important;
+	border: none;
+	box-shadow:
+		0 0 16rpx rgba(99, 102, 241, 0.5),
+		0 0 32rpx rgba(45, 212, 191, 0.3),
+		inset 0 1rpx 0 rgba(255, 255, 255, 0.3);
+	color: #ffffff;
+	font-weight: 700;
+	text-shadow: 0 1rpx 2rpx rgba(0, 0, 0, 0.2);
+}
+
+/* ========== 日期项 hover 效果 ========== */
+.cal-center .cube:active .num-grid {
+	background: rgba(255, 255, 255, 0.08);
+	transform: scale(0.95);
+}
+
+.cal-center .cube:active .num-grid.calendar-bg {
+	transform: scale(0.95);
+	filter: brightness(1.1);
 }

@@ -1,20 +1,8 @@
 <view class="container">
-	<view class="header">
-		<view class="title">
-			<text wx:if="{{currentTab === 0}}">卡项商城</text>
-			<text wx:if="{{currentTab === 1}}">次卡商城</text>
-			<text wx:if="{{currentTab === 2}}">储值卡商城</text>
-		</view>
-		<view class="total">
-			<text wx:if="{{currentTab === 0}}">共 {{totalCount}} 个</text>
-			<text wx:if="{{currentTab === 1}}">共 {{timesCardCount}} 个</text>
-			<text wx:if="{{currentTab === 2}}">共 {{balanceCardCount}} 个</text>
-		</view>
-	</view>
-
-	<!-- 分类标签 -->
+	<!-- 分类标签 - Sticky Filter -->
 	<view class="category-tabs">
-		<scroll-view class="tabs-scroll" scroll-x="true" scroll-with-animation="true">
+		<view class="switcher-container">
+			<view class="switcher-indicator" style="transform: translateX({{currentTab * 100}}%)"></view>
 			<view class="tab-item {{currentTab === 0 ? 'active' : ''}}" bindtap="switchTab" data-tab="0">
 				<text class="tab-text">全部</text>
 			</view>
@@ -24,31 +12,33 @@
 			<view class="tab-item {{currentTab === 2 ? 'active' : ''}}" bindtap="switchTab" data-tab="2">
 				<text class="tab-text">储值卡</text>
 			</view>
-		</scroll-view>
+		</view>
 	</view>
 
-	<!-- 卡项列表 -->
+	<!-- 卡项列表 - Grid Layout -->
 	<view class="card-list">
-		<view class="card-item" wx:for="{{displayCards}}" wx:key="_id" bindtap="viewCard" data-id="{{item._id}}" style="background: {{item.bgColor}};">
-			<view class="card-content">
-				<view class="card-header">
-					<text class="card-name">{{item.title}}</text>
-					<view class="card-type">
-						<text wx:if="{{item.cardType === 1}}">次数卡</text>
-						<text wx:else>余额卡</text>
-					</view>
+		<view class="card-item {{item.cardType === 1 ? 'card-times' : 'card-balance'}}" wx:for="{{displayCards}}" wx:key="_id" bindtap="viewCard" data-id="{{item._id}}">
+			<view class="card-glass">
+				<!-- 左上角：有效期标签 -->
+				<view class="card-validity">
+					<text wx:if="{{item.validDays}}">{{item.validDays}}天</text>
+					<text wx:else>无期限</text>
 				</view>
 
-				<view class="card-desc">{{item.desc}}</view>
+				<!-- 卡片标题和描述 -->
+				<view class="card-info">
+					<text class="card-title">{{item.title}}</text>
+					<text class="card-subtitle">{{item.desc}}</text>
+				</view>
 
-				<view class="card-footer">
-					<view class="card-value">
-						<text wx:if="{{item.cardType === 1}}" class="value-text">{{item.times}} 次</text>
-						<text wx:else class="value-text">${{item.amount}}</text>
+				<!-- 底部：价格和按钮 -->
+				<view class="card-bottom">
+					<view class="price-section">
+						<text class="price-symbol">¥</text>
+						<text class="price-amount">{{item.price}}</text>
 					</view>
-					<view class="card-price">
-						<text class="price-label">售价</text>
-						<text class="price-value">${{item.price}}</text>
+					<view class="btn-purchase {{item.cardType === 1 ? 'btn-cyan' : 'btn-purple'}}">
+						立即购买
 					</view>
 				</view>
 			</view>
@@ -64,10 +54,5 @@
 	<!-- 加载状态 -->
 	<view wx:if="{{loading}}" class="loading-state">
 		<text>加载中...</text>
-	</view>
-
-	<!-- 返回按钮 -->
-	<view class="footer-nav">
-		<button class="btn-back" bindtap="goBack">← 返回</button>
 	</view>
 </view>

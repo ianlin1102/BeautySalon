@@ -14,31 +14,37 @@
 		return false;
 	};
 
+	// 截断文本，超过指定长度显示省略号
+	var truncateText = function(text, maxLen) {
+		if (!text) return '';
+		maxLen = maxLen || 15;
+		if (text.length <= maxLen) return text;
+		return text.substring(0, maxLen) + '...';
+	};
+
 	module.exports = {
-		isDateInRange: isDateInRange
+		isDateInRange: isDateInRange,
+		truncateText: truncateText
 	};
 </wxs>
 
 <template name="calendarIndexTpl">
+	<!-- 周滑条始终显示在顶部 -->
+	<view class="plan-date">
+		<cmpt-calendar-scroll hasDays="{{hasDays}}" bind:click="bindClickCmpt" mode="week" />
+	</view>
+
+	<!-- 加载状态显示在日历下方 -->
 	<view wx:if="{{isLoad===null}}" class="margin-top load notexist text-l load-project"></view>
 	<view wx:if="{{isLoad===false}}" class="margin-top load loading text-l load-project"></view>
 
 	<view class="main {{skin && skin.IS_SUB?'sub-margin-bottom':''}}" wx:if="{{isLoad}}">
-		<view class="plan-date">
-			<!-- 横向滚动日历（未来4个月） - 改为按周显示 -->
-			<cmpt-calendar-scroll hasDays="{{hasDays}}" bind:click="bindClickCmpt" mode="week" />
-
-			<!-- 其他备选方案 -->
-			<!-- <cmpt-calendar-week hasDays="{{hasDays}}" bind:click="bindClickCmpt" /> -->
-			<!-- <cmpt-calendar mode="one" hasDays="{{hasDays}}" bind:click="bindClickCmpt" bind:monthChange="bindMonthChangeCmpt" /> -->
-		</view>
-
 		<view class="list padding-project">
 			<view wx:if="{{list===null}}" class="load loading text-l text-grey"></view>
 			<text wx:elif="{{list.length==0}}" class="no-project icon-emoji text-l text-grey"> 本日没有可预约的项目哦~</text>
 
-			<!-- 新的卡片样式 - 左中右三个区域 -->
-			<view class="meet-card-horizontal" wx:for="{{list}}" wx:key="_id" bindtap="url" data-url="../../meet/detail/meet_detail?id={{item.meetId}}&day={{item.day}}&timeStart={{item.timeStart}}&timeEnd={{item.timeEnd}}">
+			<!-- 新的卡片样式 - 左中右三个区域 + 侧边指示条 -->
+			<view class="meet-card-horizontal category-{{item.typeId}}" wx:for="{{list}}" wx:key="_id" bindtap="url" data-url="../../meet/detail/meet_detail?id={{item.meetId}}&day={{item.day}}&timeStart={{item.timeStart}}&timeEnd={{item.timeEnd}}">
 
 				<!-- 左侧区域：日期 + 头像 -->
 				<view class="card-left-section">
@@ -73,6 +79,11 @@
 						<text class="instructor-name">{{item.instructorName}}</text>
 					</view>
 
+					<!-- 课程信息 - 直接显示文字，点击查看完整内容 -->
+					<view class="course-info-text-row" wx:if="{{item.courseInfo}}" catchtap="bindShowCourseInfo" data-info="{{item.courseInfo}}" data-title="{{item.title || item.typeName}}">
+						<text class="course-info-preview">{{dateHelper.truncateText(item.courseInfo, 18)}}</text>
+					</view>
+
 					<!-- 预约人数 -->
 					<view class="booking-info">
 						<text class="booking-count">已约{{item.bookedCount}}/{{item.maxCount}}人</text>
@@ -90,6 +101,21 @@
 				</view>
 			</view>
 
+		</view>
+	</view>
+
+	<!-- 课程信息弹窗 -->
+	<view class="course-info-modal" wx:if="{{showCourseInfoModal}}" bindtap="bindCloseCourseInfo">
+		<view class="modal-content" catchtap="preventClose">
+			<view class="modal-header">
+				<text class="modal-title">{{courseInfoTitle || '课程信息'}}</text>
+				<view class="modal-close" bindtap="bindCloseCourseInfo">
+					<text class="icon-close"></text>
+				</view>
+			</view>
+			<scroll-view class="modal-body" scroll-y>
+				<text class="course-info-text">{{courseInfoContent}}</text>
+			</scroll-view>
 		</view>
 	</view>
 

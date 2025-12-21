@@ -127,3 +127,27 @@ cmpt-picker-multi {
 	font-size: 32rpx;
 	color: #333;
 }
+
+/* 垂直布局的表单组 */
+.form-group-col {
+	flex-direction: column;
+	align-items: flex-start;
+}
+
+.form-group-col .title {
+	margin-bottom: 16rpx;
+}
+
+/* 课程信息文本框 */
+.course-info-textarea {
+	width: 100%;
+	min-height: 120rpx;
+	max-height: 400rpx;
+	padding: 16rpx;
+	font-size: 28rpx;
+	line-height: 1.6;
+	border: 1px solid #e0e0e0;
+	border-radius: 8rpx;
+	background-color: #fafafa;
+	box-sizing: border-box;
+}

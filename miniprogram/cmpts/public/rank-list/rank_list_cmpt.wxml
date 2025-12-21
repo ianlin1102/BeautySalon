@@ -1,8 +1,8 @@
-<!-- 核销排行榜组件 - 领奖台样式 -->
+<!-- 上课排行榜组件 - 霓虹风格领奖台 -->
 <view class="rank-list-container">
 	<!-- 榜单标题和切换 -->
 	<view class="rank-header">
-		<view class="rank-title">核销排行榜</view>
+		<view class="rank-title">上课排行榜</view>
 		<view class="rank-tabs">
 			<view class="rank-tab {{currentType === 'all' ? 'active' : ''}}" bindtap="switchType" data-type="all">
 				总榜
@@ -13,61 +13,49 @@
 		</view>
 	</view>
 
-	<!-- 领奖台 - 只显示前三名 -->
+	<!-- 领奖台 - 霓虹风格，高度按比例 -->
 	<view class="podium-container" wx:if="{{rankList && rankList.length > 0}}">
 		<view class="podium">
-			<!-- 第二名（左侧，银牌） -->
-			<view class="podium-item podium-2" wx:if="{{rankList[1]}}">
-				<!-- <view class="podium-rank">
-					<text class="medal-icon">🥈</text>
-				</view> -->
+			<!-- 第二名（左侧，青蓝色） -->
+			<view class="podium-item rank-2" wx:if="{{rankList[1]}}">
 				<view class="podium-avatar">
 					<text class="avatar-text">{{rankList[1].userName.substring(0, 2)}}</text>
 				</view>
-				<view class="podium-name">{{rankList[1].userName}}</view>
-				<view class="podium-count">
-					<text class="count-num">{{rankList[1].checkinCount}}</text>
-					<text class="count-unit">次</text>
+				<view class="podium-bar" style="height: {{rankList[1].barHeight}}rpx;">
+					<text class="bar-rank">2</text>
 				</view>
-				<view class="podium-base podium-base-2">
-					<text class="base-rank">2</text>
+				<view class="podium-info">
+					<view class="podium-name">{{rankList[1].userName}}</view>
+					<view class="podium-count">{{rankList[1].checkinCount}}次</view>
 				</view>
 			</view>
 
-			<!-- 第一名（中间，金牌） -->
-			<view class="podium-item podium-1" wx:if="{{rankList[0]}}">
-				<view class="podium-crown">👑</view>
-				<!-- <view class="podium-rank">
-					<text class="medal-icon">🥇</text>
-				</view> -->
-				<view class="podium-avatar podium-avatar-1">
+			<!-- 第一名（中间，粉紫色） -->
+			<view class="podium-item rank-1" wx:if="{{rankList[0]}}">
+				<view class="crown-icon">👑</view>
+				<view class="podium-avatar">
 					<text class="avatar-text">{{rankList[0].userName.substring(0, 2)}}</text>
 				</view>
-				<view class="podium-name">{{rankList[0].userName}}</view>
-				<view class="podium-count">
-					<text class="count-num">{{rankList[0].checkinCount}}</text>
-					<text class="count-unit">次</text>
+				<view class="podium-bar" style="height: {{rankList[0].barHeight}}rpx;">
+					<text class="bar-rank">1</text>
 				</view>
-				<view class="podium-base podium-base-1">
-					<text class="base-rank">1</text>
+				<view class="podium-info">
+					<view class="podium-name">{{rankList[0].userName}}</view>
+					<view class="podium-count">{{rankList[0].checkinCount}}次</view>
 				</view>
 			</view>
 
-			<!-- 第三名（右侧，铜牌） -->
-			<view class="podium-item podium-3" wx:if="{{rankList[2]}}">
-				<!-- <view class="podium-rank">
-					<text class="medal-icon">🥉</text>
-				</view> -->
+			<!-- 第三名（右侧，电紫色） -->
+			<view class="podium-item rank-3" wx:if="{{rankList[2]}}">
 				<view class="podium-avatar">
 					<text class="avatar-text">{{rankList[2].userName.substring(0, 2)}}</text>
 				</view>
-				<view class="podium-name">{{rankList[2].userName}}</view>
-				<view class="podium-count">
-					<text class="count-num">{{rankList[2].checkinCount}}</text>
-					<text class="count-unit">次</text>
+				<view class="podium-bar" style="height: {{rankList[2].barHeight}}rpx;">
+					<text class="bar-rank">3</text>
 				</view>
-				<view class="podium-base podium-base-3">
-					<text class="base-rank">3</text>
+				<view class="podium-info">
+					<view class="podium-name">{{rankList[2].userName}}</view>
+					<view class="podium-count">{{rankList[2].checkinCount}}次</view>
 				</view>
 			</view>
 		</view>

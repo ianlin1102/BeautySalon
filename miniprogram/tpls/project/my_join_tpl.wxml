@@ -9,25 +9,46 @@
 			<!-- List Begin -->
 			<view class="text-pic-list-box padding-project">
 
-				<view class="item card-project shadow-project" wx:for="{{dataList.list}}" wx:key="index">
+				<view class="item card-project shadow-project {{item.isTimeout ? 'is-timeout' : ''}} {{item.JOIN_STATUS==10 || item.JOIN_STATUS==99 ? 'is-cancelled' : ''}}" wx:for="{{dataList.list}}" wx:key="index">
+					<!-- 状态标签 -->
 					<view wx:if="{{item.isTimeout}}" class="status">已结束</view>
 					<view bindtap="url" data-url="../join_detail/my_join_detail?id={{item._id}}" wx:elif="{{item.JOIN_STATUS==1}}" class="qr"><text class="icon-qrcode"></text></view>
+
+					<!-- 课程标题 -->
 					<view class="title content-cut-two" bindtap="url" data-url="../join_detail/my_join_detail?id={{item._id}}">{{item.JOIN_MEET_TITLE}}</view>
+
+					<!-- 时间信息 -->
 					<view class="author" bindtap="url" data-url="../join_detail/my_join_detail?id={{item._id}}">
-						<text class="icon-time margin-right-xs text-s"></text><text class="text-cut">{{item.JOIN_MEET_DAY}} {{item.JOIN_MEET_TIME_START}}～{{item.JOIN_MEET_TIME_END}}</text>
+						<text class="icon-time margin-right-xs text-s"></text>
+						<text class="text-cut">{{item.JOIN_MEET_DAY}} {{item.JOIN_MEET_TIME_START}}～{{item.JOIN_MEET_TIME_END}}</text>
 					</view>
 
+					<!-- 导师信息 -->
+					<view wx:if="{{item.JOIN_INSTRUCTOR_NAME}}" class="instructor-row" bindtap="url" data-url="../join_detail/my_join_detail?id={{item._id}}">
+						<text class="icon-my margin-right-xs text-s"></text>
+						<text class="text-cut">{{item.JOIN_INSTRUCTOR_NAME}} 老师</text>
+					</view>
+
+					<!-- 预约状态 -->
 					<view class="data" bindtap="url" data-url="../join_detail/my_join_detail?id={{item._id}}">
-						<text wx:if="{{item.JOIN_STATUS==1}}" class="text-green"><text class="icon-newshot margin-right-xxs"></text>预约成功{{item.JOIN_IS_CHECKIN==1?'，已签到':''}}</text>
- 
-						<text wx:elif="{{item.JOIN_STATUS==10}}" class="text-grey"><text class="icon-bad margin-right-xxs"></text>已取消</text>
+						<text wx:if="{{item.JOIN_STATUS==1}}" class="text-green">
+							<text class="icon-newshot margin-right-xxs"></text>预约成功
+							<text wx:if="{{item.JOIN_IS_CHECKIN==1}}" class="checkin-badge">已签到</text>
+						</text>
+
+						<text wx:elif="{{item.JOIN_STATUS==10}}" class="text-grey">
+							<text class="icon-bad margin-right-xxs"></text>已取消
+						</text>
 
 						<block wx:elif="{{item.JOIN_STATUS==99}}">
-							<text class="text-orange"><text class="icon-bad margin-right-xxs"></text>系统取消<text class="text-grey" wx:if="{{item.JOIN_REASON}}">：{{item.JOIN_REASON}}</text></text>
+							<text class="text-orange">
+								<text class="icon-bad margin-right-xxs"></text>系统取消
+								<text class="text-grey" wx:if="{{item.JOIN_REASON}}">：{{item.JOIN_REASON}}</text>
+							</text>
 						</block>
-
 					</view>
 
+					<!-- 操作按钮 -->
 					<view class="data data-button">
 						<button bindtap="url" data-url="../join_detail/my_join_detail?id={{item._id}}" class="btn mid bg-gray text-black">查看详情</button>
 						<button wx:if="{{(item.JOIN_STATUS==1||item.JOIN_STATUS==0) && item.JOIN_IS_CHECKIN==0 && item.canCancel}}" bindtap="bindCancelTap" data-id="{{item._id}}" class="btn mid bg-grey light"><text class="icon-close"></text>取消</button>
@@ -42,7 +63,7 @@
 
 			</view>
 			<!-- List END -->
- 
+
 		</cmpt-comm-list>
 
 		<!--  button Begin -->

@@ -204,6 +204,19 @@ Component({
 					console.log(`周 ${range} 有数据，匹配的天:`, matchedDays);
 				}
 
+				// 计算这是第几周（从本周开始计数）
+				const weekIndex = weeks.length;
+				let weekLabel = '';
+				if (weekIndex === 0) {
+					weekLabel = '本周';
+				} else if (weekIndex === 1) {
+					weekLabel = '下周';
+				} else if (weekIndex === 2) {
+					weekLabel = '下下周';
+				} else {
+					weekLabel = ''; // 第4周及以后不显示标签
+				}
+
 				weeks.push({
 					range: range,
 					startDate: startFormatted,
@@ -215,6 +228,8 @@ Component({
 					isCrossMonth: isCrossMonth,
 					isCurrentWeek: isCurrentWeek,
 					hasData: hasData,
+					weekIndex: weekIndex,
+					weekLabel: weekLabel,
 					// 周的显示格式: "1/6 - 1/12" 或 "1/30 - 2/5" (跨月)
 					displayText: `${startMonth}/${startDay} - ${endMonth}/${endDay}`
 				});

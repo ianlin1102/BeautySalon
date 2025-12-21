@@ -36,6 +36,8 @@ MeetModel.DB_STRUCTURE = {
 	MEET_INSTRUCTOR_NAME: 'string|true|comment=导师姓名(冗余)',
 	MEET_INSTRUCTOR_PIC: 'string|false|comment=导师头像(冗余)',
 
+	MEET_COURSE_INFO: 'string|false|comment=课程信息',
+
 	MEET_IS_SHOW_LIMIT: 'int|true|default=1|comment=是否显示可预约人数',
 
 	MEET_STYLE_SET: 'object|true|default={}|comment=样式设置',
