@@ -25,6 +25,20 @@ class AdminController extends BaseController {
 	async isAdmin() {
 		// 判断是否管理员
 		let service = new BaseAdminService();
+
+		// HTTP 请求使用 JWT 认证，直接从 event._httpAdmin 获取管理员信息
+		if (this._event._isHttpRequest && this._event._httpAdmin) {
+			this._admin = {
+				ADMIN_ID: this._event._httpAdmin.adminId,
+				ADMIN_NAME: this._event._httpAdmin.adminName,
+				ADMIN_TYPE: this._event._httpAdmin.adminType,
+				ADMIN_STATUS: 1
+			};
+			this._adminId = this._admin.ADMIN_ID;
+			return;
+		}
+
+		// 小程序请求使用 token 验证
 		let admin = await service.isAdmin(this._token);
 		this._admin = admin;
 		this._adminId = admin.ADMIN_ID;
@@ -34,6 +48,24 @@ class AdminController extends BaseController {
 	async isSuperAdmin() {
 		// 判断是否管理员
 		let service = new BaseAdminService();
+
+		// HTTP 请求使用 JWT 认证，直接从 event._httpAdmin 获取管理员信息
+		if (this._event._isHttpRequest && this._event._httpAdmin) {
+			// 检查是否为超级管理员（type === 1）
+			if (this._event._httpAdmin.adminType !== 1) {
+				this.AppError('仅超级管理员可操作');
+			}
+			this._admin = {
+				ADMIN_ID: this._event._httpAdmin.adminId,
+				ADMIN_NAME: this._event._httpAdmin.adminName,
+				ADMIN_TYPE: this._event._httpAdmin.adminType,
+				ADMIN_STATUS: 1
+			};
+			this._adminId = this._admin.ADMIN_ID;
+			return;
+		}
+
+		// 小程序请求使用 token 验证
 		let admin = await service.isSuperAdmin(this._token);
 		this._admin = admin;
 		this._adminId = admin.ADMIN_ID;

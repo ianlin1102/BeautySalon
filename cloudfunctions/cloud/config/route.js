@@ -10,6 +10,7 @@ module.exports = {
 	'passport/phone': 'passport_controller@getPhone',
 	'passport/my_detail': 'passport_controller@getMyDetail',
 	'passport/edit_base': 'passport_controller@editBase',
+	'passport/register': 'passport_controller@register',  // 用户注册
 
 	'news/list': 'news_controller@getNewsList',
 	'news/home_list': 'news_controller@getHomeNewsList',
@@ -36,6 +37,11 @@ module.exports = {
 	'checkin/rank_list': 'checkin_controller@getRankList',            // 获取核销排行榜
 	'checkin/clear_cache': 'checkin_controller@clearRankCache',       // 清除排行榜缓存
 
+	// 调试路由
+	'debug/check_checkin': 'debug_controller@checkCheckinData',       // 检查签到数据
+	'debug/check_user': 'debug_controller@checkUserData',             // 检查用户数据
+	'debug/test_groupcount': 'debug_controller@testGroupCount',       // 测试 groupCount
+
 	// 积分系统路由
 	'points/test': 'points_controller@test',                         // 测试积分系统
 	'points/init': 'points_controller@initPointsSystem',             // 初始化积分系统
@@ -45,6 +51,7 @@ module.exports = {
 
 	'test/test': 'test/test_controller@test',
 	'test/meet_test_join': 'test/test_meet_controller@testJoin',
+	'test/create_user': 'test/test_controller@createTestUser',  // 创建测试用户（临时）
 
 	//***########### ADMIN ################## */  
 	'admin/login': 'admin/admin_home_controller@adminLogin',

@@ -58,6 +58,26 @@ class PassportController extends BaseController {
 		return await service.editBase(this._userId, input);
 	}
 
+	/** 用户注册 */
+	async register() {
+		// 数据校验
+		let rules = {
+			account: 'must|string|min:3|max:30|name=账号',
+			password: 'must|string|min:3|max:30|name=密码',
+			name: 'string|min:1|max:20|name=姓名',
+			mobile: 'mobile|name=手机号',
+		};
+
+		// 取得数据
+		let input = this.validateData(rules);
+
+		// 内容审核
+		await contentCheck.checkTextMultiClient(input);
+
+		let service = new PassportService();
+		return await service.register(input);
+	}
+
 }
 
 module.exports = PassportController;

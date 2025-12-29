@@ -24,26 +24,45 @@ class CheckinService extends BaseService {
 	 * @returns {object} 排行榜数据
 	 */
 	async getRankList(type = 'all', limit = 10) {
-		// 1. 检查缓存
-		const cacheKey = type === 'all' ? 'CHECKIN_RANK_ALL' : 'CHECKIN_RANK_MONTH';
-		const cacheTime = type === 'all' ? 60 * 60 * 24 : 60 * 60; // 总榜24小时，月榜1小时
+		try {
+			console.log('【排行榜】getRankList 被调用, type:', type, 'limit:', limit);
 
-		if (config.IS_CACHE) {
-			let cachedData = await cacheUtil.get(cacheKey, null);
-			if (cachedData) {
-				return cachedData;
+			// 1. 检查缓存
+			const cacheKey = type === 'all' ? 'CHECKIN_RANK_ALL' : 'CHECKIN_RANK_MONTH';
+			const cacheTime = type === 'all' ? 60 * 60 * 24 : 60 * 60; // 总榜24小时，月榜1小时
+
+			if (config.IS_CACHE) {
+				let cachedData = await cacheUtil.get(cacheKey, null);
+				if (cachedData) {
+					console.log('【排行榜】返回缓存数据');
+					return cachedData;
+				}
 			}
+
+			console.log('【排行榜】缓存未命中，开始计算');
+
+			// 2. 从数据库统计
+			let rankData = await this._calculateRank(type, limit);
+
+			console.log('【排行榜】计算完成，结果数量:', rankData.list ? rankData.list.length : 0);
+
+			// 3. 保存到缓存
+			if (config.IS_CACHE) {
+				await cacheUtil.set(cacheKey, rankData, cacheTime);
+			}
+
+			return rankData;
+		} catch (error) {
+			console.error('【排行榜】getRankList 异常:', error.message);
+			console.error('【排行榜】错误堆栈:', error.stack);
+			// 返回空数据而不是抛出异常
+			return {
+				type: type,
+				updateTime: require('../../framework/utils/time_util.js').time(),
+				list: [],
+				total: 0
+			};
 		}
-
-		// 2. 从数据库统计
-		let rankData = await this._calculateRank(type, limit);
-
-		// 3. 保存到缓存
-		if (config.IS_CACHE) {
-			await cacheUtil.set(cacheKey, rankData, cacheTime);
-		}
-
-		return rankData;
 	}
 
 	/**
@@ -52,25 +71,44 @@ class CheckinService extends BaseService {
 	 * @param {number} limit
 	 */
 	async _calculateRank(type, limit) {
-		// 1. 构建查询条件
-		let where = {
-			JOIN_IS_CHECKIN: 1,      // 已签到
-			JOIN_STATUS: JoinModel.STATUS.SUCC  // 预约成功状态
-		};
+		try {
+			console.log('【排行榜】开始计算排行榜, type:', type, 'limit:', limit);
 
-		// 2. 月榜添加时间过滤（最近30天）
-		if (type === 'month') {
-			const thirtyDaysAgo = timeUtil.time('Y-M-D h:m:s', timeUtil.time() - 30 * 24 * 60 * 60 * 1000);
-			where.JOIN_ADD_TIME = {
-				$gte: thirtyDaysAgo
+			// 1. 构建查询条件
+			let where = {
+				JOIN_IS_CHECKIN: 1,      // 已签到
+				JOIN_STATUS: JoinModel.STATUS.SUCC  // 预约成功状态
 			};
-		}
 
-		// 3. 按用户ID分组统计核销次数
-		let groupResult = await JoinModel.groupCount(where, 'JOIN_USER_ID');
+			// 2. 月榜添加时间过滤（最近30天）
+			if (type === 'month') {
+				const thirtyDaysAgo = timeUtil.time('Y-M-D h:m:s', timeUtil.time() - 30 * 24 * 60 * 60 * 1000);
+				where.JOIN_ADD_TIME = {
+					$gte: thirtyDaysAgo
+				};
+			}
 
-		// 4. 检查groupResult是否为null
-		if (!groupResult) {
+			console.log('【排行榜】查询条件:', JSON.stringify(where));
+
+			// 3. 按用户ID分组统计核销次数
+			let groupResult = await JoinModel.groupCount(where, 'JOIN_USER_ID');
+
+			console.log('【排行榜】groupCount 结果:', groupResult ? JSON.stringify(Object.keys(groupResult)) : 'null');
+
+			// 4. 检查groupResult是否为null或空
+			if (!groupResult || Object.keys(groupResult).length === 0) {
+				console.log('【排行榜】无签到数据，返回空列表');
+				return {
+					type: type,
+					updateTime: timeUtil.time(),
+					list: [],
+					total: 0
+				};
+			}
+		} catch (error) {
+			console.error('【排行榜】查询异常:', error.message);
+			console.error('【排行榜】错误堆栈:', error.stack);
+			// 异常时返回空列表，避免500错误
 			return {
 				type: type,
 				updateTime: timeUtil.time(),
@@ -125,31 +163,40 @@ class CheckinService extends BaseService {
 	async _fillUserInfo(rankArray) {
 		let result = [];
 
-		for (let item of rankArray) {
-			// 查询用户信息 - 先尝试USER_MINI_OPENID（微信openid）
-			let user = await UserModel.getOne(
-				{ USER_MINI_OPENID: item.userId },
-				'USER_NAME,USER_ID,USER_MINI_OPENID'
-			);
+		console.log('【排行榜】开始填充用户信息，待处理数量:', rankArray.length);
 
-			// 如果没找到，再尝试USER_ID
-			if (!user) {
-				user = await UserModel.getOne(
-					{ USER_ID: item.userId },
+		for (let item of rankArray) {
+			try {
+				// 查询用户信息 - 先尝试USER_MINI_OPENID（微信openid）
+				let user = await UserModel.getOne(
+					{ USER_MINI_OPENID: item.userId },
 					'USER_NAME,USER_ID,USER_MINI_OPENID'
 				);
-			}
 
-			if (user) {
-				result.push({
-					userId: item.userId,
-					userName: user.USER_NAME || '未设置姓名',
-					checkinCount: item.checkinCount,
-					rank: 0 // 在外层添加
-				});
+				// 如果没找到，再尝试USER_ID
+				if (!user) {
+					user = await UserModel.getOne(
+						{ USER_ID: item.userId },
+						'USER_NAME,USER_ID,USER_MINI_OPENID'
+					);
+				}
+
+				if (user) {
+					result.push({
+						userId: item.userId,
+						userName: user.USER_NAME || '未设置姓名',
+						checkinCount: item.checkinCount,
+						rank: 0 // 在外层添加
+					});
+				} else {
+					console.warn('【排行榜】未找到用户信息, userId:', item.userId);
+				}
+			} catch (error) {
+				console.error('【排行榜】查询用户信息失败, userId:', item.userId, 'error:', error.message);
 			}
 		}
 
+		console.log('【排行榜】用户信息填充完成，成功数量:', result.length);
 		return result;
 	}
 

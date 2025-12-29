@@ -18,8 +18,14 @@ UserModel.DB_STRUCTURE = {
 	USER_MINI_OPENID: 'string|true|comment=小程序openid',
 	USER_STATUS: 'int|true|default=1|comment=状态 0=待审核,1=正常',
 
+	USER_ACCOUNT: 'string|false|comment=用户账号',
+	USER_PASSWORD: 'string|false|comment=用户密码',
+	USER_TOKEN: 'string|false|comment=登录token',
+	USER_TOKEN_TIME: 'int|false|comment=token生成时间',
+
 	USER_NAME: 'string|false|comment=用户姓名',
 	USER_MOBILE: 'string|false|comment=联系电话',
+	USER_AVATAR: 'string|false|comment=用户头像',
 
 	USER_WORK: 'string|false|comment=所在单位',
 	USER_CITY: 'string|false|comment=所在城市',

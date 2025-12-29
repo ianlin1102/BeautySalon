@@ -1,18 +1,113 @@
 /**
  * Notes: 测试模块控制器
- * Date: 2025-03-15 19:20:00 
+ * Date: 2025-03-15 19:20:00
  */
 
-const BaseController = require('../base_controller.js'); 
+const BaseController = require('../base_controller.js');
 const config = require('../../../config/config.js');
-class TestController {
+const UserModel = require('../../model/user_model.js');
+const timeUtil = require('../../../framework/utils/time_util.js');
+
+class TestController extends BaseController {
 
 	async test() {
 		console.log('1111')
-	 
+
 		let userId = 'userid3243l4l3j24324324';
 
-		console.log(__filename); 
+		console.log(__filename);
+	}
+
+	async crash() {
+		throw new Error('这是一个测试异常，用于验证咕咕嘎嘎日志系统 🦆');
+	}
+
+	/**
+	 * 创建测试用户（临时方法，用于绕过腾讯云控制台的 _pid 限制）
+	 */
+	async createTestUser() {
+		// 数据校验
+		let rules = {
+			account: 'string|min:3|max:30|name=账号',
+			password: 'string|min:3|max:30|name=密码',
+			name: 'string|min:1|max:20|name=姓名',
+		};
+
+		// 取得数据，如果没有提供则使用默认值
+		let input = {};
+		try {
+			input = this.validateData(rules);
+		} catch (e) {
+			// 如果没有提供参数，使用默认值
+			input = {
+				account: 'testuser',
+				password: '123456',
+				name: 'TestUser'
+			};
+		}
+
+		const account = input.account || 'testuser';
+		const password = input.password || '123456';
+		const name = input.name || 'TestUser';
+
+		// 1. 检查账号是否已存在
+		let where = {
+			USER_ACCOUNT: account
+		};
+		let cnt = await UserModel.count(where);
+		if (cnt > 0) {
+			return {
+				success: false,
+				message: `账号 ${account} 已存在，可以直接登录`,
+				loginInfo: {
+					account: account,
+					password: password
+				}
+			};
+		}
+
+		// 2. 生成用户ID
+		let userId = timeUtil.time('YMDhms') + Math.random().toString().substr(2, 3);
+
+		// 3. 准备用户数据
+		let data = {
+			_pid: config.PID,  // 直接设置 _pid = 'A00'
+			USER_ID: userId,
+			USER_MINI_OPENID: 'manual_' + userId,
+			USER_ACCOUNT: account,
+			USER_PASSWORD: password,
+			USER_NAME: name,
+			USER_MOBILE: '13800138000',
+			USER_STATUS: 1,
+			USER_LOGIN_CNT: 0,
+			USER_LOGIN_TIME: 0,
+			USER_TOKEN: '',
+			USER_TOKEN_TIME: 0,
+			USER_AVATAR: '',
+			USER_WORK: '',
+			USER_CITY: '',
+			USER_TRADE: ''
+		};
+
+		// 4. 直接插入数据库（mustPID = true 会自动添加 _pid）
+		await UserModel.insert(data, true);
+
+		return {
+			success: true,
+			userId: userId,
+			message: `测试用户创建成功！`,
+			userData: {
+				account: account,
+				password: password,
+				name: name,
+				userId: userId
+			},
+			loginInfo: {
+				account: account,
+				password: password,
+				loginUrl: '使用账号和密码在登录页面登录'
+			}
+		};
 	}
 
 }

@@ -14,20 +14,39 @@ class CheckinController extends BaseController {
 	 * @returns {object} 排行榜数据
 	 */
 	async getRankList() {
-		// 数据校验
-		let rules = {
-			type: 'string|name=榜单类型|default=all|in:all,month',
-			limit: 'int|name=数量限制|default=10|min:1|max:50'
-		};
+		try {
+			console.log('【排行榜Controller】开始处理请求');
 
-		// 取得数据
-		let input = this.validateData(rules);
+			// 数据校验
+			let rules = {
+				type: 'string|name=榜单类型|default=all|in:all,month',
+				limit: 'int|name=数量限制|default=10|min:1|max:50'
+			};
 
-		// 调用Service
-		let service = new CheckinService();
-		let result = await service.getRankList(input.type, input.limit);
+			// 取得数据
+			let input = this.validateData(rules);
 
-		return result;
+			console.log('【排行榜Controller】参数校验成功, type:', input.type, 'limit:', input.limit);
+
+			// 调用Service
+			let service = new CheckinService();
+			let result = await service.getRankList(input.type, input.limit);
+
+			console.log('【排行榜Controller】Service 返回成功');
+
+			return result;
+		} catch (error) {
+			console.error('【排行榜Controller】异常:', error.message);
+			console.error('【排行榜Controller】堆栈:', error.stack);
+
+			// 返回空数据而不是抛出异常
+			return {
+				type: 'all',
+				updateTime: require('../../framework/utils/time_util.js').time(),
+				list: [],
+				total: 0
+			};
+		}
 	}
 
 	/**
