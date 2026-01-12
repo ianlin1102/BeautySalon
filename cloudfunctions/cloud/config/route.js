@@ -52,6 +52,7 @@ module.exports = {
 	'test/test': 'test/test_controller@test',
 	'test/meet_test_join': 'test/test_meet_controller@testJoin',
 	'test/create_user': 'test/test_controller@createTestUser',  // 创建测试用户（临时）
+	'test/update_user': 'test/test_controller@updateTestUser',  // 更新测试用户（修复字段）
 
 	//***########### ADMIN ################## */  
 	'admin/login': 'admin/admin_home_controller@adminLogin',
@@ -124,6 +125,7 @@ module.exports = {
 	'card/my_card_detail': 'card_controller@getMyCardDetail',      // 我的卡项详情
 	'card/my_card_records': 'card_controller@getMyCardRecords',    // 我的使用记录
 	'card/my_card_summary': 'card_controller@getMyCardSummary',    // 我的卡项汇总
+	'card/purchase': 'card_controller@purchaseCard',               // 购买卡项
 
 	// 管理后台 - 卡项商品管理
 	'admin/card_list': 'admin/admin_card_controller@getCardList',
@@ -178,5 +180,13 @@ module.exports = {
 	'admin/user_card_adjust': 'admin/admin_user_card_controller@adjustUserCard#noDemo',       // 调整用户卡（扣减/增加）
 	'admin/user_card_records': 'admin/admin_user_card_controller@getUserCardRecords',         // 用户使用记录
 	'admin/user_card_info': 'admin/admin_user_card_controller@getUserInfo',                   // 获取用户信息（含卡项汇总）
+
+	//***########### PURCHASE / RECHARGE ################## */
+	// 购买/充值模块
+	'purchase/test': 'purchase_controller@test',                       // 测试购买模块
+	'purchase/create': 'purchase_controller@createOrder',              // 创建购买订单
+	'purchase/upload_proof': 'purchase_controller@uploadProof',        // 上传支付凭证
+	'purchase/detail': 'purchase_controller@getOrderDetail',           // 获取订单详情
+	'purchase/my_orders': 'purchase_controller@getMyOrders',           // 获取我的订单列表
 
 }

@@ -110,6 +110,84 @@ class TestController extends BaseController {
 		};
 	}
 
+	/**
+	 * 更新测试用户（修复字段格式问题）
+	 * 解决 USER_STATUS 为字符串"1"而非整数1的问题
+	 */
+	async updateTestUser() {
+		const account = this._request.account || 'testuser';
+
+		// 1. 查找用户 (mustPID = false，因为 testuser 可能没有 _pid 字段)
+		let where = {
+			USER_ACCOUNT: account
+		};
+		let user = await UserModel.getOne(where, '*', {}, false);
+
+		if (!user) {
+			return {
+				success: false,
+				message: `用户 ${account} 不存在`
+			};
+		}
+
+		// 2. 生成 USER_ID（如果不存在）
+		let userId = user.USER_ID || timeUtil.time('YMDhms') + Math.random().toString().substr(2, 3);
+		const nowTimestamp = timeUtil.time();
+
+		// 3. 准备更新数据（补全所有必要字段）
+		let updateData = {
+			// 必须字段
+			_pid: config.PID,  // 'A00'
+			USER_ID: userId,
+			USER_STATUS: 1,  // 确保是整数
+
+			// 个人信息
+			USER_NAME: user.USER_NAME || 'Web测试用户',
+			USER_MOBILE: user.USER_MOBILE || '18888888888',
+			USER_AVATAR: user.USER_AVATAR || '',
+
+			// 扩展信息
+			USER_WORK: user.USER_WORK || 'Test Company',
+			USER_CITY: user.USER_CITY || 'Chicago',
+			USER_TRADE: user.USER_TRADE || 'IT',
+
+			// 登录信息
+			USER_LOGIN_CNT: (user.USER_LOGIN_CNT || 0),
+			USER_LOGIN_TIME: user.USER_LOGIN_TIME || 0,
+
+			// 时间戳
+			USER_ADD_TIME: user.USER_ADD_TIME || nowTimestamp,
+			USER_EDIT_TIME: nowTimestamp,
+
+			// 来源标记
+			USER_SOURCE: 'web'
+		};
+
+		// 4. 更新数据库 (mustPID = false，因为原记录可能没有 _pid)
+		await UserModel.edit(where, updateData, false);
+
+		// 5. 查询更新后的数据验证 (现在有 _pid 了，可以用默认查询)
+		let updatedUser = await UserModel.getOne(where, '*', {}, false);
+
+		return {
+			success: true,
+			message: `用户 ${account} 更新成功`,
+			before: {
+				USER_STATUS: user.USER_STATUS,
+				USER_STATUS_TYPE: typeof user.USER_STATUS,
+				USER_ID: user.USER_ID,
+				_pid: user._pid
+			},
+			after: {
+				USER_STATUS: updatedUser.USER_STATUS,
+				USER_STATUS_TYPE: typeof updatedUser.USER_STATUS,
+				USER_ID: updatedUser.USER_ID,
+				_pid: updatedUser._pid
+			},
+			userData: updatedUser
+		};
+	}
+
 }
 
 module.exports = TestController;

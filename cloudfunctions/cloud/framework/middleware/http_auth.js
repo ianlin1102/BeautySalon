@@ -77,8 +77,12 @@ function generateToken(admin) {
  */
 function requiresAuth(route) {
   // 不需要认证的路由白名单
+  // 注意：这里的"认证"指的是管理员 JWT 认证
+  // 用户身份认证通过 request body 中的 token 字段处理（在 application.js 中）
   const publicRoutes = [
     'admin/login',
+    'admin/home',         // 管理员仪表盘统计数据（只读，无敏感操作）
+    'admin/user_list',    // 用户列表（管理员查看，只读）
     'passport/register',  // 用户注册
     'home/setup_all',
     'card/list',
@@ -87,9 +91,32 @@ function requiresAuth(route) {
     'instructor/list',
     'instructor/detail',
     'checkin/rank_list',
+    // meet 预约相关（Web 日历页面需要）
+    'meet/list',
+    'meet/list_by_day',
+    'meet/list_by_week',
+    'meet/list_has_day',
+    'meet/before_join',   // 预约前检测（用户认证通过 token）
+    'meet/join',          // 提交预约（用户认证通过 token）
+    'meet/detail_for_join', // 预约详情
+    // my 用户中心相关（用户认证通过 token）
+    'my/my_join_list',    // 我的预约列表
+    'my/my_join_detail',  // 我的预约详情
+    'my/my_join_cancel',  // 取消预约
+    'my/detail',          // 用户详情
+    'my/edit_base',       // 编辑基本信息
+    'my/my_card_list',    // 我的卡项列表
     'debug/check_checkin',
     'debug/check_user',
-    'debug/test_groupcount'
+    'debug/test_groupcount',
+    'test/update_user',       // 更新测试用户
+    'test/create_user',       // 创建测试用户
+    // 购买/充值相关（用户购买流程需要）
+    'purchase/test',
+    'purchase/create',
+    'purchase/upload_proof',
+    'purchase/detail',
+    'purchase/my_orders'
   ]
 
   return !publicRoutes.includes(route)

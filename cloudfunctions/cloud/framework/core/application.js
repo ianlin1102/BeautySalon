@@ -66,7 +66,7 @@ async function app(event, context) {
 		console.log('');
 		let time = timeUtil.time('Y-M-D h:m:s');
 		let timeTicks = timeUtil.time();
-	// 获取 openId - 支持小程序和 HTTP 请求
+	// 获取 openId - 支持小程序、HTTP 请求和 CloudBase JS SDK
 	let openId = wxContext.OPENID;  // 小程序请求的默认值
 	let requestType = 'MINI_PROGRAM';
 
@@ -84,6 +84,21 @@ async function app(event, context) {
 			requestType = 'HTTP_PUBLIC';
 			console.log(`【HTTP 公开】使用 guest ID: ${openId}`);
 		}
+	}
+
+	// CloudBase JS SDK / Web 端调用：优先使用前端传入的 token
+	// 小程序端也会传 token（用户 ID），这里统一处理
+	if (!openId && event.token) {
+		openId = event.token;
+		requestType = 'WEB_SDK';
+		console.log(`【Web SDK】使用前端传入的 token: ${openId}`);
+	}
+
+	// 最终兜底：如果还是没有 openId，使用 guest
+	if (!openId) {
+		openId = 'anonymous-guest';
+		requestType = 'ANONYMOUS';
+		console.log(`【匿名】使用 guest ID: ${openId}`);
 	}
 
 	console.log('▤▤▤▤▤▤▤▤▤▤▤▤▤▤▤▤▤▤▤▤▤▤▤▤▤▤▤▤▤▤▤▤▤▤▤▤▤▤▤▤▤▤▤▤▤▤▤▤▤');

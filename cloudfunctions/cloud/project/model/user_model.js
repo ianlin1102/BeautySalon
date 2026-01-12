@@ -41,6 +41,9 @@ UserModel.DB_STRUCTURE = {
 
 	USER_EDIT_TIME: 'int|true',
 	USER_EDIT_IP: 'string|false',
+
+	USER_SOURCE: 'string|false|comment=用户来源(wechat/web/google)',
+	USER_GOOGLE_ID: 'string|false|comment=Google账户ID',
 }
 
 // 字段前缀

@@ -19,7 +19,7 @@ const UserModel = require('../../model/user_model.js');
 const MeetModel = require('../../model/meet_model.js');
 const NewsModel = require('../../model/news_model.js');
 const JoinModel = require('../../model/join_model.js');
-const dataUtil = require('../../../framework/utils/data_util.js');
+// 注意：dataUtil 已在第8行引入，不要重复引入
 
 class AdminHomeService extends BaseAdminService {
 
@@ -100,12 +100,13 @@ class AdminHomeService extends BaseAdminService {
 		}
 
 		// 2. 尝试普通用户登录
+		// Web 用户可能没有 _pid 字段，所以使用 mustPID = false
 		let userWhere = {
 			USER_ACCOUNT: name,
 			USER_STATUS: 1
 		}
 		let userFields = 'USER_ID,USER_ACCOUNT,USER_PASSWORD,USER_NAME,USER_AVATAR,USER_LOGIN_TIME,USER_LOGIN_CNT';
-		let user = await UserModel.getOne(userWhere, userFields);
+		let user = await UserModel.getOne(userWhere, userFields, {}, false);
 
 		if (!user) {
 			this.AppError('账号或密码不正确');
@@ -127,7 +128,8 @@ class AdminHomeService extends BaseAdminService {
 			USER_LOGIN_TIME: timeUtil.time(),
 			USER_LOGIN_CNT: userCnt + 1
 		}
-		await UserModel.edit(userWhere, userData);
+		// Web 用户可能没有 _pid，使用 mustPID = false
+		await UserModel.edit(userWhere, userData, false);
 
 		let userLast = (!user.USER_LOGIN_TIME) ? '尚未登录' : timeUtil.timestamp2Time(user.USER_LOGIN_TIME);
 

@@ -10,6 +10,7 @@ const timeUtil = require('../../framework/utils/time_util.js');
 const JoinModel = require('../model/join_model.js');
 const cacheUtil = require('../../framework/utils/cache_util.js');
 const config = require('../../config/config.js');
+const cloudUtil = require('../../framework/cloud/cloud_util.js');
 
 const CACHE_CALENDAR_INDEX = 'cache_calendar_index';
 const CACHE_CALENDAR_HAS_DAY = 'cache_calendar_has_day';
@@ -18,6 +19,24 @@ const CACHE_CALENDAR_HAS_WEEK = 'cache_calendar_has_week';
 
 class MeetController extends BaseController {
 
+	/**
+	 * 转换列表中的导师图片 cloud:// URL 为临时 HTTPS URL
+	 */
+	async _convertInstructorPics(list) {
+		if (!list || !Array.isArray(list)) return list;
+
+		for (let item of list) {
+			if (item.instructorPic && item.instructorPic.startsWith('cloud://')) {
+				try {
+					const tempUrl = await cloudUtil.getTempFileURLOne(item.instructorPic);
+					if (tempUrl) item.instructorPic = tempUrl;
+				} catch (err) {
+					console.error('转换导师图片URL失败:', err);
+				}
+			}
+		}
+		return list;
+	}
 
 	// 把列表转换为显示模式
 	transMeetList(list) {
@@ -49,14 +68,15 @@ class MeetController extends BaseController {
 
 		let cacheKey = CACHE_CALENDAR_INDEX + '_' + input.day;
 		let list = await cacheUtil.get(cacheKey);
-		if (list) {
-			return list;
-		} else {
+		if (!list) {
 			let service = new MeetService();
-			let list = await service.getMeetListByDay(input.day);
+			list = await service.getMeetListByDay(input.day);
 			cacheUtil.set(cacheKey, list, config.CACHE_CALENDAR_TIME);
-			return list;
 		}
+
+		// 转换导师图片 URL（临时 URL 会过期，不能缓存）
+		list = await this._convertInstructorPics(list);
+		return list;
 
 	}
 
@@ -99,14 +119,15 @@ class MeetController extends BaseController {
 
 		let cacheKey = CACHE_CALENDAR_WEEK_INDEX + '_' + input.startDate + '_' + input.endDate;
 		let list = await cacheUtil.get(cacheKey);
-		if (list) {
-			return list;
-		} else {
+		if (!list) {
 			let service = new MeetService();
-			let list = await service.getMeetListByWeek(input.startDate, input.endDate);
+			list = await service.getMeetListByWeek(input.startDate, input.endDate);
 			cacheUtil.set(cacheKey, list, config.CACHE_CALENDAR_TIME);
-			return list;
 		}
+
+		// 转换导师图片 URL（临时 URL 会过期，不能缓存）
+		list = await this._convertInstructorPics(list);
+		return list;
 
 	}
 
@@ -387,10 +408,11 @@ class MeetController extends BaseController {
 	/** 预约提交 */
 	async join() {
 		// 数据校验
+		// forms 改为可选，因为某些课程可能不需要额外表单信息
 		let rules = {
 			meetId: 'must|id',
 			timeMark: 'must|string',
-			forms: 'must|array',
+			forms: 'array|default=[]',  // 允许为空数组
 			cardId: 'string', // 卡项ID（可选）
 		};
 

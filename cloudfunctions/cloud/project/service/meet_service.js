@@ -707,6 +707,7 @@ class MeetService extends BaseService {
 			let node = {};
 			// 返回完整的时间段数组，供前端显示，包含时长和预约人数
 			node.times = usefulTimes.map(t => ({
+				mark: t.mark,  // 时段标识，用于预约提交
 				start: t.start,
 				end: t.end,
 				duration: this._calculateDuration(t.start, t.end),
@@ -829,6 +830,7 @@ class MeetService extends BaseService {
 			let node = {};
 			// 返回整周的时间段数组，包含完整信息
 			node.times = allUsefulTimes.map(t => ({
+				mark: t.mark,  // 时段标识，用于预约提交
 				start: t.start,
 				end: t.end,
 				duration: this._calculateDuration(t.start, t.end),
@@ -1196,7 +1198,7 @@ class MeetService extends BaseService {
 			//	'JOIN_MEET_TIME_START': 'desc',
 			'JOIN_ADD_TIME': 'desc'
 		};
-		let fields = 'JOIN_IS_CHECKIN,JOIN_REASON,JOIN_MEET_ID,JOIN_MEET_TITLE,JOIN_MEET_DAY,JOIN_MEET_TIME_START,JOIN_MEET_TIME_END,JOIN_INSTRUCTOR_ID,JOIN_INSTRUCTOR_NAME,JOIN_STATUS,JOIN_ADD_TIME';
+		let fields = 'JOIN_IS_CHECKIN,JOIN_REASON,JOIN_MEET_ID,JOIN_MEET_TITLE,JOIN_MEET_DAY,JOIN_MEET_TIME_START,JOIN_MEET_TIME_END,JOIN_INSTRUCTOR_ID,JOIN_INSTRUCTOR_NAME,JOIN_STATUS,JOIN_ADD_TIME,JOIN_CARD_DEDUCT';
 
 		let where = {
 			JOIN_USER_ID: userId
@@ -1236,7 +1238,7 @@ class MeetService extends BaseService {
 					break;
 				}
 				case 'succ': { //预约成功
-					where.JOIN_STATUS = JoinModel.STATUS.COMM;
+					where.JOIN_STATUS = JoinModel.STATUS.SUCC;  // 修复: COMM → SUCC (值为1)
 					//where.JOIN_MEET_DAY = ['>=', timeUtil.time('Y-M-D')];
 					//where.JOIN_MEET_TIME_START = ['>=', timeUtil.time('h:m')];
 					break;

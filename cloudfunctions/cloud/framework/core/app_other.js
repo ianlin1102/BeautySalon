@@ -2,6 +2,31 @@
  * Notes: 云函数非标业务处理
  * Ver : CCMiniCloud Framework 2.0.1 ALL RIGHTS RESERVED BY cclinux@qq.com
  * Date: 2025-10-21 04:00:00
+ *
+ * ============================================================
+ * 双端兼容架构说明（小程序 + HTTP 网页端）
+ * ============================================================
+ *
+ * 【调用格式差异】
+ * - 小程序: wx.cloud.callFunction({ data: { route, params: {...} } })
+ *   → event = { route, params: { startDate, endDate } }
+ *
+ * - HTTP 网页: fetch(url, { body: JSON.stringify({ route, startDate, endDate }) })
+ *   → event = { path, httpMethod, body: '{"route":"...", "startDate":"..."}' }
+ *
+ * 【兼容处理层次】
+ * 1. app_other.js (本文件): HTTP 请求预处理
+ *    - 解析 HTTP body
+ *    - 将根级参数转换为 params 格式: { route, params: {...} }
+ *
+ * 2. framework/client/controller.js: 参数标准化
+ *    - _normalizeParams() 兼容两种格式
+ *    - 优先使用 event.params，否则提取根级参数
+ *
+ * 【修改原则】
+ * - 不修改小程序代码
+ * - 所有兼容逻辑在后端 framework 层处理
+ * ============================================================
  */
 
 const httpAuth = require('../middleware/http_auth.js');
@@ -15,8 +40,10 @@ function handlerOther(event) {
 		eventX: event
 	};
 
+	// ============================================================
 	// HTTP 触发器请求处理
 	// HTTP 请求的 event 对象包含: path, httpMethod, headers, body 等字段
+	// ============================================================
 	if (event.path !== undefined || event.httpMethod !== undefined) {
 		logger.forceInfo('检测到 HTTP 触发器请求', {
 			path: event.path,
@@ -75,18 +102,41 @@ function handlerOther(event) {
 				});
 			}
 
-			// 标记这是 HTTP 请求（可能需要特殊处理）
+			// 标记这是 HTTP 请求
 			body._isHttpRequest = true;
 
+			// ============================================================
+			// 关键：将 HTTP 请求参数转换为小程序格式
+			// HTTP body: { route, startDate, endDate }
+			// 转换为: { route, params: { startDate, endDate } }
+			// 这样 controller 的 this._request = event.params 就能正确获取参数
+			// ============================================================
+			const { route, params: existingParams, _httpAdmin, _isHttpRequest, token, PID, ...restParams } = body;
+
+			// 如果 HTTP 请求已经包含 params 对象，直接使用；否则从根级别提取
+			const finalParams = (existingParams && Object.keys(existingParams).length > 0)
+				? existingParams
+				: restParams;
+
+			const eventX = {
+				route,
+				token,
+				PID,
+				params: finalParams,
+				_httpAdmin,
+				_isHttpRequest
+			};
+
 			logger.http('HTTP 请求解析完成', {
-				route: body.route,
-				isAuthenticated: !!body._httpAdmin
+				route: eventX.route,
+				params: eventX.params,
+				isAuthenticated: !!eventX._httpAdmin
 			});
 
 			// 返回解析后的请求体作为 event
 			return {
 				isOther: false,
-				eventX: body
+				eventX
 			};
 		} catch (err) {
 			logger.forceError('解析 HTTP 请求失败', {
