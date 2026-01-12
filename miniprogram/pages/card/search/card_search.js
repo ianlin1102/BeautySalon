@@ -2,8 +2,8 @@
  * 卡项搜索页面
  */
 
-const AdminCardBiz = require('../../biz/admin_card_biz.js');
-const pageHelper = require('../../helper/page_helper.js');
+const AdminCardBiz = require('../../../biz/admin_card_biz.js');
+const pageHelper = require('../../../helper/page_helper.js');
 
 Page({
 	data: {
@@ -573,7 +573,7 @@ Page({
 		};
 
 		// 跳转到记录页面
-		let url = '/pages/test/card_records?';
+		let url = '/pages/card/records/card_records?';
 		for (let key in params) {
 			if (params[key]) {
 				url += `${key}=${encodeURIComponent(params[key])}&`;
@@ -625,7 +625,7 @@ Page({
 		}
 
 		// 跳转到记录页面
-		let url = '/pages/test/card_records?';
+		let url = '/pages/card/records/card_records?';
 		for (let key in params) {
 			if (params[key]) {
 				url += `${key}=${encodeURIComponent(params[key])}&`;
@@ -652,7 +652,7 @@ Page({
 	// 跳转到卡项商城
 	goCardStore() {
 		wx.navigateTo({
-			url: '/pages/test/card_store'
+			url: '/pages/card/store/card_store'
 		});
 	},
 
@@ -684,7 +684,7 @@ Page({
 		wx.showLoading({ title: '加载中...' });
 
 		try {
-			const cloudHelper = require('../../helper/cloud_helper.js');
+			const cloudHelper = require('/../../helper/cloud_helper.js');
 			let params = {
 				userId: userId,  // 使用 openid（USER_MINI_OPENID）
 				userCardId: card._id,
@@ -765,7 +765,7 @@ Page({
 		wx.showLoading({ title: '删除中...' });
 
 		try {
-			const cloudHelper = require('../../helper/cloud_helper.js');
+			const cloudHelper = require('/../../helper/cloud_helper.js');
 			await cloudHelper.callCloudSumbit('admin/user_card_delete', {
 				userCardId: userCardId
 			});
@@ -814,7 +814,7 @@ Page({
 		wx.showLoading({ title: '加载卡项...' });
 
 		try {
-			const cloudHelper = require('../../helper/cloud_helper.js');
+			const cloudHelper = require('/../../helper/cloud_helper.js');
 			// 使用 admin API 获取完整的卡项数据
 			let result = await cloudHelper.callCloudData('admin/card_list', {
 				page: 1,
@@ -926,7 +926,7 @@ Page({
 		wx.showLoading({ title: '添加中...' });
 
 		try {
-			const cloudHelper = require('../../helper/cloud_helper.js');
+			const cloudHelper = require('/../../helper/cloud_helper.js');
 			let params = {
 				userId: userId,  // 使用 openid（USER_MINI_OPENID）
 				cardId: card._id,

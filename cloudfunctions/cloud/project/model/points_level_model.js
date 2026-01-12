@@ -10,13 +10,58 @@ class PointsLevelModel extends BaseModel {
     static ADD_TIME = true;
     static UPDATE_TIME = true;
 
-    // 默认等级配置
+    // 默认等级配置 - 夜店风格渐变配色
     static DEFAULT_LEVELS = [
-        { level: 1, name: '新手会员', minPoints: 0, maxPoints: 99, color: '#95a5a6' },
-        { level: 2, name: '铜牌会员', minPoints: 100, maxPoints: 299, color: '#CD7F32' },
-        { level: 3, name: '银牌会员', minPoints: 300, maxPoints: 599, color: '#C0C0C0' },
-        { level: 4, name: '金牌会员', minPoints: 600, maxPoints: 999, color: '#FFD700' },
-        { level: 5, name: '钻石会员', minPoints: 1000, maxPoints: 9999, color: '#1e90ff' }
+        {
+            level: 1,
+            name: '新手会员',
+            minPoints: 0,
+            maxPoints: 99,
+            color: '#95a5a6',
+            gradientStart: '#bdc3c7',
+            gradientEnd: '#7f8c8d',
+            shadowColor: 'rgba(149, 165, 166, 0.4)'
+        },
+        {
+            level: 2,
+            name: '铜牌会员',
+            minPoints: 100,
+            maxPoints: 299,
+            color: '#CD7F32',
+            gradientStart: '#EDC9AF',
+            gradientEnd: '#A0522D',
+            shadowColor: 'rgba(205, 127, 50, 0.6)'
+        },
+        {
+            level: 3,
+            name: '银牌会员',
+            minPoints: 300,
+            maxPoints: 599,
+            color: '#C0C0C0',
+            gradientStart: '#E8E8E8',
+            gradientEnd: '#A9A9A9',
+            shadowColor: 'rgba(192, 192, 192, 0.5)'
+        },
+        {
+            level: 4,
+            name: '金牌会员',
+            minPoints: 600,
+            maxPoints: 999,
+            color: '#FFD700',
+            gradientStart: '#FFFACD',
+            gradientEnd: '#FFA500',
+            shadowColor: 'rgba(255, 215, 0, 0.8)'
+        },
+        {
+            level: 5,
+            name: '钻石会员',
+            minPoints: 1000,
+            maxPoints: 9999,
+            color: '#1e90ff',
+            gradientStart: '#00f2ff',
+            gradientEnd: '#1e90ff',
+            shadowColor: 'rgba(30, 144, 255, 0.8)'
+        }
     ];
 
     // 根据积分获取等级信息

@@ -2,10 +2,11 @@
 	"pages": [
 		"projects/A00/my/index/my_index",
 		"pages/admin/user_card/manage/admin_user_card_manage",
-		"pages/test/card_store",
-		"pages/test/card_search",
-		"pages/test/card_records",
-		"pages/test/card_detail",
+		"pages/card/store/card_store",
+		"pages/card/search/card_search",
+		"pages/card/records/card_records",
+		"pages/card/detail/card_detail",
+		"pages/card/disclaimer/card_disclaimer",
 		"pages/admin/card/list/admin_card_list",
 		"pages/admin/card/add/admin_card_add",
 		"pages/admin/card/edit/admin_card_edit",
@@ -69,15 +70,15 @@
 	"window": {
 		"backgroundColor": "#ffffff",
 		"backgroundTextStyle": "dark",
-		"navigationBarBackgroundColor": "#333333",
-		"navigationBarTitleText": "美容店预约小程序",
+		"navigationBarBackgroundColor": "#0d1528",
+		"navigationBarTitleText": "Dplus",
 		"navigationBarTextStyle": "white"
 	},
 	"tabBar": {
 		"custom": false,
-		"backgroundColor": "#ffffff",
+		"backgroundColor": "#000305",
 		"color": "#999999",
-		"selectedColor": "#333333",
+		"selectedColor": "#7878c1",
 		"list": [{
 				"pagePath": "projects/A00/default/index/default_index",
 				"text": "首页",
@@ -85,7 +86,7 @@
 				"selectedIconPath": "/projects/A00/skin/images/tabbar_icon/home_selected.png"
 			},
 			{
-				"pagePath": "pages/test/card_store",
+				"pagePath": "pages/card/store/card_store",
 				"text": "卡项商城",
 				"iconPath": "/projects/A00/skin/images/tabbar_icon/shop_cur.png",
 				"selectedIconPath": "/projects/A00/skin/images/tabbar_icon/shop_selected.png"

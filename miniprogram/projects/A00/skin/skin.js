@@ -2,7 +2,7 @@ module.exports = {
 	PID: 'A00', //美业
 
 	NAV_COLOR: '#ffffff',
-	NAV_BG: '#333333',
+	NAV_BG: '#0d1528',
 
 	MEET_NAME: '预约',
 
@@ -10,7 +10,16 @@ module.exports = {
 
 	NEWS_CATE: '1=小店动态|rightpic,2=美容小课堂|leftbig',
 	CARD_CATE: '1=次数卡|leftbig,2=余额卡|leftbig',
-	MEET_TYPE: '1=美容师预约|leftbig2,2=项目预约|leftbig',
+	MEET_TYPE: '1=Hip-Hop|leftbig2,2=K-Pop|leftbig,3=Jazz Funk|leftbig2,4=古典舞|leftbig,99=其他(自定义)|leftbig',
+
+	// 舞蹈分类颜色配置
+	MEET_TYPE_COLORS: {
+		'1': '#FF6B6B',     // Hip-Hop - 活力红
+		'2': '#4ECDC4',     // K-Pop - 青春蓝绿
+		'3': '#FFD93D',     // Jazz Funk - 明亮黄
+		'4': '#A8E6CF',     // 古典舞 - 典雅绿
+		'99': '#95A5A6'     // 其他 - 灰色
+	},
 
 	DEFAULT_FORMS: [{
 			type: 'line',

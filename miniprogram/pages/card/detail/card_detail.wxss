@@ -1,6 +1,6 @@
 page {
 	background-color: #f8f8f8;
-	padding-bottom: 120rpx;
+	padding-bottom: 180rpx;
 }
 
 .main {
@@ -204,45 +204,62 @@ page {
 	border: 1rpx solid #eee;
 }
 
+/* 免责声明勾选 */
+.disclaimer-section {
+	background: #fff;
+	padding: 30rpx;
+	margin: 0 20rpx 20rpx 20rpx;
+	border-radius: 12rpx;
+}
+
+.disclaimer-checkbox {
+	display: flex;
+	align-items: center;
+	font-size: 28rpx;
+	line-height: 1.8;
+}
+
+.disclaimer-text {
+	color: #666;
+	margin-left: 10rpx;
+}
+
+.disclaimer-link {
+	color: #667eea;
+	text-decoration: underline;
+	margin-left: 5rpx;
+}
+
 /* 购买按钮 */
 .purchase-bar {
 	position: fixed;
 	bottom: 0;
 	left: 0;
 	right: 0;
-	display: flex;
-	align-items: center;
-	justify-content: space-between;
 	background: #fff;
-	padding: 20rpx 30rpx;
+	padding: 30rpx 40rpx;
+	padding-bottom: calc(30rpx + env(safe-area-inset-bottom));
 	box-shadow: 0 -2rpx 10rpx rgba(0, 0, 0, 0.05);
 	z-index: 100;
-}
-
-.purchase-price {
 	display: flex;
-	align-items: baseline;
-}
-
-.purchase-price .currency {
-	font-size: 28rpx;
-	color: #ff4d4f;
-	font-weight: bold;
-}
-
-.purchase-price .amount {
-	font-size: 40rpx;
-	color: #ff4d4f;
-	font-weight: bold;
+	justify-content: center;
+	align-items: center;
 }
 
 .purchase-btn {
-	flex-shrink: 0;
 	background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
 	color: #fff;
 	border: none;
 	border-radius: 50rpx;
-	padding: 20rpx 60rpx;
+	padding: 24rpx 100rpx;
 	font-size: 32rpx;
 	font-weight: bold;
+	line-height: 1.5;
+	width: 100%;
+	max-width: 600rpx;
+}
+
+.purchase-btn[disabled] {
+	background: #e0e0e0;
+	color: #999;
 }

@@ -355,11 +355,6 @@
  		// 取值
  		let val = data[formName];
 
- 		// DEBUG: Log what we're validating
- 		if (formName === 'formDaysSet' || formName === 'formFormSet' || formName === 'formCancelSet' || formName === 'formCostSet') {
- 			console.log('[validate.js] 检查字段:', formName, '值:', val, '类型:', typeof val, 'isArray:', Array.isArray(val), 'constructor:', val ? val.constructor : 'null/undefined');
- 		}
-
  		switch (dataType) {
  			case 'Array': {
 				if (defVal !== undefined) {
@@ -465,7 +460,7 @@
  			let rules = arr[i].split(':');
  			let ruleName = rules[0];
 
-			// 空 且非必填的 不校验 
+			// 空 且非必填的 不校验
 			if (ruleName != 'must' && val === undefined) continue;
 
  			switch (ruleName) {

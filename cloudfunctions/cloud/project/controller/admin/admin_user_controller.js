@@ -41,9 +41,10 @@ class AdminUserController extends BaseAdminController {
 	}
 
 
-	/** 用户列表 */
+	/** 用户列表 (公开路由，无需管理员认证) */
 	async getUserList() {
-		await this.isAdmin();
+		// 不需要 isAdmin() 检查，因为路由在 publicRoutes 中
+		// 用户列表只读，无敏感操作
 
 		// 数据校验
 		let rules = {

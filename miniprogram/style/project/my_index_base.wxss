@@ -1,361 +1,482 @@
-/*
-page{
-	height: 100vh;
-	display: flex;
-	flex-direction: column;
-	justify-content: space-between;
-}*/
+/* ========== My Index - Neon Theme Base Styles ========== */
+@import "./neon_theme.wxss";
 
-.main {
+/* 页面背景 - 夜店深空黑 */
+.neon-page {
+	background-color: #050511;
+	min-height: 100vh;
 	padding: 0;
+	position: relative;
+	overflow: hidden;
 }
 
-.main .upside {
-	background-color: var(--projectColor);
-	height: 280rpx;
+/* 背景光斑 - 动态氛围 */
+.bg-glow {
+	position: fixed;
+	border-radius: 50%;
+	pointer-events: none;
+	z-index: 0;
+	filter: blur(160rpx);
+}
+
+.bg-glow-1 {
+	top: -100rpx;
+	left: -100rpx;
+	width: 500rpx;
+	height: 500rpx;
+	opacity: 0.5;
+	animation: pulse-glow 6s infinite alternate;
+}
+
+.bg-glow-2 {
+	top: 600rpx;
+	right: -120rpx;
+	width: 400rpx;
+	height: 400rpx;
+	opacity: 0.4;
+	background: radial-gradient(circle, #00f2ff 0%, transparent 70%);
+	animation: pulse-glow 5s infinite alternate-reverse;
+}
+
+/* 主内容区域 */
+.content-area {
+	position: relative;
+	z-index: 10;
+	padding: 40rpx 30rpx;
+	padding-top: 180rpx; /* 向下移动约100px */
+	display: flex;
+	flex-direction: column;
+	gap: 40rpx;
+}
+
+/* ========== 用户头像与等级进度条 ========== */
+.user-section {
+	display: flex;
+	align-items: center;
+	gap: 30rpx;
+	padding: 40rpx;
+	border-radius: 40rpx;
+	background: rgba(255, 255, 255, 0.03);
+	border: 1rpx solid rgba(255, 255, 255, 0.05);
+	backdrop-filter: blur(10px);
+	-webkit-backdrop-filter: blur(10px);
+}
+
+.avatar-container {
+	flex-shrink: 0;
+}
+
+/* 头像光环 - 渐变边框 + 霓虹阴影 */
+.avatar-ring {
+	width: 140rpx;
+	height: 140rpx;
+	border-radius: 50%;
+	padding: 6rpx;
+	position: relative;
+	overflow: hidden;
+	/* 默认渐变边框（会被JS动态覆盖） */
+	background: linear-gradient(135deg, #bdc3c7, #7f8c8d);
+	box-shadow: 0 0 30rpx rgba(149, 165, 166, 0.5);
+	animation: breathe-avatar 3s infinite ease-in-out;
+}
+
+@keyframes breathe-avatar {
+	0%, 100% {
+		opacity: 1;
+		filter: brightness(1);
+	}
+	50% {
+		opacity: 0.9;
+		filter: brightness(1.1);
+	}
+}
+
+.avatar-ring:active {
+	transform: scale(0.95);
+}
+
+.avatar-img {
 	width: 100%;
+	height: 100%;
+	border-radius: 50%;
+	border: 4rpx solid #050511;
+	background: #222;
+}
+
+/* 等级徽章容器 */
+.level-wrapper {
+	display: flex;
+	align-items: center;
+	gap: 16rpx;
+}
+
+/* 等级菱形徽章 */
+.level-icon {
+	width: 36rpx;
+	height: 36rpx;
+	border-radius: 8rpx;
+	transform: rotate(45deg);
 	display: flex;
 	align-items: center;
 	justify-content: center;
-	position: relative;
-	overflow: hidden;
-	padding-top: 20rpx;
+	box-shadow: 0 0 16rpx currentColor;
 }
 
-.main .upside .upImg {
-	height: inherit;
+.level-icon::after {
+	content: '';
+	width: 16rpx;
+	height: 16rpx;
+	background: #050511;
+	border-radius: 50%;
+}
+
+.level-progress-area {
+	flex: 1;
+	padding: 10rpx;
+	border-radius: 16rpx;
+	transition: all 0.2s;
+}
+
+.level-progress-area:active {
+	background: rgba(255, 255, 255, 0.05);
+	transform: scale(0.98);
+}
+
+.level-header {
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+	margin-bottom: 16rpx;
+}
+
+.level-name {
+	font-size: 36rpx;
+	font-weight: 800;
+	text-shadow: 0 0 16rpx currentColor;
+}
+
+.level-points {
+	font-size: 24rpx;
+	color: rgba(255, 255, 255, 0.6);
+	font-family: 'Courier New', monospace;
+}
+
+/* 进度条轨道 */
+.progress-track {
+	height: 12rpx;
 	width: 100%;
+	background: rgba(255, 255, 255, 0.1);
+	border-radius: 6rpx;
+	overflow: hidden;
+	border: 1rpx solid rgba(255, 255, 255, 0.1);
+	position: relative;
+}
+
+/* 进度条填充 + 扫光特效 */
+.progress-fill {
+	height: 100%;
+	border-radius: 6rpx;
+	transition: all 1s ease-out;
+	position: relative;
+	overflow: hidden;
+}
+
+.progress-fill::after {
+	content: '';
 	position: absolute;
 	top: 0;
 	left: 0;
-}
-
-.main .upside .user-bar {
+	bottom: 0;
 	width: 100%;
-	display: flex;
-	justify-content: flex-start;
-	align-items: center;
-	padding: 0 40rpx;
-	z-index: 9999;
+	background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.4), transparent);
+	transform: translateX(-100%);
+	animation: shimmer 2s infinite;
 }
 
-.main .upside .user-bar .avatar {
-	height: 120rpx;
-	width: 120rpx;
-	border: 0rpx;
-	font-size: 80rpx;
-	border-radius: 50%;
-	background-color: #fff;
-	display: flex;
-	align-items: center;
-	justify-content: center;
-	cursor: pointer;
-	transition: all 0.2s ease;
+.progress-hint {
+	margin-top: 12rpx;
+	font-size: 22rpx;
+	color: rgba(255, 255, 255, 0.5);
+	text-align: right;
 }
 
-.main .upside .user-bar .avatar:active {
-	transform: scale(0.95);
-	opacity: 0.8;
-}
-
-.main .upside .user-bar .avatar image {
-	height: 70rpx;
-	width: 70rpx;
-}
-
-.main .upside .user-bar .detail {
-	flex: 1;
-	margin-left: 40rpx;
+/* ========== 预约入口 - 赛博青主题 ========== */
+.appointment-entry {
 	display: flex;
 	flex-direction: column;
-	justify-content: center;
-	align-items: flex-start;
-	color: #fff;
-	box-sizing: border-box;
-	cursor: pointer;
-	transition: all 0.2s ease;
-	padding: 10rpx;
-	border-radius: 10rpx;
-}
-
-.main .upside .user-bar .detail:active {
-	transform: scale(0.98);
-	background: rgba(255, 255, 255, 0.1);
-}
-
-.main .upside .user-bar .detail .name {
-	width: 100%;
-	font-size: 36rpx;
-	font-weight: bold;
-}
-
-.main .upside .user-bar .detail .desc {
-	width: 100%;
-	font-size: 26rpx;
-	margin-top: 15rpx;
-	color: var(--projectCompareColor)
-}
-
-/* 内联积分信息样式 */
-.points-inline {
-	display: flex;
-	align-items: center;
-	margin-top: 15rpx;
 	gap: 20rpx;
 }
 
-.points-level-badge {
-	background: rgba(255, 255, 255, 0.9);
-	color: var(--projectColor);
-	font-size: 24rpx;
-	padding: 8rpx 16rpx;
-	border-radius: 15rpx;
-	font-weight: bold;
-	box-shadow: 0 2rpx 8rpx rgba(0, 0, 0, 0.1);
-}
-
-.points-amount {
-	color: rgba(255, 255, 255, 0.95);
-	font-size: 26rpx;
-	font-weight: bold;
-}
-
-.progress-inline {
-	width: 100%;
-	margin-top: 15rpx;
-	cursor: pointer;
-	transition: all 0.2s ease;
-}
-
-.progress-inline:active {
-	transform: scale(0.98);
-	opacity: 0.8;
-}
-
-.progress-bar-inline {
-	width: 100%;
-	height: 8rpx;
-	background: rgba(255, 255, 255, 0.3);
-	border-radius: 4rpx;
-	overflow: hidden;
-	margin-bottom: 8rpx;
-}
-
-.progress-fill-inline {
-	height: 100%;
-	background: rgba(255, 255, 255, 0.9);
-	border-radius: 4rpx;
-	transition: width 0.3s ease;
-}
-
-.progress-text-inline {
-	font-size: 22rpx;
-	color: rgba(255, 255, 255, 0.85);
-	line-height: 1.3;
-}
-
-.main .down {
-	box-sizing: border-box;
-	width: 100%;
-	display: flex;
-	flex-direction: column;
-	justify-content: center;
-	padding: 30rpx 20rpx;
-	margin-top: 30rpx;
-}
-
-.main .down .data {
+.entry-header {
 	display: flex;
 	justify-content: space-between;
 	align-items: center;
-	height: 150rpx;
-	padding: 0rpx 40rpx 0rpx 40rpx;
-	width: 100%;
-	background-color: #fff;
+	padding: 0 8rpx;
 }
 
-.main .down .data view {
-	width: 150rpx;
+.entry-title-bar {
 	display: flex;
-	flex-direction: column;
 	align-items: center;
-	justify-content: center;
+	gap: 16rpx;
 }
 
-.main .down .data view .num {
+.title-indicator {
+	width: 8rpx;
+	height: 32rpx;
+	background: #00f2ff;
+	border-radius: 4rpx;
+	box-shadow: 0 0 16rpx #00f2ff;
+}
+
+.entry-title {
 	font-size: 32rpx;
 	font-weight: bold;
+	color: #fff;
+	letter-spacing: 2rpx;
 }
 
-.main .down .data view .txt {
+.entry-hint {
 	font-size: 24rpx;
-	color: #aaa;
+	color: rgba(255, 255, 255, 0.4);
 }
 
-.main .comm-list .item.arrow::before,
-.main .comm-list .item .content .item-icon {
-	color: #0E9489;
-}
-
-.main .down .today {
-	width: 100%;
-	padding: 30rpx 30rpx 20rpx;
-	display: flex;
-	flex-direction: column;
-	align-items: center;
-	justify-content: center;
-	background-color: #fff;
-}
-
-.main .down .today .title {
-	width: 100%;
-	text-align: left;
-	font-size: 32rpx;
-	font-weight: bold;
-	line-height: 1.2;
-	margin-bottom: 30rpx;
-}
-
-.main .down .today .list {
-	width: 100%;
-	display: flex;
-	flex-direction: column;
-	align-items: flex-start;
-	justify-content: flex-start;
-}
-
-.main .down .today .list .item {
-	width: 100%;
-	display: flex;
-	flex-direction: column;
-	align-items: flex-start;
-	justify-content: center;
-	padding: 15rpx 0;
-	border-bottom: 1rpx dashed #ccc;
-}
-
-.main .down .today .list .item:last-child {
-	margin-bottom: 0rpx;
-	border: 0;
-}
-
-.main .down .today .list .item .time {
-	font-size: 28rpx;
-	width: 100%;
-	display: flex;
-	align-items: center;
-	justify-content: space-between;
-	line-height: 2;
-	font-weight: bold;
-}
-
-.main .down .today .list .item .time .status {
-	font-weight: normal;
-	font-size: 27rpx;
-}
-
-.main .down .today .list .item .project {
-	color: #666;
-	font-size: 24rpx;
-	width: 100%;
-	text-align: left;
-}
-
-.main .site-footer {
-	width: 100%;
-	align-self: flex-end;
-}
-
-/* 积分条样式 */
-.points-bar {
-	background: #fff;
+/* 预约卡片 - 青色呼吸边框 */
+.appointment-card {
+	border-radius: 32rpx;
 	padding: 30rpx;
-	margin: 20rpx 0;
-	border-radius: 20rpx;
-}
-
-.points-header {
+	position: relative;
+	overflow: hidden;
 	display: flex;
+	justify-content: space-between;
 	align-items: center;
+	transition: all 0.2s;
+
+	/* 玻璃背景 + 青色渐变 */
+	background: linear-gradient(160deg, rgba(0, 242, 255, 0.05) 0%, rgba(20, 20, 35, 0.4) 100%);
+	backdrop-filter: blur(15px);
+	-webkit-backdrop-filter: blur(15px);
+
+	/* 顶部亮边 */
+	border-top: 2rpx solid rgba(0, 242, 255, 0.5);
+	border-left: 1rpx solid rgba(255, 255, 255, 0.1);
+	border-right: 1rpx solid rgba(255, 255, 255, 0.05);
+	border-bottom: 1rpx solid rgba(0, 0, 0, 0.2);
+
+	/* 呼吸动画 */
+	animation: breathe-cyan 3s infinite ease-in-out;
 }
 
-.points-avatar {
+.appointment-card:active {
+	transform: scale(0.98);
+}
+
+.appointment-content {
+	display: flex;
+	flex-direction: column;
+	gap: 8rpx;
+}
+
+.appointment-content view {
+	display: flex;
+	flex-direction: column;
+	gap: 8rpx;
+}
+
+.appointment-label {
+	display: inline-block;
+	font-size: 20rpx;
+	color: #000;
+	background: #00f2ff;
+	padding: 4rpx 12rpx;
+	border-radius: 8rpx;
+	font-weight: bold;
+	box-shadow: 0 0 16rpx rgba(0, 242, 255, 0.5);
+	width: fit-content;
+}
+
+.appointment-name {
+	font-size: 32rpx;
+	font-weight: bold;
+	color: #fff;
+	margin-top: 8rpx;
+}
+
+.appointment-time {
+	font-size: 24rpx;
+	color: rgba(255, 255, 255, 0.7);
+	margin-top: 4rpx;
+}
+
+.appointment-instructor {
+	font-size: 24rpx;
+	color: rgba(255, 255, 255, 0.5);
+	margin-top: 4rpx;
+}
+
+.appointment-arrow {
 	width: 80rpx;
 	height: 80rpx;
 	border-radius: 50%;
+	background: rgba(0, 242, 255, 0.15);
+	border: 1rpx solid rgba(0, 242, 255, 0.3);
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	transition: transform 0.2s;
+}
+
+.appointment-arrow text {
+	font-size: 40rpx;
+	color: #00f2ff;
+}
+
+.appointment-card:active .appointment-arrow {
+	transform: scale(1.1);
+}
+
+/* ========== 卡包入口 - 魅惑紫主题 (提亮版) ========== */
+.card-wallet-entry {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	padding: 30rpx;
+	position: relative;
 	overflow: hidden;
-	margin-right: 20rpx;
+	transition: all 0.2s;
+
+	/* 提亮：增加背景透明度 */
+	background: linear-gradient(160deg, rgba(189, 0, 255, 0.25) 0%, rgba(189, 0, 255, 0.05) 100%);
+	backdrop-filter: blur(20px) brightness(1.2);
+	-webkit-backdrop-filter: blur(20px) brightness(1.2);
+
+	/* 顶部亮边 */
+	border-top: 2rpx solid rgba(189, 0, 255, 0.5);
+
+	/* 呼吸动画 (错开时间) */
+	animation: breathe-purple 4s infinite ease-in-out;
+	animation-delay: -1s;
 }
 
-.points-avatar image {
-	width: 100%;
-	height: 100%;
+/* 移除左侧装饰条（用边框替代） */
+.card-wallet-entry::before {
+	display: none;
 }
 
-.points-info {
-	flex: 1;
+.card-wallet-entry:active {
+	background: rgba(255, 255, 255, 0.08);
+	transform: scale(0.98);
 }
 
-.points-title {
-	font-size: 30rpx;
-	font-weight: bold;
-	color: #333;
-	margin-bottom: 10rpx;
+.wallet-left {
+	display: flex;
+	align-items: center;
+	gap: 24rpx;
 }
 
-.points-level {
-	font-size: 26rpx;
-	color: #666;
-	margin-bottom: 15rpx;
+/* Icon 深黑紫背景，营造凹陷感 */
+.wallet-icon {
+	width: 90rpx;
+	height: 90rpx;
+	border-radius: 24rpx;
+	background: rgba(20, 0, 40, 0.6);
+	border: 1rpx solid rgba(189, 0, 255, 0.5);
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	box-shadow: inset 0 0 20rpx rgba(0, 0, 0, 0.5);
+	font-size: 40rpx;
 }
 
-.points-progress {
+.wallet-info {
 	display: flex;
 	flex-direction: column;
+	gap: 6rpx;
 }
 
-.progress-bar {
-	width: 100%;
-	height: 8rpx;
-	background: #f0f0f0;
-	border-radius: 4rpx;
-	overflow: hidden;
-	margin-bottom: 8rpx;
-}
-
-.progress-fill {
-	height: 100%;
-	border-radius: 4rpx;
-	transition: width 0.3s ease;
-}
-
-.progress-text {
-	font-size: 24rpx;
-	color: #666;
-}
-
-/* 积分选项样式 */
-.item .extra {
-	color: #FF6B6B;
+.wallet-title {
+	font-size: 30rpx;
 	font-weight: bold;
-	font-size: 28rpx;
+	color: #fff;
 }
 
-/* 积分图标颜色 */
-.icon-coin {
-	color: #FFD700 !important;
+.wallet-subtitle {
+	font-size: 20rpx;
+	color: rgba(230, 180, 255, 0.9);
+	text-transform: uppercase;
+	letter-spacing: 2rpx;
+	font-weight: 600;
 }
 
-/* 预约状态显示样式 */
-.appointment-status {
-	padding: 20rpx 0;
+.wallet-right {
+	text-align: right;
+	display: flex;
+	flex-direction: column;
+	align-items: flex-end;
+	gap: 8rpx;
+}
+
+.wallet-count {
+	font-size: 48rpx;
+	font-weight: 800;
+	color: #fff;
+	text-shadow: 0 0 20rpx rgba(189, 0, 255, 0.6);
+	line-height: 1;
+}
+
+.wallet-badge {
+	font-size: 20rpx;
+	color: rgba(255, 255, 255, 0.5);
+}
+
+/* ========== 底部功能列表 - Clean Glass ========== */
+.menu-section {
+	overflow: hidden;
+	margin-top: 10rpx;
+	background: rgba(255, 255, 255, 0.03);
+}
+
+.menu-item {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	padding: 30rpx;
+	transition: all 0.2s;
+}
+
+.menu-item:active {
+	background: rgba(255, 255, 255, 0.05);
+}
+
+.menu-item-left {
+	display: flex;
+	align-items: center;
+	gap: 24rpx;
+}
+
+.menu-icon {
+	width: 48rpx;
 	text-align: center;
-	font-size: 28rpx;
-	line-height: 1.4;
+	font-size: 36rpx;
+	transition: color 0.2s;
 }
 
-.appointment-status text {
-	display: block;
-	word-wrap: break-word;
-	word-break: break-all;
+.menu-label {
+	font-size: 28rpx;
+	color: rgba(255, 255, 255, 0.8);
+}
+
+.menu-arrow {
+	font-size: 28rpx;
+	color: rgba(255, 255, 255, 0.3);
+	transition: color 0.2s;
+}
+
+.menu-item:active .menu-arrow {
+	color: #00f2ff;
+}
+
+.menu-divider {
+	height: 1rpx;
+	background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), transparent);
+	margin: 0;
 }

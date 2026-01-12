@@ -49,11 +49,89 @@ Page({
 		if (!AdminBiz.isAdmin(this)) return;
 		pageHelper.getOptions(this, options);
 
-		this.setData(await AdminMeetBiz.initFormData()); // 初始化表单数据   
+		this.setData(await AdminMeetBiz.initFormData()); // 初始化表单数据
 
+		await this._loadInstructorList();
 		await this._loadDetail();
 
 		this._setContentDesc();
+	},
+
+	/** 加载导师列表 */
+	_loadInstructorList: async function () {
+		try {
+			let params = {};
+			let opt = { title: 'none' };
+			let result = await cloudHelper.callCloudData('instructor/list', params, opt);
+
+			let instructorOptions = [];
+
+			// 添加"尚未决定"选项
+			instructorOptions.push({
+				INSTRUCTOR_ID: 'UNDECIDED',
+				INSTRUCTOR_NAME: '尚未决定',
+				INSTRUCTOR_PIC: ''
+			});
+
+			// 映射导师列表，将 _id 转换为 INSTRUCTOR_ID
+			if (result && result.list) {
+				result.list.forEach(instructor => {
+					instructorOptions.push({
+						INSTRUCTOR_ID: instructor._id,
+						INSTRUCTOR_NAME: instructor.INSTRUCTOR_NAME,
+						INSTRUCTOR_PIC: instructor.INSTRUCTOR_PIC || ''
+					});
+				});
+			}
+
+			this.setData({
+				instructorOptions: instructorOptions
+			});
+		} catch (err) {
+			console.error('加载导师列表失败:', err);
+			// 即使失败也要设置默认选项
+			this.setData({
+				instructorOptions: [{
+					INSTRUCTOR_ID: 'UNDECIDED',
+					INSTRUCTOR_NAME: '尚未决定',
+					INSTRUCTOR_PIC: ''
+				}]
+			});
+		}
+	},
+
+	/** 导师选择变化 */
+	bindInstructorChange: function (e) {
+		let index = parseInt(e.detail.value);
+		let instructor = this.data.instructorOptions[index];
+
+		if (!instructor) {
+			console.error('[admin_meet_edit] 未找到导师对象，index:', index);
+			return;
+		}
+
+		this.setData({
+			formInstructorIndex: index,
+			formInstructorId: instructor.INSTRUCTOR_ID,
+			formInstructorName: instructor.INSTRUCTOR_NAME,
+			formInstructorPic: instructor.INSTRUCTOR_PIC || ''
+		});
+	},
+
+	/** 根据导师ID获取索引 */
+	_getInstructorIndex: function (instructorId) {
+		let options = this.data.instructorOptions;
+		if (!options || options.length === 0) return 0;
+
+		// 如果ID为空字符串,映射到UNDECIDED
+		let targetId = (!instructorId || instructorId === '') ? 'UNDECIDED' : instructorId;
+
+		for (let i = 0; i < options.length; i++) {
+			if (options[i].INSTRUCTOR_ID === targetId) {
+				return i;
+			}
+		}
+		return 0; // 默认返回第一个（尚未决定）
 	},
 
 	_loadDetail: async function () {
@@ -105,9 +183,14 @@ Page({
 			// 表单数据
 			formTitle: meet.MEET_TITLE,
 			formTypeId: meet.MEET_TYPE_ID,
+			formInstructorId: meet.MEET_INSTRUCTOR_ID || 'UNDECIDED',
+			formInstructorName: meet.MEET_INSTRUCTOR_NAME || '尚未决定',
+			formInstructorPic: meet.MEET_INSTRUCTOR_PIC || '',
+			formInstructorIndex: this._getInstructorIndex(meet.MEET_INSTRUCTOR_ID || 'UNDECIDED'),
 			formContent: meet.MEET_CONTENT,
 			formOrder: meet.MEET_ORDER,
 			formStyleSet: meet.MEET_STYLE_SET,
+			formCourseInfo: meet.MEET_COURSE_INFO || '',
 
 			formDaysSet: formDaysSet,
 

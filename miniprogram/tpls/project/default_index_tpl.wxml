@@ -2,13 +2,17 @@
 	<view class="main">
 		<!-- Carousel Banner -->
 		<view class="carousel-section">
-			<swiper class="carousel" autoplay="{{true}}" interval="{{5000}}" duration="{{500}}" circular="{{true}}" indicator-dots="{{true}}" indicator-color="rgba(0, 0, 0, 0.3)" indicator-active-color="#333333">
+			<swiper class="carousel" autoplay="{{true}}" interval="{{5000}}" duration="{{500}}" circular="{{true}}" indicator-dots="{{true}}" indicator-color="rgba(255, 255, 255, 0.5)" indicator-active-color="#fff" bindchange="onCarouselChange">
 				<block wx:for="{{carouselList}}" wx:key="_id">
 					<swiper-item>
-						<image src="{{item.CAROUSEL_PIC}}" mode="aspectFill" class="carousel-image" bindtap="onCarouselTap" data-url="{{item.CAROUSEL_URL}}" />
+						<image src="{{item.CAROUSEL_PIC}}" mode="aspectFill" class="carousel-image" />
 					</swiper-item>
 				</block>
 			</swiper>
+			<view class="carousel-button" bindtap="onCarouselButtonTap" hover-class="none">
+				<text class="button-text">Book Your Spot</text>
+				<image class="button-icon" src="../../skin/images/index_page/Gemini_Generated_Image_92tusb92tusb92tu-removebg-preview.png" mode="aspectFit" />
+			</view>
 		</view>
 
 		<!-- Main Menu -->
@@ -16,35 +20,47 @@
 			<view class="menu-grid card-project shadow-project">
 				<view bindtap="url" data-url="../../meet/index/meet_index" class="menu-item">
 					<view class="menu-item-inner">
-						<view class="menu-icon"><image src="../../skin/images/menu_icon/定时见面_appointment.png" /></view>
+						<view class="menu-icon"><image src="../../skin/images/menu_icon/预约-removebg-preview.png" /></view>
 						<view class="menu-title">预约</view>
 					</view>
 				</view>
 
-				<view bindtap="url" data-url="/pages/test/card_store" class="menu-item">
+				<view bindtap="url" data-url="../../../../pages/card/store/card_store" class="menu-item">
 					<view class="menu-item-inner">
-						<view class="menu-icon"><image src="../../skin/images/menu_icon/银行卡_bank-card-one.png" /></view>
+						<view class="menu-icon"><image src="../../skin/images/menu_icon/卡项-removebg-preview.png" /></view>
 						<view class="menu-title">卡项</view>
 					</view>
 				</view>
 
 				<view bindtap="showComingSoon" class="menu-item">
 					<view class="menu-item-inner">
-						<view class="menu-icon"><image src="../../skin/images/menu_icon/书籍_bookshelf.png" /></view>
+						<view class="menu-icon"><image src="../../skin/images/menu_icon/课程-removebg-preview.png" /></view>
 						<view class="menu-title">课程</view>
 					</view>
 				</view>
 
 				<view bindtap="url" data-url="../../about/detail/about_detail" class="menu-item">
 					<view class="menu-item-inner">
-						<view class="menu-icon"><image src="../../skin/images/menu_icon/徽章_medal-one.png" /></view>
+						<view class="menu-icon"><image src="../../skin/images/menu_icon/关于我们-removebg-preview.png" /></view>
 						<view class="menu-title">关于我们</view>
 					</view>
 				</view>
 			</view>
 		</view>
 
-		<!-- Instructor Team Section -->
+		<!-- 核销排行榜 - 领奖台样式 -->
+		<view class="rank-section-wrapper">
+			<cmpt-rank-list id="rankList" type="all" limit="{{3}}" />
+		</view>
+
+		<!-- 海报区域 - 占位，待添加 -->
+		<view class="poster-section">
+			<view class="poster-placeholder">
+				<text class="placeholder-text">海报区域（待添加）</text>
+			</view>
+		</view>
+
+		<!-- 导师团队 -->
 		<view class="instructor-section">
 			<view class="section-header">
 				<view class="section-title">导师团队</view>

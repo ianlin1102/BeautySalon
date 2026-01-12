@@ -30,7 +30,13 @@ MeetModel.DB_STRUCTURE = {
 	MEET_DAYS: 'array|true|default=[]|comment=最近一次修改保存的可用日期',
   
 	MEET_TYPE_ID: 'string|true|comment=分类编号',
-	MEET_TYPE_NAME: 'string|true|comment=分类冗余', 
+	MEET_TYPE_NAME: 'string|true|comment=分类冗余',
+
+	MEET_INSTRUCTOR_ID: 'string|true|comment=导师ID',
+	MEET_INSTRUCTOR_NAME: 'string|true|comment=导师姓名(冗余)',
+	MEET_INSTRUCTOR_PIC: 'string|false|comment=导师头像(冗余)',
+
+	MEET_COURSE_INFO: 'string|false|comment=课程信息',
 
 	MEET_IS_SHOW_LIMIT: 'int|true|default=1|comment=是否显示可预约人数',
 

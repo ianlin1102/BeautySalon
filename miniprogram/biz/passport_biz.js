@@ -54,17 +54,17 @@ class PassportBiz extends BaseBiz {
 	}
 
 	static async adminLogin(name, pwd, that) {
-		if (name.length < 5 || name.length > 30) {
+		if (name.length < 3 || name.length > 30) {
 			wx.showToast({
-				title: '账号输入错误(5-30位)',
+				title: '账号输入错误(3-30位)',
 				icon: 'none'
 			});
 			return;
 		}
 
-		if (pwd.length < 5 || pwd.length > 30) {
+		if (pwd.length < 3 || pwd.length > 30) {
 			wx.showToast({
-				title: '密码输入错误(5-30位)',
+				title: '密码输入错误(3-30位)',
 				icon: 'none'
 			});
 			return;
@@ -80,14 +80,50 @@ class PassportBiz extends BaseBiz {
 
 		try {
 			await cloudHelper.callCloudSumbit('admin/login', params, opt).then(res => {
-				if (res && res.data && res.data.name) AdminBiz.adminLogin(res.data);
+				if (!res || !res.data) {
+					wx.showToast({
+						title: '登录失败',
+						icon: 'none'
+					});
+					return;
+				}
 
-				wx.reLaunch({
-					url: '/pages/admin/index/home/admin_home',
-				});
+				const loginData = res.data;
+				console.log('登录成功:', loginData);
+
+				// 根据角色类型进行路由
+				if (loginData.role === 'admin') {
+					// 管理员登录
+					AdminBiz.adminLogin(loginData);
+					wx.reLaunch({
+						url: '/pages/admin/index/home/admin_home',
+					});
+				} else if (loginData.role === 'user') {
+					// 普通用户登录
+					// 保存用户登录信息到缓存
+					cacheHelper.set('USER_TOKEN', loginData.token, 86400 * 7); // 7天有效
+					cacheHelper.set('USER_INFO', {
+						userId: loginData.userId,
+						name: loginData.name,
+						avatar: loginData.avatar
+					}, 86400 * 7);
+
+					wx.reLaunch({
+						url: '/projects/A00/my/index/my_index',
+					});
+				} else {
+					wx.showToast({
+						title: '未知用户类型',
+						icon: 'none'
+					});
+				}
 			});
 		} catch (e) {
-			console.log(e);
+			console.log('登录错误:', e);
+			wx.showToast({
+				title: e.msg || '登录失败',
+				icon: 'none'
+			});
 		}
 
 	}
@@ -99,7 +135,14 @@ class PassportBiz extends BaseBiz {
 
 		const DEFAULT_POINTS = {
 			totalPoints: 0,
-			currentLevel: { name: '新手会员', color: '#95a5a6' },
+			currentLevel: {
+				name: '新手会员',
+				color: '#95a5a6',
+				gradientStart: '#bdc3c7',
+				gradientEnd: '#7f8c8d',
+				shadowColor: 'rgba(149, 165, 166, 0.4)',
+				maxPoints: 99
+			},
 			needPoints: 100,
 			progressPercent: 0,
 			recentHistory: []

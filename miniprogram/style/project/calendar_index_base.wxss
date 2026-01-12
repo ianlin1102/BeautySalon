@@ -1,30 +1,31 @@
+/* ========== Calendar Index Base - Dark Neon Theme ========== */
 
 page {
-	background-color: #f2f2f2;
+	background-color: #050511;
+	color: #ffffff;
 }
 
-.main {
-	padding: 0 0 20rpx;
-}
-
-.main .plan-date {
+/* 周滑条固定在顶部 */
+.plan-date {
 	width: 100%;
 	position: sticky;
 	top: 0;
 	z-index: 999;
-	box-shadow: var(--ShadowSize) var(--greyShadow);
+	background: #050511;
+}
+
+.main {
+	padding: 0 0 20rpx;
+	min-height: calc(100vh - 200rpx);
 }
 
 .main .list {
 	width: 100%;
-	display: flex;
-	flex-direction: column;
-	justify-content: flex-start;
-	align-items: center;
-	padding: 30rpx 20rpx;
+	display: block;
+	padding: 0 20rpx 30rpx;
 }
 
-/* 旧样式保留（可选） */
+/* ========== 旧样式保留（可选） ========== */
 .main .list .item {
 	width: 100%;
 	display: flex;
@@ -32,9 +33,10 @@ page {
 	align-items: center;
 	height: 100rpx;
 	padding: 0 30rpx 0 0;
-	background-color: #fff;
+	background: rgba(255, 255, 255, 0.03);
+	border: 1rpx solid rgba(255, 255, 255, 0.06);
 	margin-bottom: 30rpx;
-	border-radius: 10rpx;
+	border-radius: 16rpx;
 	overflow: hidden;
 }
 
@@ -42,6 +44,7 @@ page {
 	width: 8rpx;
 	height: 100rpx;
 	margin-right: 15rpx;
+	background: linear-gradient(135deg, #6366f1, #2dd4bf);
 }
 
 .main .list .item .img {
@@ -56,7 +59,7 @@ page {
 	text-align: left;
 	font-size: 28rpx;
 	font-weight: bold;
-	color: #333;
+	color: #ffffff;
 	margin-left: 20rpx;
 }
 
@@ -64,23 +67,336 @@ page {
 	width: 140rpx;
 	text-align: right;
 	font-size: 26rpx;
-	color: #999;
+	color: rgba(255, 255, 255, 0.5);
 }
 
-/* 新的大卡片样式 */
+.main .list .no-project {
+	padding: 30rpx 30rpx;
+	font-size: 28rpx;
+	color: rgba(255, 255, 255, 0.4);
+}
+
+/* ========== 横向卡片样式 - 磨砂黑晶风格 ========== */
+.main .list .meet-card-horizontal {
+	width: 100%;
+	display: flex;
+	flex-direction: row;
+	align-items: stretch;
+	background: rgba(20, 20, 30, 0.6);
+	border: 1rpx solid rgba(255, 255, 255, 0.04);
+	border-radius: 24rpx;
+	padding: 24rpx;
+	padding-left: 32rpx; /* 为侧边指示条留出空间 */
+	margin-bottom: 20rpx;
+	gap: 20rpx;
+	transition: transform 0.2s ease, background 0.2s ease;
+	position: relative;
+	overflow: hidden;
+	/* 启用硬件加速，防止滚动闪烁 */
+	transform: translateZ(0);
+	-webkit-transform: translateZ(0);
+	backface-visibility: hidden;
+	-webkit-backface-visibility: hidden;
+}
+
+.meet-card-horizontal:active {
+	transform: scale(0.98);
+	background: rgba(255, 255, 255, 0.05);
+}
+
+/* 侧边悬浮指示条 (Floating Indicator) */
+.meet-card-horizontal::before {
+	content: '';
+	position: absolute;
+	left: 0;
+	top: 20%;
+	bottom: 20%;
+	width: 6rpx;
+	border-radius: 0 8rpx 8rpx 0;
+	background: var(--card-accent-color, #6366f1);
+	box-shadow: 4rpx 0 20rpx var(--card-accent-shadow, rgba(99, 102, 241, 0.3));
+	opacity: 0.85;
+	/* 防止滚动时闪烁 */
+	transform: translateZ(0);
+	pointer-events: none;
+}
+
+/* 顶部微光已移除，防止滚动闪烁 */
+
+/* 不同分类的指示条颜色 */
+.meet-card-horizontal.category-1 {
+	--card-accent-color: #f43f5e;
+	--card-accent-shadow: rgba(244, 63, 94, 0.4);
+}
+
+.meet-card-horizontal.category-2 {
+	--card-accent-color: #2dd4bf;
+	--card-accent-shadow: rgba(45, 212, 191, 0.4);
+}
+
+.meet-card-horizontal.category-3 {
+	--card-accent-color: #fbbf24;
+	--card-accent-shadow: rgba(251, 191, 36, 0.4);
+}
+
+.meet-card-horizontal.category-4 {
+	--card-accent-color: #a8e6cf;
+	--card-accent-shadow: rgba(168, 230, 207, 0.4);
+}
+
+.meet-card-horizontal.category-99 {
+	--card-accent-color: #9ca3af;
+	--card-accent-shadow: rgba(156, 163, 175, 0.3);
+}
+
+/* ========== 左侧区域：日期 + 头像 ========== */
+.meet-card-horizontal .card-left-section {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	justify-content: flex-start;
+	gap: 12rpx;
+	flex-shrink: 0;
+	width: 120rpx;
+}
+
+.card-left-section .date-info {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	gap: 4rpx;
+}
+
+.date-info .date-text {
+	font-size: 26rpx;
+	font-weight: bold;
+	color: #ffffff;
+	white-space: nowrap;
+}
+
+.date-info .weekday-text {
+	font-size: 22rpx;
+	color: rgba(255, 255, 255, 0.5);
+}
+
+.card-left-section .avatar-wrapper {
+	width: 96rpx;
+	height: 96rpx;
+	border-radius: 50%;
+	overflow: hidden;
+	border: 2rpx solid rgba(255, 255, 255, 0.1);
+	box-shadow: 0 4rpx 16rpx rgba(0, 0, 0, 0.3);
+}
+
+.avatar-wrapper .instructor-avatar {
+	width: 100%;
+	height: 100%;
+	object-fit: cover;
+}
+
+/* ========== 中间区域：内容区 ========== */
+.meet-card-horizontal .card-middle-section {
+	flex: 1;
+	display: flex;
+	flex-direction: column;
+	justify-content: center;
+	gap: 10rpx;
+	padding-right: 12rpx;
+}
+
+/* ========== 分类标签 - Neon Style ========== */
+.card-middle-section .category-tag {
+	display: inline-block;
+	align-self: flex-start;
+	padding: 6rpx 16rpx;
+	font-size: 22rpx;
+	font-weight: 700;
+	border-radius: 8rpx;
+	letter-spacing: 0.5px;
+	border: 1rpx solid currentColor;
+	background: transparent;
+	box-shadow: 0 0 8rpx -2rpx currentColor;
+	text-shadow: 0 0 5rpx currentColor;
+	backdrop-filter: blur(4rpx);
+}
+
+/* 分类标签颜色 - Neon Colors */
+.category-tag-1 {
+	color: #f43f5e;
+	border-color: rgba(244, 63, 94, 0.5);
+	background: rgba(244, 63, 94, 0.08);
+}
+
+.category-tag-2 {
+	color: #2dd4bf;
+	border-color: rgba(45, 212, 191, 0.5);
+	background: rgba(45, 212, 191, 0.08);
+}
+
+.category-tag-3 {
+	color: #fbbf24;
+	border-color: rgba(251, 191, 36, 0.5);
+	background: rgba(251, 191, 36, 0.08);
+}
+
+.category-tag-4 {
+	color: #a8e6cf;
+	border-color: rgba(168, 230, 207, 0.5);
+	background: rgba(168, 230, 207, 0.08);
+}
+
+.category-tag-99 {
+	color: #9ca3af;
+	border-color: rgba(156, 163, 175, 0.5);
+	background: rgba(156, 163, 175, 0.08);
+}
+
+/* ========== 时长 ========== */
+.card-middle-section .time-duration {
+	display: flex;
+	align-items: baseline;
+	gap: 12rpx;
+}
+
+.time-duration .time-range {
+	color: #ffffff;
+	font-weight: 700;
+	font-size: 30rpx;
+	letter-spacing: 0.5px;
+}
+
+.time-duration .duration {
+	color: rgba(255, 255, 255, 0.4);
+	font-size: 22rpx;
+}
+
+/* ========== 导师信息 ========== */
+.card-middle-section .instructor-info {
+	display: flex;
+	align-items: center;
+	font-size: 24rpx;
+}
+
+.instructor-info .instructor-label {
+	color: rgba(255, 255, 255, 0.5);
+}
+
+.instructor-info .instructor-name {
+	color: rgba(255, 255, 255, 0.8);
+	font-weight: 500;
+}
+
+/* ========== 预约人数 - 进度条样式 ========== */
+.card-middle-section .booking-info {
+	display: flex;
+	align-items: center;
+	gap: 8rpx;
+	font-size: 22rpx;
+	color: rgba(255, 255, 255, 0.4);
+}
+
+.booking-info .booking-bar {
+	width: 100rpx;
+	height: 6rpx;
+	background: rgba(255, 255, 255, 0.1);
+	border-radius: 3rpx;
+	overflow: hidden;
+}
+
+.booking-info .booking-bar-fill {
+	height: 100%;
+	background: linear-gradient(90deg, #6366f1, #2dd4bf);
+	border-radius: 3rpx;
+	transition: width 0.3s;
+}
+
+/* ========== 开课提示 ========== */
+.card-middle-section .class-notice {
+	font-size: 20rpx;
+	color: rgba(255, 255, 255, 0.3);
+	font-style: italic;
+}
+
+/* ========== 右侧区域：预约按钮 ========== */
+.meet-card-horizontal .card-right-section {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	flex-shrink: 0;
+	width: 120rpx;
+}
+
+/* ========== 预约按钮 - Neon Glow ========== */
+.card-right-section .book-button {
+	width: 100%;
+	height: 72rpx;
+	background: linear-gradient(135deg, #6366f1, #2dd4bf);
+	color: #fff;
+	font-size: 26rpx;
+	font-weight: 600;
+	border-radius: 36rpx;
+	border: none;
+	box-shadow:
+		0 0 16rpx rgba(99, 102, 241, 0.6),
+		0 0 8rpx rgba(45, 212, 191, 0.4);
+	text-shadow: 0 1rpx 2rpx rgba(0, 0, 0, 0.2);
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	animation: pulse-neon 3s infinite ease-in-out;
+	transition: all 0.2s;
+}
+
+@keyframes pulse-neon {
+	0%, 100% {
+		box-shadow:
+			0 0 12rpx rgba(99, 102, 241, 0.5),
+			0 0 6rpx rgba(45, 212, 191, 0.3);
+	}
+	50% {
+		box-shadow:
+			0 0 24rpx rgba(99, 102, 241, 0.7),
+			0 0 12rpx rgba(45, 212, 191, 0.5);
+	}
+}
+
+.card-right-section .book-button::after {
+	border: none;
+}
+
+.card-right-section .book-button:active {
+	transform: scale(0.95);
+	filter: brightness(1.2);
+}
+
+/* ========== 空状态 ========== */
+.main .list .no-project {
+	text-align: center;
+	padding: 80rpx 30rpx;
+	font-size: 28rpx;
+	color: rgba(255, 255, 255, 0.4);
+}
+
+/* ========== 加载状态 ========== */
+.load-project {
+	color: rgba(255, 255, 255, 0.5);
+}
+
+/* ========== 旧的大卡片样式（保留兼容） ========== */
 .main .list .meet-card {
 	width: 100%;
-	background-color: #fff;
-	border-radius: 20rpx;
+	background: rgba(255, 255, 255, 0.03);
+	border: 1rpx solid rgba(255, 255, 255, 0.06);
+	border-radius: 24rpx;
 	padding: 30rpx;
 	margin-bottom: 24rpx;
-	box-shadow: 0 4rpx 16rpx rgba(0, 0, 0, 0.06);
+	backdrop-filter: blur(20rpx);
 	transition: all 0.3s;
 }
 
 .main .list .meet-card:active {
 	transform: scale(0.98);
-	box-shadow: 0 2rpx 8rpx rgba(0, 0, 0, 0.1);
+	background: rgba(255, 255, 255, 0.06);
 }
 
 .meet-card .card-header {
@@ -103,7 +419,7 @@ page {
 	width: 100rpx;
 	height: 100rpx;
 	border-radius: 16rpx;
-	background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+	background: linear-gradient(135deg, #6366f1 0%, #2dd4bf 100%);
 	display: flex;
 	align-items: center;
 	justify-content: center;
@@ -121,7 +437,7 @@ page {
 .card-title {
 	font-size: 32rpx;
 	font-weight: bold;
-	color: #333;
+	color: #ffffff;
 	line-height: 1.4;
 }
 
@@ -129,16 +445,11 @@ page {
 	display: flex;
 	align-items: center;
 	font-size: 26rpx;
-	color: #666;
+	color: rgba(255, 255, 255, 0.6);
 	line-height: 1.4;
 }
 
-.main .list .no-project {
-	padding: 30rpx 30rpx;
-	font-size: 28rpx;
-}
-
-/* 新的背景图片卡片样式 */
+/* ========== 背景图片卡片样式 ========== */
 .main .list .meet-card-new {
 	width: 100%;
 	height: 280rpx;
@@ -146,10 +457,9 @@ page {
 	border-radius: 24rpx;
 	margin-bottom: 24rpx;
 	overflow: hidden;
-	box-shadow: 0 6rpx 20rpx rgba(0, 0, 0, 0.08);
+	border: 1rpx solid rgba(255, 255, 255, 0.08);
 }
 
-/* 背景图片层 */
 .meet-card-new .card-bg {
 	position: absolute;
 	top: 0;
@@ -168,10 +478,10 @@ page {
 .meet-card-new .bg-placeholder {
 	width: 100%;
 	height: 100%;
-	background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+	background: linear-gradient(135deg, #6366f1 0%, #2dd4bf 100%);
 }
 
-/* 白色渐变遮罩 - 从上1/4开始渐变，中间完成 */
+/* 暗色渐变遮罩 */
 .meet-card-new .card-gradient-mask {
 	position: absolute;
 	bottom: 0;
@@ -179,19 +489,18 @@ page {
 	right: 0;
 	height: 85%;
 	background: linear-gradient(to top,
-		rgba(255, 255, 255, 1) 0%,
-		rgba(255, 255, 255, 1) 20%,
-		rgba(255, 255, 255, 0.96) 35%,
-		rgba(255, 255, 255, 0.88) 50%,
-		rgba(255, 255, 255, 0.72) 65%,
-		rgba(255, 255, 255, 0.45) 80%,
+		rgba(5, 5, 17, 0.98) 0%,
+		rgba(5, 5, 17, 0.95) 20%,
+		rgba(5, 5, 17, 0.85) 40%,
+		rgba(5, 5, 17, 0.6) 60%,
+		rgba(5, 5, 17, 0.3) 80%,
 		transparent 100%);
+	z-index: 2;
 }
 
-/* 内容层：左右布局 */
 .meet-card-new .card-layout {
 	position: relative;
-	z-index: 2;
+	z-index: 3;
 	height: 100%;
 	display: flex;
 	flex-direction: row;
@@ -199,7 +508,6 @@ page {
 	padding: 24rpx 28rpx 28rpx;
 }
 
-/* 左侧区域：标题和时间段 */
 .meet-card-new .card-left {
 	flex: 1;
 	display: flex;
@@ -212,13 +520,13 @@ page {
 .meet-card-new .card-title-new {
 	font-size: 40rpx;
 	font-weight: bold;
-	color: #000;
+	color: #ffffff;
 	line-height: 1.3;
 	max-width: 480rpx;
 	overflow: hidden;
 	text-overflow: ellipsis;
 	white-space: nowrap;
-	text-shadow: 0 1rpx 3rpx rgba(255, 255, 255, 0.8);
+	text-shadow: 0 2rpx 8rpx rgba(0, 0, 0, 0.5);
 	flex-shrink: 0;
 }
 
@@ -226,12 +534,11 @@ page {
 	display: flex;
 	align-items: center;
 	font-size: 28rpx;
-	color: #666;
+	color: rgba(255, 255, 255, 0.7);
 	line-height: 1.4;
 	padding-top: 2rpx;
 }
 
-/* 时间段标签容器 - 纵向排列 */
 .meet-card-new .card-time-slots-new {
 	display: flex;
 	flex-direction: column;
@@ -241,22 +548,21 @@ page {
 	flex-shrink: 1;
 }
 
-/* 单个时间段标签 - 横向显示 */
 .meet-card-new .time-slot-tag {
 	display: inline-flex;
 	align-items: center;
 	padding: 6rpx 16rpx;
-	background: linear-gradient(135deg, #fce4ec 0%, #f8bbd0 100%);
-	color: #c2185b;
+	background: rgba(99, 102, 241, 0.2);
+	border: 1rpx solid rgba(99, 102, 241, 0.4);
+	color: #a5b4fc;
 	font-size: 24rpx;
 	font-weight: 600;
 	border-radius: 18rpx;
 	align-self: flex-start;
-	box-shadow: 0 2rpx 8rpx rgba(252, 228, 236, 0.4);
+	box-shadow: 0 0 12rpx rgba(99, 102, 241, 0.3);
 	flex-shrink: 0;
 }
 
-/* 右侧区域：按钮 */
 .meet-card-new .card-right {
 	width: 160rpx;
 	display: flex;
@@ -267,19 +573,15 @@ page {
 
 .meet-card-new .book-btn {
 	padding: 18rpx 28rpx;
-	background: radial-gradient(ellipse at center,
-		#5756B3 0%,
-		#5756B3 40%,
-		rgba(87, 86, 179, 0.85) 70%,
-		rgba(87, 86, 179, 0.6) 90%,
-		rgba(87, 86, 179, 0.3) 100%);
+	background: linear-gradient(135deg, #6366f1, #2dd4bf);
 	color: #fff;
 	font-size: 30rpx;
 	font-weight: 600;
 	border-radius: 44rpx;
 	border: none;
-	box-shadow: 0 6rpx 20rpx rgba(87, 86, 179, 0.4),
-				0 0 40rpx rgba(87, 86, 179, 0.2);
+	box-shadow:
+		0 0 20rpx rgba(99, 102, 241, 0.5),
+		0 0 40rpx rgba(45, 212, 191, 0.3);
 	transition: all 0.3s;
 }
 
@@ -289,6 +591,173 @@ page {
 
 .meet-card-new .book-btn:active {
 	transform: scale(0.95);
-	box-shadow: 0 2rpx 8rpx rgba(87, 86, 179, 0.5),
-				0 0 20rpx rgba(87, 86, 179, 0.3);
+	filter: brightness(1.2);
+}
+
+/* 高亮状态 */
+.meet-card-new.highlighted {
+	box-shadow:
+		0 0 24rpx rgba(99, 102, 241, 0.5),
+		0 0 0 2rpx rgba(99, 102, 241, 0.3);
+	animation: highlight-pulse 2s ease-in-out infinite;
+}
+
+@keyframes highlight-pulse {
+	0%, 100% {
+		box-shadow:
+			0 0 24rpx rgba(99, 102, 241, 0.4),
+			0 0 0 2rpx rgba(99, 102, 241, 0.2);
+	}
+	50% {
+		box-shadow:
+			0 0 40rpx rgba(99, 102, 241, 0.6),
+			0 0 0 4rpx rgba(99, 102, 241, 0.4);
+	}
+}
+
+/* ========== 课程信息文字显示 ========== */
+.card-middle-section .course-info-text-row {
+	display: flex;
+	align-items: center;
+	margin-top: 4rpx;
+}
+
+.course-info-text-row .course-info-preview {
+	font-size: 24rpx;
+	color: #a5b4fc;
+	line-height: 1.4;
+	font-weight: 500;
+	text-shadow: 0 0 8rpx rgba(99, 102, 241, 0.6), 0 0 16rpx rgba(99, 102, 241, 0.3);
+}
+
+.course-info-text-row:active .course-info-preview {
+	color: #c4b5fd;
+	text-shadow: 0 0 12rpx rgba(99, 102, 241, 0.8), 0 0 24rpx rgba(99, 102, 241, 0.5);
+}
+
+/* ========== 旧版课程信息标签样式（保留兼容） ========== */
+.card-middle-section .course-info-tag {
+	display: inline-flex;
+	align-items: center;
+	gap: 6rpx;
+	padding: 6rpx 14rpx;
+	background: rgba(99, 102, 241, 0.15);
+	border: 1rpx solid rgba(99, 102, 241, 0.4);
+	border-radius: 8rpx;
+	font-size: 22rpx;
+	color: #a5b4fc;
+	align-self: flex-start;
+	transition: all 0.2s;
+}
+
+.course-info-tag:active {
+	background: rgba(99, 102, 241, 0.3);
+	transform: scale(0.95);
+}
+
+.course-info-tag .icon-info-circle {
+	font-size: 22rpx;
+}
+
+.course-info-tag .tag-text {
+	font-weight: 500;
+}
+
+/* ========== 课程信息弹窗 ========== */
+.course-info-modal {
+	position: fixed;
+	top: 0;
+	left: 0;
+	right: 0;
+	bottom: 0;
+	background: rgba(0, 0, 0, 0.7);
+	z-index: 9999;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	padding: 40rpx;
+	animation: fadeIn 0.2s ease-out;
+}
+
+@keyframes fadeIn {
+	from {
+		opacity: 0;
+	}
+	to {
+		opacity: 1;
+	}
+}
+
+.course-info-modal .modal-content {
+	width: 100%;
+	max-width: 600rpx;
+	max-height: 70vh;
+	background: rgba(20, 20, 35, 0.95);
+	border: 1rpx solid rgba(99, 102, 241, 0.3);
+	border-radius: 24rpx;
+	overflow: hidden;
+	box-shadow:
+		0 0 40rpx rgba(99, 102, 241, 0.3),
+		0 8rpx 32rpx rgba(0, 0, 0, 0.5);
+	animation: slideUp 0.25s ease-out;
+}
+
+@keyframes slideUp {
+	from {
+		opacity: 0;
+		transform: translateY(40rpx);
+	}
+	to {
+		opacity: 1;
+		transform: translateY(0);
+	}
+}
+
+.modal-content .modal-header {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	padding: 28rpx 30rpx;
+	border-bottom: 1rpx solid rgba(255, 255, 255, 0.08);
+	background: rgba(99, 102, 241, 0.1);
+}
+
+.modal-header .modal-title {
+	font-size: 32rpx;
+	font-weight: 600;
+	color: #ffffff;
+}
+
+.modal-header .modal-close {
+	width: 56rpx;
+	height: 56rpx;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	border-radius: 50%;
+	background: rgba(255, 255, 255, 0.08);
+	transition: all 0.2s;
+}
+
+.modal-header .modal-close:active {
+	background: rgba(255, 255, 255, 0.15);
+	transform: scale(0.9);
+}
+
+.modal-close .icon-close {
+	font-size: 28rpx;
+	color: rgba(255, 255, 255, 0.6);
+}
+
+.modal-content .modal-body {
+	padding: 30rpx;
+	max-height: 50vh;
+}
+
+.modal-body .course-info-text {
+	font-size: 28rpx;
+	line-height: 1.8;
+	color: rgba(255, 255, 255, 0.85);
+	white-space: pre-wrap;
+	word-break: break-word;
 }

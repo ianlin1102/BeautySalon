@@ -125,7 +125,7 @@ Page({
 	bindReviewTap: function (e) {
 		let id = pageHelper.dataset(e, 'id');
 		wx.navigateTo({
-			url: '/pages/test/card_detail?id=' + id,
+			url: '/pages/card/detail/card_detail?id=' + id,
 		});
 	},
 

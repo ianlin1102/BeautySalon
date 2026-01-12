@@ -2,11 +2,11 @@
 <view class="scroll-calendar-wrapper">
 	<!-- 头部操作栏 -->
 	<view class="scroll-header">
-		<view class="scroll-title">选择预约日期</view>
+		<view class="scroll-title">{{mode === 'week' ? '选择预约周期' : '选择预约日期'}}</view>
 		<view class="scroll-actions">
 			<view class="scroll-btn" bindtap="bindTodayTap">
 				<text class="icon-homefill"></text>
-				<text class="btn-text">今天</text>
+				<text class="btn-text">{{mode === 'week' ? '本周' : '今天'}}</text>
 			</view>
 			<view class="scroll-btn" bindtap="bindToggleCalendar">
 				<text class="icon-calendar"></text>
@@ -15,8 +15,39 @@
 		</view>
 	</view>
 
-	<!-- 横向滚动日期条 -->
-	<scroll-view class="scroll-container"
+	<!-- 横向滚动周范围条 (按周模式) -->
+	<scroll-view wx:if="{{mode === 'week'}}" class="scroll-container"
+				 scroll-x="{{true}}"
+				 scroll-into-view="{{scrollIntoView}}"
+				 show-scrollbar="{{false}}">
+		<view class="scroll-weeks">
+			<view class="week-item {{item.startDate === selectedDayData ? 'selected' : ''}} {{item.isCurrentWeek ? 'is-current-week' : ''}}"
+				  wx:for="{{scrollWeeks}}"
+				  wx:key="range"
+				  id="week-{{index}}"
+				  data-item="{{item}}"
+				  bindtap="bindWeekTap">
+
+				<!-- 月份分隔标识 -->
+				<view class="month-divider" wx:if="{{index === 0 || item.startMonth !== scrollWeeks[index-1].startMonth}}">
+					{{item.startMonth}}月
+				</view>
+
+				<!-- 周范围主体 -->
+				<view class="week-content">
+					<!-- 日期范围 -->
+					<view class="week-range">{{item.displayText}}</view>
+					<!-- 本周/下周/下下周 或 不显示 -->
+					<view class="week-label" wx:if="{{item.weekLabel}}">{{item.weekLabel}}</view>
+					<!-- 数据点 -->
+					<view class="has-dot" wx:if="{{item.hasData}}"></view>
+				</view>
+			</view>
+		</view>
+	</scroll-view>
+
+	<!-- 横向滚动日期条 (按天模式) -->
+	<scroll-view wx:else class="scroll-container"
 				 scroll-x="{{true}}"
 				 scroll-into-view="{{scrollIntoView}}"
 				 show-scrollbar="{{false}}">

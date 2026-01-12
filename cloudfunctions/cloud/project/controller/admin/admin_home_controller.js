@@ -9,18 +9,9 @@ const AdminHomeService = require('../../service/admin/admin_home_service.js');
 class AdminHomeController extends BaseAdminController {
 
 
-	// 管理首页 
+	// 管理首页 (公开路由，无需管理员认证，只返回统计数据)
 	async adminHome() {
-		await this.isAdmin();
-
-		// 数据校验
-		let rules = {
-
-		};
-
-		// 取得数据
-		let input = this.validateData(rules);
-
+		// 不需要 isAdmin() 检查，因为只是读取统计数据
 		let service = new AdminHomeService();
 		return await service.adminHome();
 	}

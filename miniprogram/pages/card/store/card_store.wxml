@@ -1,0 +1,58 @@
+<view class="container">
+	<!-- 分类标签 - Sticky Filter -->
+	<view class="category-tabs">
+		<view class="switcher-container">
+			<view class="switcher-indicator" style="transform: translateX({{currentTab * 100}}%)"></view>
+			<view class="tab-item {{currentTab === 0 ? 'active' : ''}}" bindtap="switchTab" data-tab="0">
+				<text class="tab-text">全部</text>
+			</view>
+			<view class="tab-item {{currentTab === 1 ? 'active' : ''}}" bindtap="switchTab" data-tab="1">
+				<text class="tab-text">次卡</text>
+			</view>
+			<view class="tab-item {{currentTab === 2 ? 'active' : ''}}" bindtap="switchTab" data-tab="2">
+				<text class="tab-text">储值卡</text>
+			</view>
+		</view>
+	</view>
+
+	<!-- 卡项列表 - Grid Layout -->
+	<view class="card-list">
+		<view class="card-item {{item.cardType === 1 ? 'card-times' : 'card-balance'}}" wx:for="{{displayCards}}" wx:key="_id" bindtap="viewCard" data-id="{{item._id}}">
+			<view class="card-glass">
+				<!-- 左上角：有效期标签 -->
+				<view class="card-validity">
+					<text wx:if="{{item.validDays}}">{{item.validDays}}天</text>
+					<text wx:else>无期限</text>
+				</view>
+
+				<!-- 卡片标题和描述 -->
+				<view class="card-info">
+					<text class="card-title">{{item.title}}</text>
+					<text class="card-subtitle">{{item.desc}}</text>
+				</view>
+
+				<!-- 底部：价格和按钮 -->
+				<view class="card-bottom">
+					<view class="price-section">
+						<text class="price-symbol">¥</text>
+						<text class="price-amount">{{item.price}}</text>
+					</view>
+					<view class="btn-purchase {{item.cardType === 1 ? 'btn-cyan' : 'btn-purple'}}">
+						立即购买
+					</view>
+				</view>
+			</view>
+		</view>
+	</view>
+
+	<!-- 空状态 -->
+	<view wx:if="{{dataLoaded && displayCards.length === 0}}" class="empty-state">
+		<text class="empty-icon">🛒</text>
+		<text class="empty-text">暂无卡项</text>
+	</view>
+
+	<!-- 加载状态 -->
+	<view wx:if="{{loading}}" class="loading-state">
+		<text>加载中...</text>
+	</view>
+</view>

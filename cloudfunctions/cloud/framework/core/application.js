@@ -66,10 +66,43 @@ async function app(event, context) {
 		console.log('');
 		let time = timeUtil.time('Y-M-D h:m:s');
 		let timeTicks = timeUtil.time();
-		let openId = wxContext.OPENID;
+	// 获取 openId - 支持小程序、HTTP 请求和 CloudBase JS SDK
+	let openId = wxContext.OPENID;  // 小程序请求的默认值
+	let requestType = 'MINI_PROGRAM';
 
-		console.log('▤▤▤▤▤▤▤▤▤▤▤▤▤▤▤▤▤▤▤▤▤▤▤▤▤▤▤▤▤▤▤▤▤▤▤▤▤▤▤▤▤▤▤▤▤▤▤▤▤');
-		console.log(`【↘${time} ENV (${config.CLOUD_ID})】【Request Base↘↘↘】\n【↘Route =***${r}】\n【↘Controller = ${controllerName}】\n【↘Action = ${actionName}】\n【↘OPENID = ${openId}】`);
+	// HTTP 请求的 openId 处理
+	if (event._isHttpRequest) {
+		requestType = 'HTTP';
+		if (event._httpAdmin && event._httpAdmin.adminId) {
+			// 已认证的 HTTP 请求：使用管理员 ID 作为 openId
+			openId = event._httpAdmin.adminId;
+			requestType = 'HTTP_AUTH';
+			console.log(`【HTTP 认证】管理员: ${event._httpAdmin.adminName}, adminId=${openId}`);
+		} else {
+			// 公开的 HTTP 请求：使用固定 guest ID
+			openId = 'http-guest';
+			requestType = 'HTTP_PUBLIC';
+			console.log(`【HTTP 公开】使用 guest ID: ${openId}`);
+		}
+	}
+
+	// CloudBase JS SDK / Web 端调用：优先使用前端传入的 token
+	// 小程序端也会传 token（用户 ID），这里统一处理
+	if (!openId && event.token) {
+		openId = event.token;
+		requestType = 'WEB_SDK';
+		console.log(`【Web SDK】使用前端传入的 token: ${openId}`);
+	}
+
+	// 最终兜底：如果还是没有 openId，使用 guest
+	if (!openId) {
+		openId = 'anonymous-guest';
+		requestType = 'ANONYMOUS';
+		console.log(`【匿名】使用 guest ID: ${openId}`);
+	}
+
+	console.log('▤▤▤▤▤▤▤▤▤▤▤▤▤▤▤▤▤▤▤▤▤▤▤▤▤▤▤▤▤▤▤▤▤▤▤▤▤▤▤▤▤▤▤▤▤▤▤▤▤');
+	console.log(`【↘${time} ENV (${config.CLOUD_ID})】【Request Base↘↘↘】\n【↘Route =***${r}】\n【↘Controller = ${controllerName}】\n【↘Action = ${actionName}】\n【↘Type = ${requestType}】\n【↘OPENID = ${openId}】`);
 
 
 

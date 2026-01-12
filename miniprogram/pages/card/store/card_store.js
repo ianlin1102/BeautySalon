@@ -2,8 +2,8 @@
  * 卡项商城页面
  */
 
-const cloudHelper = require('../../helper/cloud_helper.js');
-const pageHelper = require('../../helper/page_helper.js');
+const cloudHelper = require('../../../helper/cloud_helper.js');
+const pageHelper = require('../../../helper/page_helper.js');
 
 Page({
 	data: {
@@ -149,7 +149,7 @@ Page({
 	viewCard(e) {
 		let id = e.currentTarget.dataset.id;
 		wx.navigateTo({
-			url: `/pages/test/card_detail?id=${id}`
+			url: `/pages/card/detail/card_detail?id=${id}`
 		});
 	},
 

@@ -16,14 +16,32 @@ class CardController extends BaseController {
 			let node = {};
 			node.type = 'card';
 			node._id = list[k]._id;
-			node.cardType = list[k].CARD_TYPE; // 1=次数卡, 2=余额卡
+
+			// Web 端使用的字段名（大写）
+			node.CARD_TYPE = list[k].CARD_TYPE; // 1=次数卡, 2=余额卡
+			node.CARD_TITLE = list[k].CARD_NAME;
+			node.CARD_NAME = list[k].CARD_NAME;
+			node.CARD_DESC = list[k].CARD_DESC;
+			node.CARD_PRICE = list[k].CARD_PRICE;
+			node.CARD_CNT = list[k].CARD_TIMES || 0; // 次数卡的次数
+			node.CARD_BALANCE = list[k].CARD_AMOUNT || 0; // 余额卡的金额
+			node.CARD_VALIDITY_DAYS = list[k].CARD_VALIDITY_DAYS || 0;
+			node.CARD_ADD_TIME = list[k].CARD_ADD_TIME;
+			node.CARD_PIC = list[k].CARD_PIC || []; // 返回完整图片数组
+			node.CARD_HOME = list[k].CARD_HOME || 0;
+
+			// 小程序使用的字段名（兼容）
+			node.cardType = list[k].CARD_TYPE;
 			node.title = list[k].CARD_NAME;
 			node.desc = list[k].CARD_DESC;
 			node.price = list[k].CARD_PRICE;
-			node.times = list[k].CARD_TIMES;
-			node.amount = list[k].CARD_AMOUNT;
+			node.times = list[k].CARD_TIMES || 0;
+			node.amount = list[k].CARD_AMOUNT || 0;
+			node.validDays = list[k].CARD_VALIDITY_DAYS || 0;
 			node.ext = list[k].CARD_ADD_TIME;
-			node.pic = list[k].CARD_PIC[0];
+			// 安全访问数组第一个元素
+			node.pic = (list[k].CARD_PIC && list[k].CARD_PIC.length > 0) ? list[k].CARD_PIC[0] : '';
+
 			ret.push(node);
 		}
 		return ret;

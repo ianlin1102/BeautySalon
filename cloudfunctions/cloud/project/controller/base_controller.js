@@ -19,13 +19,18 @@ class BaseController extends Controller {
 	constructor(route, openId, event) {
 		super(route, openId, event);
 
-		if (config.TEST_MODE)
-			openId = config.TEST_TOKEN_ID;
+	if (config.TEST_MODE)
+		openId = config.TEST_TOKEN_ID;
 
-		if (!openId) {
-			console.error('OPENID is unfined');
-			throw new AppError('OPENID is unfined', appCode.SVR);
-		}
+	if (!openId) {
+		console.error('OPENID is undefined');
+		throw new AppError('OPENID is undefined', appCode.SVR);
+	}
+
+	// HTTP 请求额外日志（用于调试）
+	if (event._isHttpRequest) {
+		console.log(`【BaseController】HTTP请求 openId=${openId}, 已认证=${!!event._httpAdmin}`);
+	}
 
 		// 模板判定
 		if (config.PID) {

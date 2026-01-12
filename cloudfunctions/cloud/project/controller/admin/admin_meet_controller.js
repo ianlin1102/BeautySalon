@@ -249,11 +249,15 @@ class AdminMeetController extends BaseAdminController {
 			title: 'must|string|min:2|max:50|name=标题',
 			typeId: 'must|id|name=分类',
 			typeName: 'must|string|name=分类',
+			instructorId: 'must|string|name=导师ID',
+			instructorName: 'must|string|name=导师姓名',
+			instructorPic: 'string|name=导师头像',
 			order: 'must|int|min:1|max:9999|name=排序号',
 			daysSet: 'must|array|name=预约时间设置',
 			isShowLimit: 'must|int|in:0,1|name=是否显示可预约人数',
 			cancelSet: 'object|name=取消限制设置',
 			costSet: 'object|name=消费设置',
+			courseInfo: 'string|max:500|name=课程信息',
 
 			formSet: 'must|array|name=用户资料设置',
 		};
@@ -300,12 +304,16 @@ class AdminMeetController extends BaseAdminController {
 			title: 'must|string|min:2|max:50|name=标题',
 			typeId: 'must|id|name=分类',
 			typeName: 'must|string|name=分类',
+			instructorId: 'must|string|name=导师ID',
+			instructorPic: 'string|name=导师头像',
+			instructorName: 'must|string|name=导师姓名',
 			order: 'must|int|min:1|max:9999|name=排序号',
 			daysSet: 'must|array|name=预约时间设置',
 
 			isShowLimit: 'must|int|in:0,1|name=是否显示可预约人数',
 			cancelSet: 'object|name=取消限制设置',
 			costSet: 'object|name=消费设置',
+			courseInfo: 'string|max:500|name=课程信息',
 
 			formSet: 'must|array|name=用户资料设置',
 		};

@@ -1,6 +1,6 @@
-const pageHelper = require('../../helper/page_helper.js');
-const cloudHelper = require('../../helper/cloud_helper.js');
-const PassportBiz = require('../../biz/passport_biz.js');
+const pageHelper = require('../../../helper/page_helper.js');
+const cloudHelper = require('../../../helper/cloud_helper.js');
+const PassportBiz = require('../../../biz/passport_biz.js');
 
 Page({
 
@@ -10,6 +10,7 @@ Page({
 	data: {
 		isLoad: false,
 		card: null,
+		agreedDisclaimer: false, // 是否同意免责声明
 	},
 
 	/**
@@ -94,9 +95,34 @@ Page({
 	},
 
 	/**
+	 * 勾选免责声明
+	 */
+	bindAgreeDisclaimer: function (e) {
+		const agreed = e.detail.value.length > 0;
+		this.setData({
+			agreedDisclaimer: agreed
+		});
+	},
+
+	/**
+	 * 查看免责声明
+	 */
+	bindViewDisclaimer: function () {
+		wx.navigateTo({
+			url: '/pages/card/disclaimer/card_disclaimer'
+		});
+	},
+
+	/**
 	 * 立即购买按钮
 	 */
 	bindPurchaseTap: function () {
+		// 检查是否同意免责声明
+		if (!this.data.agreedDisclaimer) {
+			pageHelper.showModal('请先阅读并同意购买免责声明');
+			return;
+		}
+
 		// 检查登录状态
 		if (!PassportBiz.check(this)) {
 			return;

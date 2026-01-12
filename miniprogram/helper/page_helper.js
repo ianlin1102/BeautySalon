@@ -22,7 +22,8 @@
  		MENU_ITEM: ['首页', '预约日历', '我的'], // 第1,4,5菜单
 
  		NEWS_CATE: '1=小店动态|rightpic,2=美容小课堂|leftbig',
- 		MEET_TYPE: '1=美容师预约|leftbig2,2=项目预约|leftbig',
+ 		CARD_CATE: '1=次数卡|leftbig,2=余额卡|leftbig',
+ 		MEET_TYPE: '1=Hip-Hop|leftbig2,2=K-Pop|leftbig,3=Jazz Funk|leftbig2,4=古典舞|leftbig,99=其他(自定义)|leftbig',
 
  		DEFAULT_FORMS: [{
  				type: 'line',

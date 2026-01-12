@@ -36,6 +36,9 @@ JoinModel.DB_STRUCTURE = {
 	JOIN_MEET_TIME_END: 'string|true|comment=时段结束',
 	JOIN_MEET_TIME_MARK: 'string|true|comment=时段标识',
 
+	JOIN_INSTRUCTOR_ID: 'string|false|comment=导师ID(冗余)',
+	JOIN_INSTRUCTOR_NAME: 'string|false|comment=导师姓名(冗余)',
+
 	JOIN_START_TIME: 'int|true|comment=开始时间戳',
 
 	JOIN_FORMS: 'array|true|default=[]|comment=表单',

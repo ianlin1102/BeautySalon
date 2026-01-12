@@ -323,6 +323,164 @@ function getTimeLeft(datetimeTo, flag = 1) {
 
 }
 
+/**
+ * 美国时区定义
+ * 注意：这些偏移量会根据夏令时(DST)调整
+ */
+const US_TIMEZONES = {
+	// 东部时区 (纽约, 亚特兰大, 迈阿密)
+	'Eastern': {
+		name: '美东时区',
+		abbr: 'ET',
+		standard: -5,  // EST (UTC-5)
+		daylight: -4   // EDT (UTC-4)
+	},
+	// 中部时区 (芝加哥, 休斯顿, 达拉斯)
+	'Central': {
+		name: '美中时区',
+		abbr: 'CT',
+		standard: -6,  // CST (UTC-6)
+		daylight: -5   // CDT (UTC-5)
+	},
+	// 山地时区 (丹佛, 凤凰城)
+	'Mountain': {
+		name: '美山时区',
+		abbr: 'MT',
+		standard: -7,  // MST (UTC-7)
+		daylight: -6   // MDT (UTC-6)
+	},
+	// 太平洋时区 (洛杉矶, 西雅图, 旧金山)
+	'Pacific': {
+		name: '美西时区',
+		abbr: 'PT',
+		standard: -8,  // PST (UTC-8)
+		daylight: -7   // PDT (UTC-7)
+	}
+};
+
+/**
+ * 判断某个日期是否处于夏令时
+ * 美国夏令时：3月第二个星期日 至 11月第一个星期日
+ * @param {Date} date - 日期对象
+ * @returns {boolean} - 是否处于夏令时
+ */
+function isDST(date) {
+	const year = date.getFullYear();
+
+	// 3月第二个星期日 2:00 AM
+	const dstStart = new Date(year, 2, 1); // 3月1日
+	dstStart.setDate(1 + (7 - dstStart.getDay()) % 7 + 7); // 第二个星期日
+	dstStart.setHours(2, 0, 0, 0);
+
+	// 11月第一个星期日 2:00 AM
+	const dstEnd = new Date(year, 10, 1); // 11月1日
+	dstEnd.setDate(1 + (7 - dstEnd.getDay()) % 7); // 第一个星期日
+	dstEnd.setHours(2, 0, 0, 0);
+
+	return date >= dstStart && date < dstEnd;
+}
+
+/**
+ * 获取时区偏移量(小时)
+ * @param {string} timezone - 时区名称 ('Eastern', 'Central', 'Mountain', 'Pacific')
+ * @param {Date} date - 日期对象，用于判断是否夏令时
+ * @returns {number} - 相对于UTC的小时偏移量
+ */
+function getTimezoneOffset(timezone, date = new Date()) {
+	const tz = US_TIMEZONES[timezone];
+	if (!tz) return 0;
+
+	return isDST(date) ? tz.daylight : tz.standard;
+}
+
+/**
+ * 将时间戳转换到指定时区的时间字符串
+ * @param {number} timestamp - 毫秒时间戳
+ * @param {string} timezone - 时区名称 ('Eastern', 'Central', 'Mountain', 'Pacific')
+ * @param {string} format - 时间格式，默认 'Y-M-D h:m:s'
+ * @returns {string} - 格式化后的时间字符串
+ */
+function convertToTimezone(timestamp, timezone, format = 'Y-M-D h:m:s') {
+	const date = new Date(timestamp);
+	const offset = getTimezoneOffset(timezone, date);
+	const offsetMs = offset * 60 * 60 * 1000; // 转换为毫秒
+
+	return timestamp2Time(timestamp, format, offsetMs);
+}
+
+/**
+ * 获取当前时间在指定时区的显示
+ * @param {string} timezone - 时区名称 ('Eastern', 'Central', 'Mountain', 'Pacific')
+ * @param {string} format - 时间格式，默认 'Y-M-D h:m:s'
+ * @returns {string} - 格式化后的时间字符串
+ */
+function getCurrentTimeInTimezone(timezone, format = 'Y-M-D h:m:s') {
+	return convertToTimezone(new Date().getTime(), timezone, format);
+}
+
+/**
+ * 在不同时区之间转换时间
+ * @param {string} timeStr - 时间字符串 (Y-M-D h:m:s 或 Y-M-D)
+ * @param {string} fromTimezone - 源时区
+ * @param {string} toTimezone - 目标时区
+ * @param {string} format - 返回格式，默认 'Y-M-D h:m:s'
+ * @returns {string} - 转换后的时间字符串
+ */
+function convertBetweenTimezones(timeStr, fromTimezone, toTimezone, format = 'Y-M-D h:m:s') {
+	// 将时间字符串转为时间戳
+	const timestamp = time2Timestamp(timeStr);
+	const date = new Date(timestamp);
+
+	// 获取源时区和目标时区的偏移量
+	const fromOffset = getTimezoneOffset(fromTimezone, date);
+	const toOffset = getTimezoneOffset(toTimezone, date);
+
+	// 计算时区差异（小时）
+	const hoursDiff = toOffset - fromOffset;
+	const msDiff = hoursDiff * 60 * 60 * 1000;
+
+	// 调整时间戳
+	const adjustedTimestamp = timestamp + msDiff;
+
+	return timestamp2Time(adjustedTimestamp, format);
+}
+
+/**
+ * 获取所有时区的当前时间
+ * @param {string} format - 时间格式，默认 'h:m:s'
+ * @returns {Object} - 包含所有时区时间的对象
+ */
+function getAllTimezonesTime(format = 'h:m:s') {
+	const now = new Date().getTime();
+	const result = {};
+
+	for (let tz in US_TIMEZONES) {
+		const tzInfo = US_TIMEZONES[tz];
+		result[tz] = {
+			name: tzInfo.name,
+			abbr: tzInfo.abbr,
+			time: convertToTimezone(now, tz, format),
+			isDST: isDST(new Date()),
+			offset: getTimezoneOffset(tz)
+		};
+	}
+
+	return result;
+}
+
+/**
+ * 格式化时区显示（包含时区缩写）
+ * @param {string} timeStr - 时间字符串
+ * @param {string} timezone - 时区名称
+ * @returns {string} - 带时区标识的时间字符串，如 "14:30 ET"
+ */
+function formatWithTimezone(timeStr, timezone) {
+	const tzInfo = US_TIMEZONES[timezone];
+	if (!tzInfo) return timeStr;
+
+	return `${timeStr} ${tzInfo.abbr}`;
+}
+
 
 module.exports = {
 	fmtDateCHN,
@@ -347,5 +505,14 @@ module.exports = {
 	getFirstOfWeek,
 	getLastOfWeek,
 	getFirstOfMonth,
-	getLastOfMonth
+	getLastOfMonth,
+
+	// 时区转换相关
+	isDST,
+	getTimezoneOffset,
+	convertToTimezone,
+	getCurrentTimeInTimezone,
+	convertBetweenTimezones,
+	getAllTimezonesTime,
+	formatWithTimezone
 }

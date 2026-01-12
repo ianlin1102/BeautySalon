@@ -1,0 +1,70 @@
+<!-- 上课排行榜组件 - 霓虹风格领奖台 -->
+<view class="rank-list-container">
+	<!-- 榜单标题和切换 -->
+	<view class="rank-header">
+		<view class="rank-title">上课排行榜</view>
+		<view class="rank-tabs">
+			<view class="rank-tab {{currentType === 'all' ? 'active' : ''}}" bindtap="switchType" data-type="all">
+				总榜
+			</view>
+			<view class="rank-tab {{currentType === 'month' ? 'active' : ''}}" bindtap="switchType" data-type="month">
+				月榜
+			</view>
+		</view>
+	</view>
+
+	<!-- 领奖台 - 霓虹风格，高度按比例 -->
+	<view class="podium-container" wx:if="{{rankList && rankList.length > 0}}">
+		<view class="podium">
+			<!-- 第二名（左侧，青蓝色） -->
+			<view class="podium-item rank-2" wx:if="{{rankList[1]}}">
+				<view class="podium-avatar">
+					<text class="avatar-text">{{rankList[1].userName.substring(0, 2)}}</text>
+				</view>
+				<view class="podium-bar" style="height: {{rankList[1].barHeight}}rpx;">
+					<text class="bar-rank">2</text>
+				</view>
+				<view class="podium-info">
+					<view class="podium-name">{{rankList[1].userName}}</view>
+					<view class="podium-count">{{rankList[1].checkinCount}}次</view>
+				</view>
+			</view>
+
+			<!-- 第一名（中间，粉紫色） -->
+			<view class="podium-item rank-1" wx:if="{{rankList[0]}}">
+				<view class="crown-icon">👑</view>
+				<view class="podium-avatar">
+					<text class="avatar-text">{{rankList[0].userName.substring(0, 2)}}</text>
+				</view>
+				<view class="podium-bar" style="height: {{rankList[0].barHeight}}rpx;">
+					<text class="bar-rank">1</text>
+				</view>
+				<view class="podium-info">
+					<view class="podium-name">{{rankList[0].userName}}</view>
+					<view class="podium-count">{{rankList[0].checkinCount}}次</view>
+				</view>
+			</view>
+
+			<!-- 第三名（右侧，电紫色） -->
+			<view class="podium-item rank-3" wx:if="{{rankList[2]}}">
+				<view class="podium-avatar">
+					<text class="avatar-text">{{rankList[2].userName.substring(0, 2)}}</text>
+				</view>
+				<view class="podium-bar" style="height: {{rankList[2].barHeight}}rpx;">
+					<text class="bar-rank">3</text>
+				</view>
+				<view class="podium-info">
+					<view class="podium-name">{{rankList[2].userName}}</view>
+					<view class="podium-count">{{rankList[2].checkinCount}}次</view>
+				</view>
+			</view>
+		</view>
+	</view>
+
+	<!-- 空状态 -->
+	<view class="rank-empty" wx:if="{{!rankList || rankList.length === 0}}">
+		<text class="empty-icon">🏆</text>
+		<text class="empty-text">暂无排行数据</text>
+	</view>
+
+</view>

@@ -166,11 +166,15 @@ class AdminMeetService extends BaseAdminService {
 		order,
 		typeId,
 		typeName,
+		instructorId,
+		instructorName,
+		instructorPic,
 		daysSet,
 		isShowLimit,
 		cancelSet,
 		costSet,
 		formSet,
+		courseInfo,
 	}) {
 		// 数据准备
 		let data = {
@@ -178,6 +182,10 @@ class AdminMeetService extends BaseAdminService {
 			MEET_ORDER: order,
 			MEET_TYPE_ID: typeId,
 			MEET_TYPE_NAME: typeName,
+			MEET_INSTRUCTOR_ID: instructorId,
+			MEET_INSTRUCTOR_NAME: instructorName,
+			MEET_INSTRUCTOR_PIC: instructorPic || '',
+			MEET_COURSE_INFO: courseInfo || '',
 			MEET_IS_SHOW_LIMIT: isShowLimit,
 			MEET_CANCEL_SET: cancelSet || { isLimit: false, days: 0, hours: 0, minutes: 0 },
 			MEET_COST_SET: costSet || { isEnabled: false, costType: 'free', timesCost: 1, balanceCost: 0, allowAutoSelect: true },
@@ -321,12 +329,16 @@ class AdminMeetService extends BaseAdminService {
 		title,
 		typeId,
 		typeName,
+		instructorId,
+		instructorName,
+		instructorPic,
 		order,
 		daysSet,
 		isShowLimit,
 		cancelSet,
 		costSet,
-		formSet
+		formSet,
+		courseInfo,
 	}) {
 		// 更新数据
 		let data = {
@@ -334,6 +346,10 @@ class AdminMeetService extends BaseAdminService {
 			MEET_ORDER: order,
 			MEET_TYPE_ID: typeId,
 			MEET_TYPE_NAME: typeName,
+			MEET_INSTRUCTOR_ID: instructorId,
+			MEET_INSTRUCTOR_NAME: instructorName,
+			MEET_INSTRUCTOR_PIC: instructorPic || '',
+			MEET_COURSE_INFO: courseInfo || '',
 			MEET_IS_SHOW_LIMIT: isShowLimit,
 			MEET_CANCEL_SET: cancelSet || { isLimit: false, days: 0, hours: 0, minutes: 0 },
 			MEET_COST_SET: costSet || { isEnabled: false, costType: 'free', timesCost: 1, balanceCost: 0, allowAutoSelect: true },

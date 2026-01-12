@@ -86,14 +86,14 @@ Page({
 	// 跳转到卡项搜索页面
 	goCardSearch() {
 		wx.navigateTo({
-			url: '/pages/test/card_search'
+			url: '/pages/card/search/card_search'
 		});
 	},
 
 	// 跳转到卡项商城页面
 	goCardStore() {
-		wx.navigateTo({
-			url: '/pages/test/card_store'
+		wx.switchTab({
+			url: '/pages/card/store/card_store'
 		});
 	},
 
@@ -115,13 +115,10 @@ Page({
 				paymentInstructions: '转账后请截图发送至微信，我们会在24小时内为您充值'
 			};
 
-			// callCloudSumbit 返回 {code, msg, data} 完整结构
 			let result = await cloudHelper.callCloudSumbit('admin/card_insert', params);
-			console.log('创建卡项返回数据:', result);
 
 			if (!result || !result.data || !result.data.id) {
 				this.addLog('创建失败：返回数据无效', 'error');
-				console.log('result:', result);
 				return;
 			}
 
@@ -130,7 +127,6 @@ Page({
 			});
 			this.addLog(`创建次数卡成功！卡项ID: ${result.data.id}`, 'success');
 		} catch (e) {
-			console.log('创建次数卡错误:', e);
 			this.addLog(`创建次数卡失败: ${e.message || e.errMsg}`, 'error');
 		}
 	},
@@ -200,27 +196,16 @@ Page({
 				phone: this.data.phone
 			};
 
-			// cloudHelper.callCloudData 已经自动解包，直接返回 data 内容
 			let data = await cloudHelper.callCloudData('admin/user_card_search', params);
 
-			// 检查返回数据
 			if (!data || !data.user) {
 				this.addLog('未找到用户信息', 'error');
 				return;
 			}
 
-			// 使用 userId（openid）而不是 user._id（数据库记录ID）
 			this.setData({
 				userId: data.userId
 			});
-
-			// 调试：打印完整返回数据
-			console.log('===== 搜索用户返回数据 =====');
-			console.log('完整数据:', data);
-			console.log('totalBalance:', data.totalBalance);
-			console.log('totalAmount:', data.totalAmount);
-			console.log('totalTimes:', data.totalTimes);
-			console.log('cards.total:', data.cards ? data.cards.total : 'undefined');
 
 			this.addLog(`找到用户: ${data.user.USER_NAME || '未设置姓名'}`, 'success');
 			this.addLog(`   手机号: ${data.user.USER_MOBILE}`, 'info');
@@ -229,7 +214,6 @@ Page({
 			this.addLog(`   总次数: ${data.totalTimes}次`, 'info');
 			this.addLog(`   卡项数量: ${data.cards.total}`, 'info');
 		} catch (e) {
-			console.log('搜索用户错误:', e);
 			this.addLog(`搜索用户失败: ${e.message || e.errMsg}`, 'error');
 		}
 	},

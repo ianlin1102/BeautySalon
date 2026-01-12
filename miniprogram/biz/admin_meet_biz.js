@@ -402,19 +402,26 @@ class AdminMeetBiz extends BaseBiz {
 
 		return {
 
-			// 选项数据  
+			// 选项数据
 			typeIdOptions: await AdminMeetBiz.getTypeList(),
 			beginDaySetOptions: AdminMeetBiz.getBeginDaySetOptions(),
+			instructorOptions: [], // 导师选项（页面加载时获取）
 
-			// 表单数据  
+			// 表单数据
 			formTitle: '',
 			formTypeId: '',
+			formInstructorId: 'UNDECIDED',
+			formInstructorName: '尚未决定',
+			formInstructorPic: '',
+			formInstructorIndex: 0,
 			formContent: '',
 			formOrder: 9999,
 			formStyleSet: {
 				pic: '',
 				desc: ''
 			},
+
+			formCourseInfo: '', // 课程信息
 
 			formDaysSet: [], // 时间设置
 
@@ -526,7 +533,11 @@ class AdminMeetBiz extends BaseBiz {
 AdminMeetBiz.CHECK_FORM = {
 	title: 'formTitle|must|string|min:2|max:50|name=标题',
 	typeId: 'formTypeId|must|id|name=分类',
+	instructorId: 'formInstructorId|must|string|name=导师',
+	instructorPic: 'formInstructorPic|string|name=导师头像',
+	instructorName: 'formInstructorName|must|string|name=导师姓名',
 	order: 'formOrder|must|int|min:1|max:9999|name=排序号',
+	courseInfo: 'formCourseInfo|string|max:500|name=课程信息',
 
 	daysSet: 'formDaysSet|must|array|name=预约时间设置',
 	isShowLimit: 'formIsShowLimit|must|int|in:0,1|name=是否显示可预约人数',

@@ -2,7 +2,7 @@
  * 卡项使用记录页面
  */
 
-const AdminCardBiz = require('../../biz/admin_card_biz.js');
+const AdminCardBiz = require('../../../biz/admin_card_biz.js');
 
 Page({
 	data: {

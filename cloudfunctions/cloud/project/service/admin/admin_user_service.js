@@ -31,7 +31,7 @@ class AdminUserService extends BaseAdminService {
 		sortType, // 搜索菜单
 		sortVal, // 搜索菜单
 		orderBy, // 排序
-		whereEx, //附加查询条件 
+		whereEx, //附加查询条件
 		page,
 		size,
 		oldTotal = 0
@@ -44,11 +44,16 @@ class AdminUserService extends BaseAdminService {
 
 
 		let where = {};
-		where.and = {
-			_pid: this.getProjectId() //复杂的查询在此处标注PID
-		};
+
+		// 基础条件：支持所有用户类型
+		// - 微信用户：有 _pid 和 USER_MINI_OPENID
+		// - Web 用户：有 USER_ACCOUNT（可能没有 _pid）
+		// - Google 用户：有 USER_GOOGLE_ID（未来支持）
+		// 不再强制要求 _pid，这样可以显示所有用户
+		where.and = {};
 
 		if (util.isDefined(search) && search) {
+			// 搜索条件
 			where.or = [{
 					USER_NAME: ['like', search]
 				},
@@ -57,6 +62,9 @@ class AdminUserService extends BaseAdminService {
 				},
 				{
 					USER_MEMO: ['like', search]
+				},
+				{
+					USER_ACCOUNT: ['like', search]  // 也搜索账号名
 				},
 			];
 
@@ -67,7 +75,7 @@ class AdminUserService extends BaseAdminService {
 					where.and.USER_STATUS = Number(sortVal);
 					break;
 				case 'companyDef':
-					// 单位性质 
+					// 单位性质
 					where.and.USER_COMPANY_DEF = (sortVal);
 					break;
 

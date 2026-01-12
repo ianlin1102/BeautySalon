@@ -2,19 +2,26 @@
 @import "../../skin/skin.wxss";
 @import "../../../../style/project/default_index_base.wxss";
 
-/* Carousel Section */
+/* Main Container - 动态渐变背景 */
+.main {
+	min-height: 100vh;
+  /*background: linear-gradient(180deg, rgb(1,3,20) 0%, #0a1540 4
+  0%, #122a5e 100%);*/
+  background: rgb(1,3,20);
+}
+
+/* Carousel Section - 占据页面40%高度 */
 .carousel-section {
+	position: relative;
 	width: 95%;
-	height: 400rpx;
-	margin: 30rpx auto 30rpx;
-	border-radius: 40rpx;
+	height: 40vh;
 	overflow: hidden;
+	border-radius: 20px;
 }
 
 .carousel {
 	width: 100%;
 	height: 100%;
-	border-radius: 40rpx;
 }
 
 .carousel-image {
@@ -22,21 +29,125 @@
 	height: 100%;
 }
 
+/* 轮播图上的霓虹发光按钮 - 霓虹灯管效果（硬朗版） */
+.carousel-button {
+	position: absolute;
+	bottom: 30rpx;
+	right: 30rpx;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	gap: 10rpx;
+	padding: 15rpx 30rpx;
+	border-radius: 50rpx;
+
+	/* 平滑渐变 - 从蓝紫色到紫粉色，10个过渡色 */
+	background: linear-gradient(45deg,
+		rgb(46, 60, 225) 0%,      /* 起始：蓝紫色 */
+		rgb(67, 66, 220) 10%,     /* 过渡1 */
+		rgb(88, 72, 215) 20%,     /* 过渡2 */
+		rgb(109, 78, 210) 30%,    /* 过渡3 */
+		rgb(130, 84, 205) 40%,    /* 过渡4 */
+		rgb(151, 90, 200) 50%,    /* 过渡5 */
+		rgb(172, 96, 195) 60%,    /* 过渡6 */
+		rgb(193, 102, 190) 70%,   /* 过渡7 */
+		rgb(214, 108, 185) 80%,   /* 过渡8 */
+		rgb(235, 114, 180) 90%,   /* 过渡9 */
+		#FF69B4 100%              /* 结束：紫粉色 */
+	);
+
+	color: #fff;
+	font-size: 26rpx;
+	font-weight: bold;
+
+	/* 霓虹灯管效果 - 左右两侧不同颜色发光 */
+	box-shadow:
+		/* 左侧天蓝色灯管效果 */
+		-4rpx 0 8rpx 3rpx rgba(0, 255, 255, 0.9),   /* 左侧强烈天蓝光 */
+		-8rpx 0 15rpx 5rpx rgba(0, 255, 255, 0.6),  /* 左侧天蓝光晕 */
+
+		/* 右侧紫粉色灯管效果 */
+		4rpx 0 8rpx 3rpx rgba(255, 105, 180, 0.9),  /* 右侧强烈紫粉光 */
+		8rpx 0 15rpx 5rpx rgba(255, 105, 180, 0.6), /* 右侧紫粉光晕 */
+
+		/* 中心硬朗边缘光 */
+		0 0 6rpx 2rpx rgba(138, 43, 226, 0.8),      /* 中心紫色亮边 */
+
+		/* 整体扩散光晕 */
+		0 0 25rpx 8rpx rgba(138, 43, 226, 0.4),     /* 主光晕 */
+
+		/* 底部阴影 */
+		0 8rpx 20rpx rgba(138, 43, 226, 0.5);
+
+	z-index: 10;
+	transition: all 0.3s ease;
+}
+
+/* 按钮文字 */
+.carousel-button .button-text {
+	color: #fff;
+	font-size: 26rpx;
+	font-weight: bold;
+}
+
+/* 按钮火苗图标 */
+.carousel-button .button-icon {
+	width: 30rpx;
+	height: 30rpx;
+	animation: flicker 1.5s ease-in-out infinite;
+}
+
+/* 火苗闪烁动画 */
+@keyframes flicker {
+	0%, 100% {
+		opacity: 1;
+		transform: scale(1);
+	}
+	50% {
+		opacity: 0.8;
+		transform: scale(1.1);
+	}
+}
+
+/* 点击效果 - 霓虹灯管按压效果 */
+.carousel-button:active {
+	transform: scale(0.96);
+	box-shadow:
+		/* 左侧天蓝色灯管缩小 */
+		-3rpx 0 5rpx 2rpx rgba(0, 255, 255, 0.9),
+		-6rpx 0 10rpx 3rpx rgba(0, 255, 255, 0.5),
+
+		/* 右侧紫粉色灯管缩小 */
+		3rpx 0 5rpx 2rpx rgba(255, 105, 180, 0.9),
+		6rpx 0 10rpx 3rpx rgba(255, 105, 180, 0.5),
+
+		/* 中心边缘光 */
+		0 0 4rpx 1rpx rgba(138, 43, 226, 0.8),
+
+		/* 整体光晕缩小 */
+		0 0 18rpx 5rpx rgba(138, 43, 226, 0.4),
+
+		/* 底部阴影缩小 */
+		0 4rpx 15rpx rgba(138, 43, 226, 0.4);
+}
+
 /* Main Menu */
 .main-menu {
-	padding: 0;
-	margin: 0 auto 40rpx;
-	width: 95%;
+	padding-top: 30rpx;
+	padding-bottom: 30rpx;
+	margin: 0 auto;
+	width: 90%;
+	background: transparent;
 }
 
 .menu-grid {
 	width: 100%;
-	background-color: #fff;
-	padding: 40rpx 30rpx;
+	background: transparent;
+	padding: 0;
 	display: flex !important;
 	flex-wrap: nowrap !important;
 	justify-content: space-between !important;
-	align-items: center;
+	align-items: flex-start;
 	box-sizing: border-box;
 }
 
@@ -45,41 +156,61 @@
 	display: flex;
 	flex-direction: column;
 	align-items: center;
-	justify-content: center;
+	justify-content: flex-start;
+	/* max-width: 25%; */
 }
 
 .menu-item-inner {
 	display: flex;
 	flex-direction: column;
 	align-items: center;
-	width: 100%;
+	width: 90%;
+	background: rgb(10,10,39);
+	backdrop-filter: blur(10px);
+	border-radius: 24rpx;
+	padding: 20rpx 15rpx;
+	/* border: 2rpx solid rgba(255, 255, 255, 0.2); */
+	transition: all 0.3s ease;
+}
+
+.menu-item-inner:active {
+	transform: scale(0.95);
+	background: rgba(255, 255, 255, 0.15);
 }
 
 .menu-icon {
 	width: 100rpx;
 	height: 100rpx;
-	margin-bottom: 10rpx;
+	margin-bottom: 16rpx;
+	padding: 10rpx;
+	box-sizing: border-box;
+	display: flex;
+	align-items: center;
+	justify-content: center;
 }
 
 .menu-icon image {
 	width: 100%;
 	height: 100%;
+	object-fit: contain;
 }
 
 .menu-title {
-	font-size: 26rpx;
-	color: #333;
+	font-size: 24rpx;
+	color: #fff;
+	font-weight: 500;
 }
 
 /* Instructor Section */
 .instructor-section {
-	width: 90%;
+	width: 95%;
 	margin: 0 auto 40rpx;
 	padding: 30rpx;
-	background-color: #fff;
-	border: 2rpx solid #e0e0e0;
-	border-radius: 20rpx;
-	box-shadow: 0 4rpx 12rpx rgba(0, 0, 0, 0.08);
+	background: rgba(255, 255, 255, 0.1);
+	backdrop-filter: blur(10px);
+	border: 2rpx solid rgba(255, 255, 255, 0.2);
+	border-radius: 24rpx;
+	box-shadow: 0 8rpx 24rpx rgba(0, 0, 0, 0.2);
 }
 
 .section-header {
@@ -92,12 +223,12 @@
 .section-title {
 	font-size: 36rpx;
 	font-weight: 600;
-	color: #333;
+	color: #fff;
 }
 
 .section-more {
 	font-size: 26rpx;
-	color: #666;
+	color: rgba(255, 255, 255, 0.8);
 	display: flex;
 	align-items: center;
 }
@@ -107,7 +238,7 @@
 	display: inline-block;
 	width: 0;
 	height: 0;
-	border-left: 10rpx solid #666;
+	border-left: 10rpx solid rgba(255, 255, 255, 0.8);
 	border-top: 6rpx solid transparent;
 	border-bottom: 6rpx solid transparent;
 	margin-left: 8rpx;
@@ -153,7 +284,7 @@
 
 .instructor-name {
 	font-size: 24rpx;
-	color: #333;
+	color: #fff;
 	text-align: center;
 	max-width: 140rpx;
 	overflow: hidden;
@@ -163,4 +294,40 @@
 
 .shadow-project {
     box-shadow: 6rpx 6rpx 8rpx rgba(0, 0, 0, 0.1);
+}
+
+/* Rank Section */
+.rank-section {
+	width: 90%;
+	margin: 0 auto 40rpx;
+}
+
+/* Rank Section Wrapper - 直接在页面中 */
+.rank-section-wrapper {
+	width: 90%;
+	margin: 0 auto 40rpx;
+}
+
+/* Poster Section - 海报区域 */
+.poster-section {
+	width: 90%;
+	margin: 0 auto 40rpx;
+}
+
+.poster-placeholder {
+	width: 100%;
+	height: 300rpx;
+	background: rgba(255, 255, 255, 0.05);
+	backdrop-filter: blur(10px);
+	border-radius: 24rpx;
+	border: 2rpx dashed rgba(255, 255, 255, 0.3);
+	display: flex;
+	align-items: center;
+	justify-content: center;
+}
+
+.placeholder-text {
+	font-size: 28rpx;
+	color: rgba(255, 255, 255, 0.6);
+	font-weight: 500;
 }

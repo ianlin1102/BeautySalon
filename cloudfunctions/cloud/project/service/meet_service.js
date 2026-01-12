@@ -40,6 +40,40 @@ class MeetService extends BaseService {
 		this._log.debug(str);
 	}
 
+	/**
+	 * 计算时间段的时长
+	 * @param {string} start - 开始时间 HH:MM 格式
+	 * @param {string} end - 结束时间 HH:MM 格式
+	 * @returns {string} 格式化的时长，如 "90分钟" 或 "2小时"
+	 */
+	_calculateDuration(start, end) {
+		if (!start || !end) return '未知';
+
+		// 解析时间字符串
+		let [startHour, startMin] = start.split(':').map(Number);
+		let [endHour, endMin] = end.split(':').map(Number);
+
+		// 转换为分钟
+		let startMinutes = startHour * 60 + startMin;
+		let endMinutes = endHour * 60 + endMin;
+
+		// 计算差值
+		let diffMinutes = endMinutes - startMinutes;
+
+		// 格式化输出
+		if (diffMinutes < 60) {
+			return diffMinutes + '分钟';
+		} else {
+			let hours = Math.floor(diffMinutes / 60);
+			let mins = diffMinutes % 60;
+			if (mins === 0) {
+				return hours + '小时';
+			} else {
+				return hours + '小时' + mins + '分钟';
+			}
+		}
+	}
+
 	/** 统一获取Meet（某天) */
 	async getMeetOneDay(meetId, day, where, fields = '*') {
 
@@ -151,6 +185,10 @@ class MeetService extends BaseService {
 		data.JOIN_MEET_TIME_START = timeSet.start;
 		data.JOIN_MEET_TIME_END = timeSet.end;
 		data.JOIN_MEET_TIME_MARK = timeMark;
+
+		// 冗余存储导师信息
+		data.JOIN_INSTRUCTOR_ID = meet.MEET_INSTRUCTOR_ID || '';
+		data.JOIN_INSTRUCTOR_NAME = meet.MEET_INSTRUCTOR_NAME || '';
 
 		data.JOIN_START_TIME = timeUtil.time2Timestamp(daySet.day + ' ' + timeSet.start + ':00');
 
@@ -655,7 +693,7 @@ class MeetService extends BaseService {
 			'MEET_ADD_TIME': 'desc'
 		};
 
-		let fields = 'MEET_TITLE,MEET_DAYS_SET,MEET_STYLE_SET';
+		let fields = 'MEET_TITLE,MEET_DAYS_SET,MEET_STYLE_SET,MEET_INSTRUCTOR_ID,MEET_INSTRUCTOR_NAME,MEET_INSTRUCTOR_PIC,MEET_TYPE_ID,MEET_TYPE_NAME,MEET_COURSE_INFO';
 
 		let list = await MeetModel.getAll(where, fields, orderBy);
 
@@ -667,14 +705,24 @@ class MeetService extends BaseService {
 			if (usefulTimes.length == 0) continue;
 
 			let node = {};
-			// 返回完整的时间段数组，供前端显示
+			// 返回完整的时间段数组，供前端显示，包含时长和预约人数
 			node.times = usefulTimes.map(t => ({
+				mark: t.mark,  // 时段标识，用于预约提交
 				start: t.start,
-				end: t.end
+				end: t.end,
+				duration: this._calculateDuration(t.start, t.end),
+				cnt: t.stat ? t.stat.succCnt : 0,
+				limit: t.limit || 20
 			}));
 			// 保留兼容性的 timeDesc
 			node.timeDesc = usefulTimes.length > 1 ? usefulTimes.length + '个时段' : usefulTimes[0].start;
 			node.title = list[k].MEET_TITLE;
+			node.typeId = list[k].MEET_TYPE_ID || '';
+			node.typeName = list[k].MEET_TYPE_NAME || '';
+			node.instructorId = list[k].MEET_INSTRUCTOR_ID || '';
+			node.instructorPic = list[k].MEET_INSTRUCTOR_PIC || '';
+			node.instructorName = list[k].MEET_INSTRUCTOR_NAME || '尚未决定';
+			node.courseInfo = list[k].MEET_COURSE_INFO || '';
 			node.pic = list[k].MEET_STYLE_SET.pic;
 			node._id = list[k]._id;
 			retList.push(node);
@@ -702,6 +750,172 @@ class MeetService extends BaseService {
 			}
 		}
 		return retList;
+	}
+
+	/** 按周范围获取预约项目（优化版：批量查询） */
+	async getMeetListByWeek(startDate, endDate) {
+		let where = {
+			MEET_STATUS: MeetModel.STATUS.COMM,
+		};
+
+		let orderBy = {
+			'MEET_ORDER': 'asc',
+			'MEET_ADD_TIME': 'desc'
+		};
+
+		let fields = 'MEET_TITLE,MEET_DAYS_SET,MEET_STYLE_SET,MEET_INSTRUCTOR_ID,MEET_INSTRUCTOR_NAME,MEET_INSTRUCTOR_PIC,MEET_TYPE_ID,MEET_TYPE_NAME,MEET_COURSE_INFO';
+
+		let list = await MeetModel.getAll(where, fields, orderBy);
+
+		if (list.length === 0) return [];
+
+		// 优化：一次性批量查询整周的所有day数据
+		let dayWhere = {
+			day: ['between', startDate, endDate]
+		};
+		let allDayData = await DayModel.getAll(dayWhere, 'DAY_MEET_ID,day,times');
+
+		// 构建快速查找索引：meetId_day -> dayData
+		let dayDataMap = {};
+		for (let dayItem of allDayData) {
+			let key = `${dayItem.DAY_MEET_ID}_${dayItem.day}`;
+			dayDataMap[key] = dayItem;
+		}
+
+		let retList = [];
+
+		for (let k in list) {
+			let meetId = list[k]._id;
+			let allUsefulTimes = []; // 收集整周的所有时间段
+			let weekDaysWithData = []; // 记录有数据的天
+
+			// 遍历周内每一天，从缓存的dayDataMap中查找
+			// 手动解析日期以避免时区问题
+			let startParts = startDate.split('-');
+			let endParts = endDate.split('-');
+			let currentDate = new Date(parseInt(startParts[0]), parseInt(startParts[1]) - 1, parseInt(startParts[2]));
+			let end = new Date(parseInt(endParts[0]), parseInt(endParts[1]) - 1, parseInt(endParts[2]));
+
+			while (currentDate <= end) {
+				let year = currentDate.getFullYear();
+				let month = String(currentDate.getMonth() + 1).padStart(2, '0');
+				let day = String(currentDate.getDate()).padStart(2, '0');
+				let dayStr = `${year}-${month}-${day}`;
+
+				// 从map中快速查找
+				let key = `${meetId}_${dayStr}`;
+				let dayData = dayDataMap[key];
+
+				if (dayData && dayData.times) {
+					// 提取有效时间段
+					for (let time of dayData.times) {
+						if (time.status === 1) {
+							allUsefulTimes.push({
+								...time,
+								day: dayStr // 添加日期标记
+							});
+						}
+					}
+					if (dayData.times.some(t => t.status === 1)) {
+						weekDaysWithData.push(dayStr);
+					}
+				}
+
+				currentDate.setDate(currentDate.getDate() + 1);
+			}
+
+			// 如果整周都没有可用时段，跳过这个预约项目
+			if (allUsefulTimes.length == 0) continue;
+
+			let node = {};
+			// 返回整周的时间段数组，包含完整信息
+			node.times = allUsefulTimes.map(t => ({
+				mark: t.mark,  // 时段标识，用于预约提交
+				start: t.start,
+				end: t.end,
+				duration: this._calculateDuration(t.start, t.end),
+				cnt: t.stat ? t.stat.succCnt : 0,
+				limit: t.limit || 20,
+				day: t.day // 包含日期信息
+			}));
+			node.timeDesc = `${weekDaysWithData.length}天 ${allUsefulTimes.length}个时段`;
+			node.title = list[k].MEET_TITLE;
+			node.typeId = list[k].MEET_TYPE_ID || '';
+			node.typeName = list[k].MEET_TYPE_NAME || '';
+			node.instructorPic = list[k].MEET_INSTRUCTOR_PIC || '';
+			node.instructorId = list[k].MEET_INSTRUCTOR_ID || '';
+			node.instructorName = list[k].MEET_INSTRUCTOR_NAME || '尚未决定';
+			node.courseInfo = list[k].MEET_COURSE_INFO || '';
+			node.pic = list[k].MEET_STYLE_SET.pic;
+			node._id = list[k]._id;
+			node.daysWithData = weekDaysWithData;
+			retList.push(node);
+		}
+		return retList;
+	}
+
+	/** 获取从某天开始可预约的周范围 */
+	async getHasWeeksFromDay(day, monthCount = 3) {
+		let where = {
+			day: ['>=', day],
+		};
+
+		let fields = 'times,day';
+		let list = await DayModel.getAllBig(where, fields);
+
+		// 获取所有有数据的日期
+		let hasDays = [];
+		for (let k in list) {
+			for (let n in list[k].times) {
+				if (list[k].times[n].status == 1) {
+					hasDays.push(list[k].day);
+					break;
+				}
+			}
+		}
+
+		// 生成周范围
+		let hasWeeks = [];
+		let startDay = new Date(day);
+
+		// 找到当前周的周一
+		let currentDay = startDay.getDay();
+		let daysToMonday = currentDay === 0 ? -6 : 1 - currentDay;
+		let weekMonday = new Date(startDay);
+		weekMonday.setDate(startDay.getDate() + daysToMonday);
+
+		// 计算结束日期（未来N个月）
+		let endDate = new Date(startDay.getFullYear(), startDay.getMonth() + monthCount, 1);
+
+		// 生成所有周
+		while (weekMonday < endDate) {
+			let weekStart = new Date(weekMonday);
+			let weekEnd = new Date(weekMonday);
+			weekEnd.setDate(weekMonday.getDate() + 6); // 周日
+
+			let startFormatted = timeUtil.time('Y-M-D', weekStart);
+			let endFormatted = timeUtil.time('Y-M-D', weekEnd);
+			let weekRange = `${startFormatted}~${endFormatted}`;
+
+			// 检查这周是否有任何可预约的日期
+			let hasData = false;
+			for (let d = new Date(weekStart); d <= weekEnd; d.setDate(d.getDate() + 1)) {
+				let dayStr = timeUtil.time('Y-M-D', d);
+				if (hasDays.includes(dayStr)) {
+					hasData = true;
+					break;
+				}
+			}
+
+			if (hasData) {
+				hasWeeks.push(weekRange);
+			}
+
+			// 下一周
+			weekMonday.setDate(weekMonday.getDate() + 7);
+		}
+
+		return hasWeeks;
 	}
 
 	/** 取得预约分页列表 */
@@ -984,7 +1198,7 @@ class MeetService extends BaseService {
 			//	'JOIN_MEET_TIME_START': 'desc',
 			'JOIN_ADD_TIME': 'desc'
 		};
-		let fields = 'JOIN_IS_CHECKIN,JOIN_REASON,JOIN_MEET_ID,JOIN_MEET_TITLE,JOIN_MEET_DAY,JOIN_MEET_TIME_START,JOIN_MEET_TIME_END,JOIN_STATUS,JOIN_ADD_TIME';
+		let fields = 'JOIN_IS_CHECKIN,JOIN_REASON,JOIN_MEET_ID,JOIN_MEET_TITLE,JOIN_MEET_DAY,JOIN_MEET_TIME_START,JOIN_MEET_TIME_END,JOIN_INSTRUCTOR_ID,JOIN_INSTRUCTOR_NAME,JOIN_STATUS,JOIN_ADD_TIME,JOIN_CARD_DEDUCT';
 
 		let where = {
 			JOIN_USER_ID: userId
@@ -1024,7 +1238,7 @@ class MeetService extends BaseService {
 					break;
 				}
 				case 'succ': { //预约成功
-					where.JOIN_STATUS = JoinModel.STATUS.COMM;
+					where.JOIN_STATUS = JoinModel.STATUS.SUCC;  // 修复: COMM → SUCC (值为1)
 					//where.JOIN_MEET_DAY = ['>=', timeUtil.time('Y-M-D')];
 					//where.JOIN_MEET_TIME_START = ['>=', timeUtil.time('h:m')];
 					break;
@@ -1043,7 +1257,7 @@ class MeetService extends BaseService {
 	/** 取得我的某日预约列表 */
 	async getMyJoinSomeday(userId, day) {
 
-		let fields = 'JOIN_IS_CHECKIN,JOIN_MEET_ID,JOIN_MEET_TITLE,JOIN_MEET_DAY,JOIN_MEET_TIME_START,JOIN_MEET_TIME_END,JOIN_STATUS,JOIN_ADD_TIME';
+		let fields = 'JOIN_IS_CHECKIN,JOIN_MEET_ID,JOIN_MEET_TITLE,JOIN_MEET_DAY,JOIN_MEET_TIME_START,JOIN_MEET_TIME_END,JOIN_INSTRUCTOR_ID,JOIN_INSTRUCTOR_NAME,JOIN_STATUS,JOIN_ADD_TIME';
 
 		let where = {
 			JOIN_USER_ID: userId,

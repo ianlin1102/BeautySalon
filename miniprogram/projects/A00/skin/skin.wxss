@@ -1,17 +1,17 @@
 page {
-	background-color: #ffffff;
+	background: #020322;
 
-	--projectColor: #333333;
-	--projectColorLight: #f5f5f5;
-	--projectCompareColor: #e0e0e0;
+	--projectColor: #5b86e5;
+	--projectColorLight: #36d1dc;
+	--projectCompareColor: #4a5568;
 
 	/*#### 父组件日历颜色定义*/
 	/* 整体颜色 */
 	--calendarPageColor: #fff;
 	/* 加重颜色*/
-	--calendarMainColor: #333333 !important;
+	--calendarMainColor: #5b86e5 !important;
 	/* 加重的亮颜色 用于选中日期的数据小圆点 */
-	--calendarLightColor: #666666;
+	--calendarLightColor: #36d1dc;
 }
 
 .text-project {

@@ -27,6 +27,15 @@ module.exports = Behavior({
 		onLoad: function (options) {
 			if (!pageHelper.getOptions(this, options)) return;
 
+			// 保存点击的具体时间段信息
+			if (options.day && options.timeStart && options.timeEnd) {
+				this.setData({
+					selectedDay: options.day,
+					selectedTimeStart: options.timeStart,
+					selectedTimeEnd: options.timeEnd
+				});
+			}
+
 			this._loadDetail();
 		},
 
@@ -100,6 +109,29 @@ module.exports = Behavior({
 								}
 							}
 						}
+					}
+				}
+
+				// 如果从卡片点击进入，过滤出选中的时间段
+				if (this.data.selectedDay && this.data.selectedTimeStart && this.data.selectedTimeEnd) {
+					let selectedDay = this.data.selectedDay;
+					let selectedTimeStart = this.data.selectedTimeStart;
+					let selectedTimeEnd = this.data.selectedTimeEnd;
+
+					if (meet.MEET_DAYS_SET) {
+						// 只保留选中的那一天和时间段
+						meet.MEET_DAYS_SET = meet.MEET_DAYS_SET.filter(daySet => {
+							if (daySet.day === selectedDay) {
+								// 在该天内，只保留选中的时间段
+								if (daySet.times) {
+									daySet.times = daySet.times.filter(timeSlot =>
+										timeSlot.start === selectedTimeStart && timeSlot.end === selectedTimeEnd
+									);
+								}
+								return daySet.times && daySet.times.length > 0;
+							}
+							return false;
+						});
 					}
 				}
 

@@ -1,4 +1,125 @@
-@import "../../../../style/project/base/article_list.wxss";
-@import "../../skin/skin.wxss"; 
-@import "../../../../style/project/my_join_base.wxss"; 
+@import "../../../../style/project/neon_theme.wxss";
+@import "../../skin/skin.wxss";
+@import "../../../../style/project/my_join_base.wxss";
 
+/* ========== 页面级霓虹样式覆盖 ========== */
+/* 这些样式只在 my_join 页面生效，不影响其他使用 cmpt-comm-list 的页面 */
+
+page {
+	background-color: #1b1728 !important;
+}
+
+/* ========== 搜索栏霓虹化 ========== */
+.top_bar.bar.search.fixed {
+	background: #1b1728 !important;
+	border-bottom: 1rpx solid rgba(255, 255, 255, 0.06);
+}
+
+.bar.search.bg-white {
+	background: transparent !important;
+}
+
+.search-form.round {
+	background: rgba(37, 66, 111, 0.4) !important;
+	border: 1rpx solid rgba(255, 255, 255, 0.1) !important;
+	border-radius: 36rpx !important;
+}
+
+.search-form.round input {
+	color: #fff !important;
+}
+
+.search-form.round input::placeholder {
+	color: rgba(255, 255, 255, 0.4) !important;
+}
+
+.search-form .icon-search {
+	color: rgba(255, 255, 255, 0.5) !important;
+}
+
+.search-form .icon-roundclose {
+	color: rgba(255, 255, 255, 0.4) !important;
+}
+
+/* 清理按钮霓虹化 */
+.btn.mid.bg-orange.light {
+	background: rgba(255, 159, 67, 0.2) !important;
+	color: #ff9f43 !important;
+	border: 1rpx solid rgba(255, 159, 67, 0.4) !important;
+}
+
+/* ========== 菜单栏霓虹化 ========== */
+.tabs.bg-white {
+	background: rgba(27, 23, 40, 0.95) !important;
+	border-bottom: 1rpx solid rgba(255, 255, 255, 0.06);
+}
+
+.tabs .tab {
+	color: rgba(255, 255, 255, 0.6) !important;
+}
+
+.tabs .tab.cur,
+.tabs .tab.text-orange {
+	color: #73bdf5 !important;
+}
+
+.tabs .tab .pulldown-text {
+	color: inherit !important;
+}
+
+.tabs .tab .icon-fold,
+.tabs .tab .icon-unfold {
+	color: rgba(255, 255, 255, 0.4) !important;
+}
+
+.tabs .tab-menu {
+	color: rgba(255, 255, 255, 0.6) !important;
+}
+
+.tabs .tab-menu.cur,
+.tabs .tab-menu.text-orange {
+	color: #73bdf5 !important;
+}
+
+/* ========== 下拉菜单霓虹化 ========== */
+.sort {
+	background: rgba(27, 23, 40, 0.98) !important;
+	border: 1rpx solid rgba(255, 255, 255, 0.08);
+}
+
+.sort .sort-item {
+	color: rgba(255, 255, 255, 0.7) !important;
+	border-bottom: 1rpx solid rgba(255, 255, 255, 0.06) !important;
+}
+
+.sort .sort-item.cur,
+.sort .sort-item.text-orange {
+	color: #73bdf5 !important;
+}
+
+/* ========== 列表容器霓虹化 ========== */
+.box-list {
+	background: #1b1728 !important;
+}
+
+.box-list-scroll {
+	background: #1b1728 !important;
+}
+
+/* ========== 回顶部按钮霓虹化 ========== */
+.btn-fixed.btn-top {
+	background: rgba(37, 66, 111, 0.8) !important;
+	color: #73bdf5 !important;
+	border: 1rpx solid rgba(115, 189, 245, 0.3) !important;
+	box-shadow: 0 0 16rpx rgba(115, 189, 245, 0.3);
+}
+
+/* ========== 下拉遮罩霓虹化 ========== */
+.pulldown-mask {
+	background: rgba(0, 0, 0, 0.7) !important;
+}
+
+/* ========== 加载状态霓虹化 ========== */
+.load-project {
+	color: rgba(255, 255, 255, 0.5) !important;
+}

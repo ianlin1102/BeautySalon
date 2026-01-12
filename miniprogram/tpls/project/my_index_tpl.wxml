@@ -1,99 +1,123 @@
 <template name="myIndexTpl">
-	<view class="main {{skin.IS_SUB?'sub-margin-bottom':''}}">
+	<view class="neon-page {{skin.IS_SUB?'sub-margin-bottom':''}}">
 
-		<!--top area begin-->
-		<view class="upside upside-shadow">
-			<image wx:if="{{upImg}}" mode="aspectFill" lazy-load class="upImg loading" src="{{upImg}}" />
-			<view class="user-bar">
-				<view class="avatar" bindtap="url" data-url="../edit/my_edit">
-					<image mode="aspectFill" src="{{user.USER_AVATAR || '../../skin/images/tabbar/my_cur.png'}}" />
-				</view>
-				<view class="detail" bindtap="url" data-url="../points/my_points">
-					<view class="name text-cut">{{user?user.USER_NAME:'欢迎回来~~~'}}</view>
-					<!-- 积分信息集成到用户详情区域 -->
-					<view class="points-inline">
-						<view class="points-level-badge">{{pointsInfo.currentLevel.name || '新手会员'}}</view>
-						<view class="points-amount">{{pointsInfo.totalPoints || 0}}积分</view>
+		<!-- 背景装饰光斑 -->
+		<view class="bg-glow bg-glow-1" style="background: radial-gradient(circle, {{pointsInfo.currentLevel.color || '#95a5a6'}} 0%, transparent 70%);"></view>
+		<view class="bg-glow bg-glow-2"></view>
+
+		<!-- 主内容区域 -->
+		<view class="content-area">
+
+			<!-- 用户头像与等级进度条 -->
+			<view class="user-section">
+				<!-- 头像 - 渐变边框效果 -->
+				<view class="avatar-container" bindtap="url" data-url="../edit/my_edit">
+					<view class="avatar-ring" style="background: linear-gradient(135deg, {{pointsInfo.currentLevel.gradientStart || '#bdc3c7'}}, {{pointsInfo.currentLevel.gradientEnd || '#7f8c8d'}}); box-shadow: 0 0 30rpx {{pointsInfo.currentLevel.shadowColor || 'rgba(149, 165, 166, 0.5)'}};">
+						<image class="avatar-img" mode="aspectFill" src="{{user.USER_AVATAR || '../../skin/images/tabbar/my_cur.png'}}" />
 					</view>
-					<view class="progress-inline">
-						<view class="progress-bar-inline">
-							<view class="progress-fill-inline" style="width: {{pointsInfo.progressPercent || 0}}%; background-color: {{pointsInfo.currentLevel.color || '#95a5a6'}}"></view>
+				</view>
+
+				<!-- 积分条区域 -->
+				<view class="level-progress-area" bindtap="url" data-url="../points/my_points">
+					<view class="level-header">
+						<view class="level-wrapper">
+							<!-- 等级菱形徽章 -->
+							<view class="level-icon" style="background: linear-gradient(135deg, {{pointsInfo.currentLevel.gradientStart || '#bdc3c7'}}, {{pointsInfo.currentLevel.gradientEnd || '#7f8c8d'}}); color: {{pointsInfo.currentLevel.color || '#95a5a6'}};"></view>
+							<text class="level-name" style="color: {{pointsInfo.currentLevel.color || '#95a5a6'}};">
+								{{pointsInfo.currentLevel.name || '新手会员'}}
+							</text>
 						</view>
-						<view class="progress-text-inline">{{pointsInfo.nextLevel ? '距离' + pointsInfo.nextLevel.name + '还需' + pointsInfo.needPoints + '积分' : '已达最高等级'}}</view>
+						<text class="level-points">{{pointsInfo.totalPoints || 0}} / {{pointsInfo.currentLevel.maxPoints || 100}}</text>
 					</view>
-				</view> 
+					<!-- 进度条 -->
+					<view class="progress-track">
+						<view class="progress-fill" style="width: {{pointsInfo.progressPercent || 0}}%; background: linear-gradient(90deg, {{pointsInfo.currentLevel.gradientStart || '#bdc3c7'}}, {{pointsInfo.currentLevel.gradientEnd || '#7f8c8d'}}); box-shadow: 0 0 20rpx {{pointsInfo.currentLevel.shadowColor || 'rgba(149, 165, 166, 0.4)'}};"></view>
+					</view>
+					<view class="progress-hint">
+						{{pointsInfo.nextLevel ? '再获得 ' + pointsInfo.needPoints + ' 分升级' : '已达最高等级'}}
+					</view>
+				</view>
 			</view>
+
+			<!-- 预约入口 -->
+			<view class="appointment-entry" bindtap="url" data-url="../join/my_join">
+				<view class="entry-header">
+					<view class="entry-title-bar">
+						<view class="title-indicator"></view>
+						<text class="entry-title">我的预约</text>
+					</view>
+					<text class="entry-hint">点击查看详情</text>
+				</view>
+
+				<view class="appointment-card">
+					<view class="appointment-content">
+						<view wx:if="{{nextAppointment}}">
+							<text class="appointment-label">最近一节</text>
+							<text class="appointment-name">{{nextAppointment.JOIN_MEET_TITLE}}</text>
+							<text class="appointment-time">{{nextAppointment.JOIN_MEET_DAY}} {{nextAppointment.JOIN_MEET_TIME_START}}</text>
+							<text wx:if="{{nextAppointment.JOIN_INSTRUCTOR_NAME}}" class="appointment-instructor">{{nextAppointment.JOIN_INSTRUCTOR_NAME}} 老师</text>
+						</view>
+						<view wx:else>
+							<text class="appointment-label">暂无预约</text>
+							<text class="appointment-name">点击预约课程</text>
+							<text class="appointment-time">{{myStats.appointmentCount || 0}} 个有效预约</text>
+						</view>
+					</view>
+					<view class="appointment-arrow">
+						<text class="icon-right"></text>
+					</view>
+				</view>
+			</view>
+
+			<!-- 卡包入口 -->
+			<view class="card-wallet-entry glass-panel" bindtap="url" data-url="../../card/my_cards/my_cards">
+				<view class="wallet-left">
+					<view class="wallet-icon">
+						<text class="icon-favorfill"></text>
+					</view>
+					<view class="wallet-info">
+						<text class="wallet-title">我的卡包</text>
+						<text class="wallet-subtitle">Member Wallet</text>
+					</view>
+				</view>
+				<view class="wallet-right">
+					<text class="wallet-count">{{myStats.cardCount || 0}}</text>
+					<text class="wallet-badge">可用卡项</text>
+				</view>
+			</view>
+
+			<!-- 底部功能列表 -->
+			<view class="menu-section glass-panel">
+				<view class="menu-item" bindtap="url" data-url="../join/my_join">
+					<view class="menu-item-left">
+						<text class="icon-activityfill menu-icon" style="color: #00f2ff;"></text>
+						<text class="menu-label">上课记录 (Class History)</text>
+					</view>
+					<text class="icon-right menu-arrow"></text>
+				</view>
+
+				<view class="menu-divider"></view>
+
+				<view class="menu-item" bindtap="url" data-url="../edit/my_edit">
+					<view class="menu-item-left">
+						<text class="icon-peoplefill menu-icon" style="color: #bd00ff;"></text>
+						<text class="menu-label">个人资料 (Profile)</text>
+					</view>
+					<text class="icon-right menu-arrow"></text>
+				</view>
+
+				<view class="menu-divider"></view>
+
+				<view class="menu-item" bindtap="bindSetTap">
+					<view class="menu-item-left">
+						<text class="icon-settings menu-icon" style="color: rgba(255,255,255,0.6);"></text>
+						<text class="menu-label">设置 (Settings)</text>
+					</view>
+					<text class="icon-right menu-arrow"></text>
+				</view>
+			</view>
+
 		</view>
-		<!--top area end-->
 
-		<!--down area begin-->
-		<view class="down padding-project">
-
-			<!-- 统计数据区域 -->
-			<view class="stats-section card-project shadow-project">
-				<view class="stat-item" bindtap="url" data-url="../../card/my_cards/my_cards">
-					<view class="stat-number">{{myStats.cardCount || 0}}</view>
-					<view class="stat-label">卡包</view>
-				</view>
-				<view class="stat-item">
-					<view class="stat-number">{{myStats.courseCount || 0}}</view>
-					<view class="stat-label">课程</view>
-				</view>
-				<view class="stat-item" bindtap="url" data-url="../join/my_join">
-					<view class="stat-number">{{myStats.appointmentCount || 0}}</view>
-					<view class="stat-label">已约</view>
-				</view>
-			</view>
-
-			<!-- 我的服务菜单 -->
-			<view class="service-section">
-				<view class="section-title">我的服务</view>
-				<view class="service-grid card-project shadow-project">
-					<view class="service-item" bindtap="url" data-url="../join/my_join">
-						<text class="icon-activityfill service-icon text-project"></text>
-						<view class="service-label">已约</view>
-					</view>
-					<view class="service-item" bindtap="url" data-url="../../card/my_cards/my_cards">
-						<text class="icon-favorfill service-icon text-purple"></text>
-						<view class="service-label">卡包</view>
-					</view>
-					<view class="service-item" bindtap="url" data-url="../points/my_points">
-						<text class="icon-coin service-icon text-orange"></text>
-						<view class="service-label">积分</view>
-					</view>
-					<view class="service-item" bindtap="bindSetTap">
-						<text class="icon-settings service-icon text-grey"></text>
-						<view class="service-label">设置</view>
-					</view>
-				</view>
-			</view>
-
-			<!--sys begin (hidden, integrated into service menu above) -->
-			<view class="comm-list menu card-project shadow-project" style="display: none;">
-
-				<!-- 临时测试按钮 -->
-				<!-- <view class="item arrow" bindtap="testPointsAPI">
-					<view class="content">
-						<text class="icon-settings my-icon-project text-orange"></text>
-						<text class="text-black">初始化积分系统</text>
-					</view>
-				</view> -->
-
-				<view class="item arrow" bindtap="bindSetTap">
-					<view class="content">
-						<text class="icon-settings my-icon-project text-grey"></text>
-						<text wx:if="{{skin.IS_SUB}}" class="text-red text-bold ">系统后台管理<text class="text-grey text-normal">（可试用）</text></text>
-						<text wx:else class="text-black">设置</text>
-					</view>
-				</view>
-
-			</view>
-			<!--sys end -->
-
-		</view>
-		<!--down area end-->
-
-	</view> 
-
-
+	</view>
 </template>
