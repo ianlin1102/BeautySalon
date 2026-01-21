@@ -1,11 +1,149 @@
 @import "../../skin/skin.wxss"; 
 @import "../../../../style/project/my_edit_base.wxss"; 
 
-.submit-line {
-	width: 100%;
+page {
+	background-color: #080808;
+	min-height: 100vh;
 }
 
-.form-group .mobile {
-	flex: 1;
-	text-align: left;
+.main {
+	padding: 30rpx !important;
 }
+
+/* Form Card */
+.form-box {
+	background-color: rgba(255, 255, 255, 0.05) !important;
+	border: 1px solid rgba(255, 255, 255, 0.1);
+	border-radius: 24rpx !important;
+	padding: 0 30rpx;
+	box-shadow: none !important;
+}
+
+/* Input Group */
+.form-group {
+	background-color: transparent !important;
+	border-bottom: 1px solid rgba(255, 255, 255, 0.05) !important;
+	padding: 30rpx 0 !important;
+	display: flex;
+	align-items: center;
+}
+
+.form-group:last-child {
+	border-bottom: none !important;
+}
+
+/* Labels */
+.form-group .title {
+	color: rgba(255, 255, 255, 0.7) !important;
+	font-size: 30rpx;
+	width: 160rpx;
+	font-weight: bold;
+}
+
+/* Inputs */
+.form-group input {
+	flex: 1;
+	font-size: 30rpx;
+	color: #ffffff !important;
+	text-align: right;
+}
+
+.phc {
+	color: rgba(255, 255, 255, 0.3) !important;
+}
+
+/* Phone Row Structure */
+.phone-input-row {
+	display: flex;
+	align-items: center;
+	flex: 1;
+	justify-content: flex-end;
+}
+
+.country-code-picker {
+	margin-right: 20rpx;
+}
+
+.country-code-display {
+	color: #06b6d4;
+	font-weight: bold;
+	font-size: 30rpx;
+	display: flex;
+	align-items: center;
+	gap: 8rpx;
+}
+
+.country-code-display .arrow {
+	font-size: 20rpx;
+	color: rgba(255, 255, 255, 0.5);
+}
+
+.phone-input {
+	flex: 1;
+	text-align: right;
+}
+
+/* Submit Button */
+.btn-project {
+	margin-top: 60rpx;
+	background: linear-gradient(135deg, #06b6d4, #d946ef) !important;
+	color: #ffffff !important;
+	font-weight: bold;
+	border-radius: 50rpx !important;
+	font-size: 32rpx;
+	box-shadow: 0 0 20rpx rgba(6, 182, 212, 0.4) !important;
+	border: none !important;
+}
+
+.btn-project::after {
+	border: none;
+}
+
+.btn-project:active {
+	opacity: 0.9;
+	transform: scale(0.98);
+}
+
+/* Error Hints */
+.hint-desc.error {
+	color: #ef4444 !important;
+	padding-left: 160rpx;
+	margin-top: 10rpx;
+	margin-bottom: 10rpx;
+	font-size: 24rpx;
+}
+
+/* 顶部与内容区域全局覆盖 (针对深色霓虹风格优化) */
+.top-title {
+	background-color: #000000 !important;
+	color: #06b6d4 !important;
+	text-shadow: 0 0 10rpx rgba(6, 182, 212, 0.5);
+}
+
+.top-menu {
+	background-color: rgba(0, 0, 0, 0.9) !important;
+	border-bottom: 1px solid rgba(255, 255, 255, 0.1) !important;
+}
+
+.article-box .article {
+	background-color: rgba(255, 255, 255, 0.03) !important;
+	color: #ffffff !important;
+	border: 1px solid rgba(6, 182, 212, 0.2);
+}
+
+.article-box .article .title,
+.article-box .article .title-sub {
+	color: #06b6d4 !important;
+	text-shadow: 0 0 10rpx rgba(6, 182, 212, 0.3);
+}
+
+.article-box .article .content {
+	color: rgba(255, 255, 255, 0.8) !important;
+}
+
+.article-box .article .hint,
+.article-box .article .address {
+	background-color: rgba(255, 255, 255, 0.05) !important;
+	color: rgba(255, 255, 255, 0.6) !important;
+}
+

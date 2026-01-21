@@ -18,14 +18,15 @@ class AdminUserCardController extends BaseAdminController {
 
 		// 数据校验
 		let rules = {
-			phone: 'must|string|len:11|name=手机号'
+			phone: 'must|string|min:10|max:15|name=手机号',  // 支持中国(11位)、美国(10位)
+			countryCode: 'string|name=国家代码'  // 如 +1, +86
 		};
 
 		// 取得数据
 		let input = this.validateData(rules);
 
 		let service = new AdminUserCardService();
-		let result = await service.searchUserByPhone(input.phone);
+		let result = await service.searchUserByPhone(input.phone, input.countryCode);
 
 		if (!result) {
 			throw new AppError('未找到该用户', appCode.LOGIC);

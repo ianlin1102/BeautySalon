@@ -10,7 +10,10 @@ module.exports = {
 	'passport/phone': 'passport_controller@getPhone',
 	'passport/my_detail': 'passport_controller@getMyDetail',
 	'passport/edit_base': 'passport_controller@editBase',
-	'passport/register': 'passport_controller@register',  // 用户注册
+	'passport/register': 'passport_controller@register',           // 用户注册
+	'passport/login': 'passport_controller@login',                 // 用户登录
+	'passport/check_username': 'passport_controller@checkUsername', // 检查用户名
+	'passport/google_auth': 'passport_controller@googleAuth',      // Google OAuth
 
 	'news/list': 'news_controller@getNewsList',
 	'news/home_list': 'news_controller@getHomeNewsList',
@@ -33,6 +36,13 @@ module.exports = {
 	'my/my_join_someday': 'meet_controller@getMyJoinSomeday',
 	'my/my_join_checkin': 'meet_controller@userSelfCheckin',
 
+	// 用户资料管理（Web端使用）
+	'my/detail': 'passport_controller@getMyDetail',           // 获取用户详情
+	'my/edit_base': 'passport_controller@editBase',           // 编辑用户基本信息
+	'my/link_google': 'passport_controller@linkGoogle',       // 关联 Google 账户
+	'my/unlink_google': 'passport_controller@unlinkGoogle',   // 取消关联 Google
+	'my/auth_methods': 'passport_controller@getAuthMethods',  // 获取认证方式
+
 	// 核销排行榜路由
 	'checkin/rank_list': 'checkin_controller@getRankList',            // 获取核销排行榜
 	'checkin/clear_cache': 'checkin_controller@clearRankCache',       // 清除排行榜缓存
@@ -53,6 +63,7 @@ module.exports = {
 	'test/meet_test_join': 'test/test_meet_controller@testJoin',
 	'test/create_user': 'test/test_controller@createTestUser',  // 创建测试用户（临时）
 	'test/update_user': 'test/test_controller@updateTestUser',  // 更新测试用户（修复字段）
+	'test/fix_user': 'test/test_controller@fixUserData',        // 修复用户数据（删除错误记录）
 
 	//***########### ADMIN ################## */  
 	'admin/login': 'admin/admin_home_controller@adminLogin',

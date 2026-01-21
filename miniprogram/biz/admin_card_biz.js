@@ -158,13 +158,14 @@ class AdminCardBiz {
 	}
 
 	/** 通过手机号搜索用户卡项 */
-	static async searchByPhone(phone) {
+	static async searchByPhone(phone, countryCode = '+1') {
 		if (!phone || phone.trim() === '') {
 			return null;
 		}
 
 		let params = {
-			phone: phone.trim()
+			phone: phone.trim(),
+			countryCode: countryCode
 		};
 
 		try {

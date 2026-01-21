@@ -8,7 +8,13 @@ module.exports = Behavior({
 	 * 页面的初始数据
 	 */
 	data: {
-		isLoad: false
+		isLoad: false,
+		// 国家代码选择
+		countryCodeIndex: 0,  // 默认选中第一个（美国）
+		countryCodes: [
+			{ code: '+1', label: '+1 (美国)', minLen: 10, maxLen: 10 },
+			{ code: '+86', label: '+86 (中国)', minLen: 11, maxLen: 11 }
+		]
 	},
 
 	methods: {
@@ -62,6 +68,13 @@ module.exports = Behavior({
 		 */
 		onShow: function () {
 
+		},
+
+		// 选择国家代码
+		onCountryCodeChange: function (e) {
+			this.setData({
+				countryCodeIndex: parseInt(e.detail.value)
+			});
 		},
 
 		/**
@@ -158,18 +171,31 @@ module.exports = Behavior({
 			try {
 				let data = this.data;
 				let mobile = data.formMobile;
-				if (mobile.length != 11) return pageHelper.showModal('请填写正确的手机号码');
+
+				// 获取当前选中的国家代码配置
+				let countryConfig = data.countryCodes[data.countryCodeIndex];
+				let countryCode = countryConfig.code;
+				let minLen = countryConfig.minLen;
+				let maxLen = countryConfig.maxLen;
+
+				// 验证手机号长度
+				if (mobile.length < minLen || mobile.length > maxLen) {
+					return pageHelper.showModal(`请填写正确的手机号码（${countryCode} 需要 ${minLen} 位）`);
+				}
 
 				let CHECK_FORM = {
 					name: 'formName|must|string|min:1|max:20|name=姓名',
-					mobile: 'formMobile|must|len:11|name=手机',
+					mobile: `formMobile|must|min:${minLen}|max:${maxLen}|name=手机`,
 					city: 'formCity|string|max:100|name=所在城市',
 					work: 'formWork|string|max:100|name=所在单位',
 					trade: 'formTrade|string|max:100|name=行业领域',
 				};
-				// 数据校验 
+				// 数据校验
 				data = validate.check(data, CHECK_FORM, this);
 				if (!data) return;
+
+				// 添加国家代码到提交数据
+				data.countryCode = countryCode;
 
 				let opts = {
 					title: '提交中'

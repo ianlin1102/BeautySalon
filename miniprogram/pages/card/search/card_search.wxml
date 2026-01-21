@@ -34,18 +34,34 @@
 
 		<!-- 手机号搜索 -->
 		<view wx:if="{{searchType === 'phone'}}">
-			<input
-				class="search-input"
-				placeholder="输入手机号"
-				value="{{phone}}"
-				bindinput="onPhoneInput"
-				type="number"
-				maxlength="11"
-			/>
+			<!-- 国家代码选择器 -->
+			<view class="phone-input-row">
+				<picker
+					class="country-code-picker"
+					mode="selector"
+					range="{{countryCodes}}"
+					range-key="label"
+					value="{{countryCodeIndex}}"
+					bindchange="onCountryCodeChange"
+				>
+					<view class="country-code-display">
+						{{countryCodes[countryCodeIndex].label}}
+						<text class="arrow">▼</text>
+					</view>
+				</picker>
+				<input
+					class="search-input phone-input"
+					placeholder="输入手机号（不含国家代码）"
+					value="{{phone}}"
+					bindinput="onPhoneInput"
+					type="number"
+					maxlength="15"
+				/>
+			</view>
 			<button class="btn btn-primary" bindtap="searchByPhone" loading="{{searching}}">
 				{{searching ? '搜索中...' : '搜索用户'}}
 			</button>
-			<view class="hint">通过手机号查找用户的所有卡项</view>
+			<view class="hint">通过国家代码+手机号查找用户的所有卡项</view>
 		</view>
 	</view>
 

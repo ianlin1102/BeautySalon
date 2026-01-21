@@ -6,3 +6,43 @@
 	flex: 1;
 	text-align: left;
 }
+
+/* 手机号输入行 */
+.phone-input-row {
+	display: flex;
+	align-items: center;
+	gap: 16rpx;
+	flex: 1;
+}
+
+/* 国家代码选择器 */
+.country-code-picker {
+	flex-shrink: 0;
+}
+
+.country-code-display {
+	height: 60rpx;
+	line-height: 60rpx;
+	padding: 0 16rpx;
+	background: #f5f5f5;
+	border-radius: 8rpx;
+	font-size: 26rpx;
+	color: #333;
+	display: flex;
+	align-items: center;
+	gap: 8rpx;
+	white-space: nowrap;
+}
+
+.country-code-display .arrow {
+	font-size: 20rpx;
+	color: #999;
+}
+
+/* 手机号输入框 */
+.phone-input {
+	flex: 1;
+	height: 60rpx;
+	line-height: 60rpx;
+	font-size: 28rpx;
+}

@@ -10,6 +10,12 @@ Page({
 		searchType: 'uniqueId', // 'uniqueId' 或 'phone'
 		uniqueId: '',
 		phone: '',
+		// 国家代码选择
+		countryCodeIndex: 0,  // 默认选中第一个（美国）
+		countryCodes: [
+			{ code: '+1', label: '+1 (美国)' },
+			{ code: '+86', label: '+86 (中国)' }
+		],
 		searchResult: null,
 		searching: false,
 		hasSearched: false
@@ -53,6 +59,13 @@ Page({
 	onPhoneInput(e) {
 		this.setData({
 			phone: e.detail.value
+		});
+	},
+
+	// 选择国家代码
+	onCountryCodeChange(e) {
+		this.setData({
+			countryCodeIndex: e.detail.value
 		});
 	},
 
@@ -111,7 +124,8 @@ Page({
 			return;
 		}
 
-		if (this.data.phone.length !== 11) {
+		// 支持中国(11位)和美国(10位)手机号
+		if (this.data.phone.length < 10 || this.data.phone.length > 15) {
 			wx.showToast({
 				title: '请输入正确的手机号',
 				icon: 'none'
@@ -122,7 +136,9 @@ Page({
 		this.setData({ searching: true });
 
 		try {
-			let result = await AdminCardBiz.searchByPhone(this.data.phone);
+			// 获取选中的国家代码
+			let countryCode = this.data.countryCodes[this.data.countryCodeIndex].code;
+			let result = await AdminCardBiz.searchByPhone(this.data.phone, countryCode);
 
 			this.setData({
 				searchResult: result,
@@ -684,7 +700,7 @@ Page({
 		wx.showLoading({ title: '加载中...' });
 
 		try {
-			const cloudHelper = require('/../../helper/cloud_helper.js');
+			const cloudHelper = require('../../../helper/cloud_helper.js');
 			let params = {
 				userId: userId,  // 使用 openid（USER_MINI_OPENID）
 				userCardId: card._id,
@@ -765,7 +781,7 @@ Page({
 		wx.showLoading({ title: '删除中...' });
 
 		try {
-			const cloudHelper = require('/../../helper/cloud_helper.js');
+			const cloudHelper = require('../../../helper/cloud_helper.js');
 			await cloudHelper.callCloudSumbit('admin/user_card_delete', {
 				userCardId: userCardId
 			});
@@ -814,7 +830,7 @@ Page({
 		wx.showLoading({ title: '加载卡项...' });
 
 		try {
-			const cloudHelper = require('/../../helper/cloud_helper.js');
+			const cloudHelper = require('../../../helper/cloud_helper.js');
 			// 使用 admin API 获取完整的卡项数据
 			let result = await cloudHelper.callCloudData('admin/card_list', {
 				page: 1,
@@ -926,7 +942,7 @@ Page({
 		wx.showLoading({ title: '添加中...' });
 
 		try {
-			const cloudHelper = require('/../../helper/cloud_helper.js');
+			const cloudHelper = require('../../../helper/cloud_helper.js');
 			let params = {
 				userId: userId,  // 使用 openid（USER_MINI_OPENID）
 				cardId: card._id,

@@ -111,6 +111,94 @@ class TestController extends BaseController {
 	}
 
 	/**
+	 * 修复用户数据：删除错误创建的用户，将信息合并到正确用户
+	 * 用于修复 passport_service 错误创建新用户的问题
+	 */
+	async fixUserData() {
+		// 数据校验
+		let rules = {
+			wrongUserId: 'must|string|name=错误用户ID',
+			correctAccount: 'must|string|name=正确用户账号',
+		};
+
+		let input = this.validateData(rules);
+
+		// 1. 查找错误创建的用户
+		let wrongWhere = { _id: input.wrongUserId };
+		let wrongUser = await UserModel.getOne(wrongWhere, '*', {}, false);
+
+		if (!wrongUser) {
+			return {
+				success: false,
+				message: `找不到错误用户 _id: ${input.wrongUserId}`
+			};
+		}
+
+		// 2. 查找正确的用户
+		let correctWhere = { USER_ACCOUNT: input.correctAccount };
+		let correctUser = await UserModel.getOne(correctWhere, '*', {}, false);
+
+		if (!correctUser) {
+			return {
+				success: false,
+				message: `找不到正确用户 account: ${input.correctAccount}`
+			};
+		}
+
+		// 3. 将错误用户的信息合并到正确用户
+		let updateData = {};
+
+		// 如果错误用户有新的名字、手机等信息，迁移到正确用户
+		if (wrongUser.USER_NAME && wrongUser.USER_NAME !== correctUser.USER_NAME) {
+			updateData.USER_NAME = wrongUser.USER_NAME;
+		}
+		if (wrongUser.USER_MOBILE && wrongUser.USER_MOBILE !== '13800138000') {
+			updateData.USER_MOBILE = wrongUser.USER_MOBILE;
+		}
+		if (wrongUser.USER_CITY) {
+			updateData.USER_CITY = wrongUser.USER_CITY;
+		}
+		if (wrongUser.USER_WORK) {
+			updateData.USER_WORK = wrongUser.USER_WORK;
+		}
+		if (wrongUser.USER_TRADE) {
+			updateData.USER_TRADE = wrongUser.USER_TRADE;
+		}
+
+		// 4. 更新正确用户
+		let updateResult = null;
+		if (Object.keys(updateData).length > 0) {
+			updateData.USER_EDIT_TIME = timeUtil.time();
+			await UserModel.edit(correctWhere, updateData, false);
+			updateResult = updateData;
+		}
+
+		// 5. 删除错误用户
+		await UserModel.del(wrongWhere, false);
+
+		// 6. 查询更新后的正确用户
+		let updatedCorrectUser = await UserModel.getOne(correctWhere, '*', {}, false);
+
+		return {
+			success: true,
+			message: '用户数据修复成功',
+			deleted: {
+				_id: wrongUser._id,
+				USER_NAME: wrongUser.USER_NAME,
+				USER_MINI_OPENID: wrongUser.USER_MINI_OPENID
+			},
+			merged: updateResult,
+			correctUser: {
+				_id: updatedCorrectUser._id,
+				USER_ACCOUNT: updatedCorrectUser.USER_ACCOUNT,
+				USER_ID: updatedCorrectUser.USER_ID,
+				USER_NAME: updatedCorrectUser.USER_NAME,
+				USER_MOBILE: updatedCorrectUser.USER_MOBILE
+			}
+		};
+	}
+
+	/**
 	 * 更新测试用户（修复字段格式问题）
 	 * 解决 USER_STATUS 为字符串"1"而非整数1的问题
 	 */

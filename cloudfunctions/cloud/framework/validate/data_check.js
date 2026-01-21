@@ -148,7 +148,12 @@ function checkLen(value, len, desc = '') {
 function checkMobile(value, desc = '') {
 	if (isNull(value)) return;
 
-	if (!/(^1[1|2|3|4|5|6|7|8|9][0-9]{9}$)/.test(value))
+	// 支持中国手机号（11位，以1开头）和美国手机号（10位）
+	// 也支持带国家代码的格式：+86xxxxxxxxxx 或 +1xxxxxxxxxx
+	const chinaPattern = /^(\+86)?1[1-9][0-9]{9}$/;      // 中国：11位，以1开头
+	const usPattern = /^(\+1)?[2-9][0-9]{9}$/;           // 美国：10位，首位2-9
+
+	if (!chinaPattern.test(value) && !usPattern.test(value))
 		return desc + '格式不正确';
 }
 

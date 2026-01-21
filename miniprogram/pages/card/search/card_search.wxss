@@ -78,6 +78,37 @@
 	font-weight: bold;
 }
 
+/* 手机号输入行 */
+.phone-input-row {
+	display: flex;
+	gap: 16rpx;
+	margin-bottom: 20rpx;
+}
+
+/* 国家代码选择器 */
+.country-code-picker {
+	flex-shrink: 0;
+}
+
+.country-code-display {
+	height: 80rpx;
+	line-height: 80rpx;
+	border: 2rpx solid #e0e0e0;
+	border-radius: 10rpx;
+	padding: 0 20rpx;
+	font-size: 26rpx;
+	background: #fff;
+	display: flex;
+	align-items: center;
+	gap: 8rpx;
+	white-space: nowrap;
+}
+
+.country-code-display .arrow {
+	font-size: 20rpx;
+	color: #999;
+}
+
 /* 搜索输入框 */
 .search-input {
 	width: 100%;
@@ -88,6 +119,12 @@
 	margin-bottom: 20rpx;
 	font-size: 28rpx;
 	box-sizing: border-box;
+}
+
+/* 手机号输入框（在行内使用） */
+.search-input.phone-input {
+	flex: 1;
+	margin-bottom: 0;
 }
 
 .btn {

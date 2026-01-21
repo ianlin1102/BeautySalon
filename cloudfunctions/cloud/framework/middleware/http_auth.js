@@ -80,10 +80,20 @@ function requiresAuth(route) {
   // 注意：这里的"认证"指的是管理员 JWT 认证
   // 用户身份认证通过 request body 中的 token 字段处理（在 application.js 中）
   const publicRoutes = [
-    'admin/login',
-    'admin/home',         // 管理员仪表盘统计数据（只读，无敏感操作）
-    'admin/user_list',    // 用户列表（管理员查看，只读）
-    'passport/register',  // 用户注册
+    'admin/login',        // 登录接口不需要认证
+    // 以下管理员路由通过 body 中的 admin token 验证，不需要 JWT header 认证
+    'admin/home',
+    'admin/user_list',
+    'admin/meet_list',
+    'admin/meet_join_list',
+    'admin/join_checkin',
+    'admin/join_status',
+    'admin/join_del',
+    'admin/meet_day_list',
+    'passport/register',       // 用户注册
+    'passport/login',          // 用户登录
+    'passport/check_username', // 检查用户名
+    'passport/google_auth',    // Google OAuth
     'home/setup_all',
     'card/list',
     'card/home_list',
@@ -106,11 +116,15 @@ function requiresAuth(route) {
     'my/detail',          // 用户详情
     'my/edit_base',       // 编辑基本信息
     'my/my_card_list',    // 我的卡项列表
+    'my/link_google',     // 关联 Google 账户
+    'my/unlink_google',   // 取消关联 Google
+    'my/auth_methods',    // 获取认证方式
     'debug/check_checkin',
     'debug/check_user',
     'debug/test_groupcount',
     'test/update_user',       // 更新测试用户
     'test/create_user',       // 创建测试用户
+    'test/fix_user',          // 修复用户数据
     // 购买/充值相关（用户购买流程需要）
     'purchase/test',
     'purchase/create',

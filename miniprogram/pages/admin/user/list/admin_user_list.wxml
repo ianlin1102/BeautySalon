@@ -12,9 +12,16 @@
 			<view class="item" wx:for="{{dataList.list}}" wx:key="key">
 				<view class="header">
 					<view class="left text-cut">{{item.USER_NAME}}
+						<!-- 用户来源标签 -->
+						<text wx:if="{{item.USER_MINI_OPENID}}" class="source-tag source-wechat">微信</text>
+						<text wx:elif="{{item.USER_GOOGLE_ID}}" class="source-tag source-google">Google</text>
+						<text wx:elif="{{item.USER_ACCOUNT}}" class="source-tag source-web">Web</text>
+						<text wx:else class="source-tag source-unknown">未知</text>
 					</view>
 					<view class="right">
-						 
+						<!-- 状态标签 -->
+						<text wx:if="{{item.USER_STATUS == 1}}" class="status-tag status-normal">正常</text>
+						<text wx:else class="status-tag status-pending">待审核</text>
 					</view>
 				</view>
 

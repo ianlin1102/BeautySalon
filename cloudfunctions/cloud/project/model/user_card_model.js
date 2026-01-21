@@ -6,7 +6,34 @@
 const BaseModel = require('./base_model.js');
 
 class UserCardModel extends BaseModel {
+	/**
+	 * 获取单个object (重写以支持自动过期检查)
+	 * @param {*} where 
+	 * @param {*} fields 
+	 * @param {*} orderBy 
+	 * @returns object or null
+	 */
+	static async getOne(where, fields = '*', orderBy = {}, mustPID = true) {
+		let card = await super.getOne(where, fields, orderBy, mustPID);
 
+		if (card && card.USER_CARD_STATUS === this.STATUS.IN_USE &&
+			card.USER_CARD_EXPIRE_TIME > 0) {
+
+			const timeUtil = require('../../framework/utils/time_util.js');
+			const now = timeUtil.time();
+
+			if (card.USER_CARD_EXPIRE_TIME < now) {
+				// 更新数据库
+				await this.edit(card._id, {
+					USER_CARD_STATUS: this.STATUS.EXPIRED
+				});
+				// 更新返回对象
+				card.USER_CARD_STATUS = this.STATUS.EXPIRED;
+				console.log(`[UserCardModel] Updated expired card ${card._id} in getOne`);
+			}
+		}
+		return card;
+	}
 }
 
 // 集合名
@@ -103,7 +130,40 @@ UserCardModel.getUserCards = async function(userId, { type, status, page = 1, si
 		USER_CARD_ADD_TIME: 'desc'
 	};
 
-	return await this.getList(where, '*', orderBy, page, size, true, 0);
+	let result = await this.getList(where, '*', orderBy, page, size, true, 0);
+
+	// 检查并更新过期卡项
+	if (result && result.list && result.list.length > 0) {
+		const timeUtil = require('../../framework/utils/time_util.js');
+		const now = timeUtil.time();
+		let expiredIds = [];
+
+		result.list.forEach(card => {
+			// 检查是否过期且状态仍为使用中
+			if (card.USER_CARD_STATUS === this.STATUS.IN_USE &&
+				card.USER_CARD_EXPIRE_TIME > 0 &&
+				card.USER_CARD_EXPIRE_TIME < now) {
+				
+				// 记录过期ID
+				expiredIds.push(card._id);
+				
+				// 更新返回列表中的状态
+				card.USER_CARD_STATUS = this.STATUS.EXPIRED;
+			}
+		});
+
+		// 批量更新数据库
+		if (expiredIds.length > 0) {
+			await this.edit({
+				_id: ['in', expiredIds]
+			}, {
+				USER_CARD_STATUS: this.STATUS.EXPIRED
+			});
+			console.log(`[UserCardModel] Updated ${expiredIds.length} expired cards for user ${userId}`);
+		}
+	}
+
+	return result;
 };
 
 // 获取用户某类型的卡项

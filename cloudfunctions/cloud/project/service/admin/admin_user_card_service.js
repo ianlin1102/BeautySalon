@@ -12,9 +12,25 @@ const CardItemModel = require('../../model/card_item_model.js');
 class AdminUserCardService extends BaseAdminService {
 
 	/** 通过手机号搜索用户 */
-	async searchUserByPhone(phone) {
+	async searchUserByPhone(phone, countryCode = '') {
+		// 构建搜索条件：尝试多种格式匹配
+		// 用户数据库中手机号可能存储为：
+		// 1. 纯号码 (如 1234567890)
+		// 2. 带国家代码 (如 +11234567890 或 +861234567890)
+		let phonesToSearch = [phone];
+
+		// 如果提供了国家代码，添加完整格式
+		if (countryCode) {
+			const fullPhone = countryCode + phone;
+			phonesToSearch.push(fullPhone);
+			// 也尝试不带 + 的格式
+			const codeWithoutPlus = countryCode.replace('+', '');
+			phonesToSearch.push(codeWithoutPlus + phone);
+		}
+
+		// 使用 $in 查询多种格式
 		let where = {
-			USER_MOBILE: phone
+			USER_MOBILE: { $in: phonesToSearch }
 		};
 
 		let user = await UserModel.getOne(where, 'USER_ID,USER_NAME,USER_MOBILE,USER_MINI_OPENID');

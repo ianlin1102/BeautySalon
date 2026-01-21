@@ -1,0 +1,15 @@
+{
+  "envId": "cloud1-6gnd02he13c1ff2e",
+  "functionRoot": "../",
+  "functions": [
+    {
+      "name": "cloud",
+      "config": {
+        "runtime": "Nodejs16.13",
+        "timeout": 60,
+        "memorySize": 256
+      },
+      "handler": "index.main"
+    }
+  ]
+}

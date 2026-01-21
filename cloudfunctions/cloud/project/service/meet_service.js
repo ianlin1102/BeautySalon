@@ -217,6 +217,10 @@ class MeetService extends BaseService {
 					this.AppError('卡项不存在或已失效');
 				}
 
+				if (UserCardModel.isExpired(userCard.USER_CARD_EXPIRE_TIME)) {
+					this.AppError('该卡项已过期，无法使用');
+				}
+
 			let costSet = meet.MEET_COST_SET;
 			let deductAmount = 0;
 			let deductType = ''; // 'times' 或 'amount'

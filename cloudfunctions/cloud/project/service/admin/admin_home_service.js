@@ -27,17 +27,49 @@ class AdminHomeService extends BaseAdminService {
 	 * 首页数据归集
 	 */
 	async adminHome() {
-		let where = {};
+		// 获取今日开始时间戳
+		let today = new Date();
+		today.setHours(0, 0, 0, 0);
+		let todayStart = today.getTime();
 
-		let userCnt = await UserModel.count(where);
-		let meetCnt = await MeetModel.count(where);
-		let newsCnt = await NewsModel.count(where);
-		let joinCnt = await JoinModel.count(where);
+		// 并行查询所有统计数据
+		let [
+			userCnt,
+			activeMeetCnt,
+			totalMeetCnt,
+			newsCnt,
+			activeJoinCnt,
+			totalJoinCnt,
+			todayCheckinCnt,
+			todayJoinCnt
+		] = await Promise.all([
+			// 用户总数
+			UserModel.count({}),
+			// 启用中的活动数 (MEET_STATUS = 1)
+			MeetModel.count({ MEET_STATUS: 1 }),
+			// 活动总数
+			MeetModel.count({}),
+			// 文章总数
+			NewsModel.count({}),
+			// 有效预约数 (JOIN_STATUS = 1)
+			JoinModel.count({ JOIN_STATUS: 1 }),
+			// 预约总数
+			JoinModel.count({}),
+			// 今日签到数
+			JoinModel.count({ JOIN_IS_CHECKIN: 1, JOIN_CHECKIN_TIME: ['>=', todayStart] }),
+			// 今日预约数
+			JoinModel.count({ JOIN_ADD_TIME: ['>=', todayStart] })
+		]);
+
 		return {
 			userCnt,
-			meetCnt,
+			meetCnt: totalMeetCnt,
+			activeMeetCnt,
 			newsCnt,
-			joinCnt
+			joinCnt: totalJoinCnt,
+			activeJoinCnt,
+			todayCheckinCnt,
+			todayJoinCnt
 		}
 	}
 
@@ -135,7 +167,7 @@ class AdminHomeService extends BaseAdminService {
 
 		return {
 			token: userToken,
-			name: user.USER_NAME || user.USER_ACCOUNT,
+			name: user.USER_NAME || user.USER_ID,  // 有名字用名字，没有则用 ID
 			avatar: user.USER_AVATAR,
 			last: userLast,
 			cnt: userCnt,

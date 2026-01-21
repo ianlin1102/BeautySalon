@@ -157,7 +157,8 @@ Page({
 				});
 
 				if (cardResult && cardResult.list) {
-					cardCount = cardResult.list.length;
+					// 统计所有可用卡项 (STATUS=1)
+					cardCount = cardResult.list.filter(item => item.USER_CARD_STATUS === 1).length;
 				}
 			} catch (e) {
 				// 静默失败

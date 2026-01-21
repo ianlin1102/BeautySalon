@@ -42,7 +42,8 @@ class PassportController extends BaseController {
 		// 数据校验
 		let rules = {
 			name: 'must|string|min:1|max:20',
-			mobile: 'must|mobile',
+			mobile: 'must|string|min:10|max:15|name=手机号',  // 支持不同国家格式
+			countryCode: 'string|max:5|name=国家代码',  // 如 +1, +86
 			city: 'string|max:100|name=所在城市',
 			work: 'string|max:100|name=所在单位',
 			trade: 'string|max:100|name=行业领域',
@@ -58,17 +59,25 @@ class PassportController extends BaseController {
 		return await service.editBase(this._userId, input);
 	}
 
-	/** 用户注册 */
-	async register() {
-		// 数据校验
+	/** 检查用户名是否可用 */
+	async checkUsername() {
 		let rules = {
-			account: 'must|string|min:3|max:30|name=账号',
-			password: 'must|string|min:3|max:30|name=密码',
-			name: 'string|min:1|max:20|name=姓名',
-			mobile: 'mobile|name=手机号',
+			username: 'must|string|min:3|max:30|name=用户名',
 		};
 
-		// 取得数据
+		let input = this.validateData(rules);
+		let service = new PassportService();
+		return await service.checkUsername(input.username);
+	}
+
+	/** 用户注册 */
+	async register() {
+		let rules = {
+			username: 'must|string|min:3|max:30|name=用户名',
+			password: 'must|string|min:6|max:30|name=密码',
+			name: 'string|min:1|max:20|name=姓名',
+		};
+
 		let input = this.validateData(rules);
 
 		// 内容审核
@@ -76,6 +85,54 @@ class PassportController extends BaseController {
 
 		let service = new PassportService();
 		return await service.register(input);
+	}
+
+	/** 用户登录（账号密码） */
+	async login() {
+		let rules = {
+			username: 'must|string|min:3|max:30|name=用户名',
+			password: 'must|string|min:6|max:30|name=密码',
+		};
+
+		let input = this.validateData(rules);
+		let service = new PassportService();
+		return await service.login(input);
+	}
+
+	/** Google OAuth 认证 */
+	async googleAuth() {
+		let rules = {
+			code: 'must|string|name=授权码',
+			redirectUri: 'must|string|name=重定向URI',
+		};
+
+		let input = this.validateData(rules);
+		let service = new PassportService();
+		return await service.googleAuth(input);
+	}
+
+	/** 关联 Google 账户 */
+	async linkGoogle() {
+		let rules = {
+			code: 'must|string|name=授权码',
+			redirectUri: 'must|string|name=重定向URI',
+		};
+
+		let input = this.validateData(rules);
+		let service = new PassportService();
+		return await service.linkGoogle(this._userId, input);
+	}
+
+	/** 取消关联 Google 账户 */
+	async unlinkGoogle() {
+		let service = new PassportService();
+		return await service.unlinkGoogle(this._userId);
+	}
+
+	/** 获取用户认证方式 */
+	async getAuthMethods() {
+		let service = new PassportService();
+		return await service.getAuthMethods(this._userId);
 	}
 
 }

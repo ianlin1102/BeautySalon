@@ -1,61 +1,90 @@
+@import "../../../../style/project/neon_theme.wxss";
+
+/* 页面背景 - 继承Neon Theme */
 .main {
 	min-height: 100vh;
-	background-color: #f5f5f5;
+	background-color: transparent; /* 由 .neon-page 控制 */
 	padding: 20rpx;
+	padding-top: 50rpx; /* 为顶部可能得自定义导航栏留空，或者增加一点呼吸空间 */
+	position: relative;
+	z-index: 10;
 }
 
-/* 汇总卡片 */
+/* 汇总卡片 - 模仿个人中心 "我的卡包" */
 .summary-card {
-	background: #fff;
-	border-radius: 16rpx;
-	padding: 24rpx 30rpx;
-	margin-bottom: 20rpx;
-	box-shadow: 0 2rpx 10rpx rgba(0, 0, 0, 0.05);
+	background: linear-gradient(160deg, rgba(189, 0, 255, 0.25) 0%, rgba(189, 0, 255, 0.05) 100%);
+	backdrop-filter: blur(20px) brightness(1.2);
+	-webkit-backdrop-filter: blur(20px) brightness(1.2);
+	border: 1rpx solid rgba(189, 0, 255, 0.3);
+	border-top: 2rpx solid rgba(189, 0, 255, 0.5);
+	border-radius: 32rpx;
+	padding: 30rpx 20rpx; /* 增加上下，减少左右，释放空间 */
+	margin-left: -20rpx; /* 完美贴边 */
+	margin-right: -20rpx; /* 完美贴边 */
+	margin-bottom: 40rpx;
+	box-shadow: 0 16rpx 64rpx 0 rgba(0, 0, 0, 0.3);
+  animation: breathe-purple 4s infinite ease-in-out;
+  width: 600rpx;
 }
 
 .summary-title {
-	color: #333;
-	font-size: 28rpx;
+	color: #fff;
+	font-size: 26rpx;
 	font-weight: bold;
-	margin-bottom: 16rpx;
-	padding-bottom: 12rpx;
-	border-bottom: 1rpx solid #f0f0f0;
+	margin-bottom: 20rpx;
+	padding-bottom: 16rpx;
+	padding-left: 20rpx; /* 标题增加左缩进 */
+	border-bottom: 1rpx solid rgba(255, 255, 255, 0.1);
+	letter-spacing: 2rpx;
+	opacity: 0.8;
 }
 
 .summary-row {
 	display: flex;
-	flex-direction: column;
-	gap: 8rpx;
+	justify-content: space-evenly; /* 改为 evenly 使间距更均匀 */
+	align-items: center;
+	width: 100%;
 }
 
 .summary-item {
 	display: flex;
-	justify-content: space-between;
+	flex-direction: column;
 	align-items: center;
-	padding: 8rpx 0;
+	gap: 6rpx;
+	flex: 1; /* 强制平分空间 */
+	min-width: 0; /* 防止内容撑开 */
 }
 
 .summary-label {
-	color: #666;
-	font-size: 26rpx;
+	color: rgba(230, 180, 255, 0.6);
+	font-size: 20rpx;
+	text-transform: uppercase;
+	white-space: nowrap; /* 保证标签不换行 */
 }
 
 .summary-value {
-	color: #333;
-	font-size: 28rpx;
-	font-weight: normal;
+	color: #fff;
+	font-size: 34rpx; /* 稍微调大一点点 */
+	font-weight: 800;
+	text-shadow: 0 0 20rpx rgba(189, 0, 255, 0.6);
+	white-space: nowrap;
 }
 
 .summary-divider {
-	display: none;
+	width: 1rpx;
+	height: 40rpx;
+	background: rgba(255, 255, 255, 0.1);
 }
 
-/* 筛选栏 */
+/* 筛选栏 - 轻玻璃 */
 .filter-bar {
-	background: #fff;
-	border-radius: 20rpx;
-	padding: 30rpx;
-	margin-bottom: 20rpx;
+	background: rgba(255, 255, 255, 0.03);
+	backdrop-filter: blur(10px);
+	-webkit-backdrop-filter: blur(10px);
+	border: 1rpx solid rgba(255, 255, 255, 0.05);
+	border-radius: 24rpx;
+	padding: 20rpx 24rpx;
+	margin-bottom: 30rpx;
 }
 
 .filter-group {
@@ -69,180 +98,249 @@
 }
 
 .filter-label {
-	font-size: 28rpx;
-	color: #666;
+	font-size: 26rpx;
+	color: rgba(255, 255, 255, 0.5);
 	margin-right: 20rpx;
-	min-width: 80rpx;
+	min-width: 70rpx;
 }
 
 .filter-item {
-	padding: 10rpx 20rpx;
-	margin-right: 15rpx;
-	background: #f5f5f5;
+	padding: 8rpx 24rpx;
+	margin-right: 16rpx;
+	background: rgba(255, 255, 255, 0.05);
 	border-radius: 30rpx;
 	font-size: 24rpx;
-	color: #666;
+	color: rgba(255, 255, 255, 0.7);
+	border: 1rpx solid transparent;
+	transition: all 0.2s;
 }
 
 .filter-item.active {
-	background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-	color: #fff;
+	background: rgba(0, 242, 255, 0.15);
+	color: #00f2ff;
+	border-color: rgba(0, 242, 255, 0.3);
+	box-shadow: 0 0 16rpx rgba(0, 242, 255, 0.2);
 }
 
 /* 卡项列表 */
 .card-list {
 	margin-bottom: 20rpx;
+	width: 90%;
+	margin-left: auto;
+	margin-right: auto;
 }
 
 .card-item {
-	background: #fff;
-	border-radius: 20rpx;
+	background: linear-gradient(160deg, rgba(0, 242, 255, 0.05) 0%, rgba(20, 20, 35, 0.4) 100%);
+	backdrop-filter: blur(15px);
+	-webkit-backdrop-filter: blur(15px);
+	border: 1rpx solid rgba(255, 255, 255, 0.05);
+	border-top: 1rpx solid rgba(0, 242, 255, 0.3);
+	border-radius: 32rpx;
 	padding: 30rpx;
-	margin-bottom: 20rpx;
-	box-shadow: 0 2rpx 10rpx rgba(0, 0, 0, 0.05);
+	margin-bottom: 30rpx;
+	/* 宽度由父容器 card-list 控制 */
+	width: 100%;
+	box-shadow: 0 8rpx 32rpx rgba(0, 0, 0, 0.2);
+	position: relative;
+	overflow: hidden;
+	box-sizing: border-box;
+}
+
+/* 状态 -0 已用完 */
+.card-item.status-0 {
+	background: rgba(255, 255, 255, 0.02);
+	border-color: rgba(255, 255, 255, 0.05);
+	opacity: 0.7;
+}
+
+/* 状态 -2 已过期 */
+.card-item.status-2 {
+	background: linear-gradient(160deg, rgba(255, 69, 58, 0.05) 0%, rgba(20, 20, 35, 0.4) 100%);
+	border-top-color: rgba(255, 69, 58, 0.3);
 }
 
 .card-header {
 	display: flex;
 	justify-content: space-between;
 	align-items: center;
-	margin-bottom: 20rpx;
+	margin-bottom: 24rpx;
 }
 
 .card-name {
-	font-size: 28rpx;
+	font-size: 32rpx;
 	font-weight: bold;
-	color: #333;
+	color: #fff;
+	text-shadow: 0 0 10rpx rgba(0, 242, 255, 0.3);
 	flex: 1;
 }
 
 .card-status {
-	padding: 6rpx 14rpx;
+	padding: 6rpx 16rpx;
 	border-radius: 20rpx;
 	font-size: 20rpx;
-	color: #fff;
+	font-weight: bold;
+	border: 1rpx solid;
 }
 
-.status-0 {
-	background: #909399;
+.status-badge-0 {
+	color: #999;
+	border-color: #666;
+	background: rgba(255, 255, 255, 0.05);
 }
 
-.status-1 {
-	background: #67c23a;
+.status-badge-1 {
+	color: #00f2ff;
+	border-color: rgba(0, 242, 255, 0.5);
+	background: rgba(0, 242, 255, 0.1);
+	box-shadow: 0 0 10rpx rgba(0, 242, 255, 0.2);
 }
 
-.status-2 {
-	background: #f56c6c;
+.status-badge-2 {
+	color: #ff453a;
+	border-color: rgba(255, 69, 58, 0.5);
+	background: rgba(255, 69, 58, 0.1);
+	box-shadow: 0 0 10rpx rgba(255, 69, 58, 0.2);
 }
 
 /* 唯一识别码 */
 .card-unique-id {
-	background: linear-gradient(135deg, #ffecd2 0%, #fcb69f 100%);
-	border-radius: 10rpx;
-	padding: 15rpx 20rpx;
-	margin-bottom: 20rpx;
+	background: rgba(0, 0, 0, 0.2);
+	border-radius: 12rpx;
+	padding: 16rpx 20rpx;
+	margin-bottom: 24rpx;
 	display: flex;
 	align-items: center;
+	border: 1rpx solid rgba(255, 255, 255, 0.05);
 }
 
 .unique-id-label {
 	font-size: 22rpx;
-	color: #8b4513;
-	margin-right: 10rpx;
+	color: rgba(255, 255, 255, 0.5);
+	margin-right: 12rpx;
 }
 
 .unique-id-value {
 	flex: 1;
-	font-size: 24rpx;
+	font-size: 26rpx;
 	font-weight: bold;
-	color: #8b4513;
+	color: #fff;
 	font-family: 'Courier New', monospace;
 	letter-spacing: 2rpx;
 }
 
 .copy-btn {
-	padding: 6rpx 16rpx;
-	background: rgba(139, 69, 19, 0.2);
+	padding: 6rpx 18rpx;
+	background: rgba(255, 255, 255, 0.1);
 	border-radius: 20rpx;
 	font-size: 20rpx;
-	color: #8b4513;
+	color: rgba(255, 255, 255, 0.8);
+	transition: all 0.2s;
+}
+
+.copy-btn:active {
+	background: rgba(255, 255, 255, 0.2);
 }
 
 /* 卡项信息 */
 .card-info {
-	margin-bottom: 20rpx;
+	margin-bottom: 24rpx;
 }
 
 .info-row {
 	display: flex;
-	justify-content: space-around;
+	justify-content: space-between;
+	gap: 20rpx;
 }
 
 .info-item {
 	flex: 1;
 	text-align: center;
 	padding: 20rpx;
-	background: #f9f9f9;
-	border-radius: 10rpx;
-	margin: 0 10rpx;
-}
-
-.info-item:first-child {
-	margin-left: 0;
-}
-
-.info-item:last-child {
-	margin-right: 0;
+	background: rgba(255, 255, 255, 0.03);
+	border-radius: 16rpx;
+	border: 1rpx solid rgba(255, 255, 255, 0.05);
 }
 
 .info-label {
 	display: block;
 	font-size: 22rpx;
-	color: #999;
-	margin-bottom: 10rpx;
+	color: rgba(255, 255, 255, 0.5);
+	margin-bottom: 8rpx;
 }
 
 .info-value {
 	display: block;
-	font-size: 30rpx;
+	font-size: 32rpx;
 	font-weight: bold;
-	color: #333;
 }
 
 .info-value.times {
-	color: #409eff;
+	color: #00f2ff;
+	text-shadow: 0 0 10rpx rgba(0, 242, 255, 0.3);
 }
 
 .info-value.balance {
-	color: #e6a23c;
+	color: #bd00ff;
+	text-shadow: 0 0 10rpx rgba(189, 0, 255, 0.3);
 }
 
 /* 进度条 */
 .progress-bar {
-	height: 8rpx;
-	background: #e0e0e0;
+	height: 6rpx;
+	background: rgba(255, 255, 255, 0.1);
 	border-radius: 10rpx;
 	overflow: hidden;
-	margin-bottom: 20rpx;
+	margin-bottom: 24rpx;
+	position: relative;
 }
 
 .progress-fill {
 	height: 100%;
-	background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
-	transition: width 0.3s;
+	background: linear-gradient(90deg, #00f2ff, #0066ff);
+	box-shadow: 0 0 10rpx rgba(0, 242, 255, 0.5);
+	position: relative;
+}
+
+.progress-fill::after {
+	content: '';
+	position: absolute;
+	top: 0;
+	left: 0;
+	bottom: 0;
+	width: 100%;
+	background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.8), transparent);
+	transform: translateX(-100%);
+	animation: shimmer 2s infinite;
+}
+
+.card-item.status-2 .progress-fill {
+	background: #555;
+	box-shadow: none;
+}
+
+.card-item.status-2 .progress-fill::after {
+	display: none;
+	animation: none;
 }
 
 /* 卡项底部 */
 .card-footer {
 	display: flex;
 	justify-content: space-between;
-	padding-top: 15rpx;
-	border-top: 1rpx solid #eee;
+	padding-top: 20rpx;
+	border-top: 1rpx solid rgba(255, 255, 255, 0.05);
 }
 
 .footer-text {
 	font-size: 20rpx;
-	color: #999;
+	color: rgba(255, 255, 255, 0.3);
+}
+
+.footer-text.expire-text {
+	color: rgba(255, 69, 58, 0.8);
+	text-shadow: 0 0 10rpx rgba(255, 69, 58, 0.3);
+	font-weight: bold;
 }
 
 /* 空状态 */
@@ -252,14 +350,15 @@
 }
 
 .empty-icon {
-	font-size: 120rpx;
+	font-size: 80rpx;
 	display: block;
 	margin-bottom: 20rpx;
+	opacity: 0.5;
 }
 
 .empty-text {
 	font-size: 28rpx;
-	color: #999;
+	color: rgba(255, 255, 255, 0.4);
 }
 
 /* 加载状态 */
@@ -268,5 +367,5 @@
 	text-align: center;
 	padding: 40rpx 0;
 	font-size: 24rpx;
-	color: #999;
+	color: rgba(255, 255, 255, 0.3);
 }

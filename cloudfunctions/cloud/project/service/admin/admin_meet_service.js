@@ -371,6 +371,8 @@ class AdminMeetService extends BaseAdminService {
 		orderBy, // 排序
 		meetId,
 		mark,
+		status,
+		isCheckin,
 		page,
 		size,
 		isTotal = true,
@@ -380,35 +382,62 @@ class AdminMeetService extends BaseAdminService {
 		orderBy = orderBy || {
 			'JOIN_EDIT_TIME': 'desc'
 		};
-		let fields = 'JOIN_IS_CHECKIN,JOIN_CODE,JOIN_ID,JOIN_REASON,JOIN_USER_ID,JOIN_MEET_ID,JOIN_MEET_TITLE,JOIN_MEET_DAY,JOIN_MEET_TIME_START,JOIN_MEET_TIME_END,JOIN_MEET_TIME_MARK,JOIN_FORMS,JOIN_STATUS,JOIN_EDIT_TIME';
+		let fields = 'JOIN_IS_CHECKIN,JOIN_CODE,JOIN_ID,JOIN_REASON,JOIN_USER_ID,JOIN_MEET_ID,JOIN_MEET_TITLE,JOIN_MEET_DAY,JOIN_MEET_TIME_START,JOIN_MEET_TIME_END,JOIN_MEET_TIME_MARK,JOIN_FORMS,JOIN_STATUS,JOIN_EDIT_TIME,JOIN_CHECKIN_TIME,JOIN_USER_NAME';
 
-		let where = {
-			JOIN_MEET_ID: meetId,
-			JOIN_MEET_TIME_MARK: mark
-		};
+		let where = {};
+		if (meetId) where.JOIN_MEET_ID = meetId;
+		if (mark) where.JOIN_MEET_TIME_MARK = mark;
+
 		if (util.isDefined(search) && search) {
 			where['JOIN_FORMS.val'] = {
 				$regex: '.*' + search,
 				$options: 'i'
 			};
-		} else if (sortType && util.isDefined(sortVal)) {
+		}
+
+		// 状态筛选
+		if (util.isDefined(status)) {
+			let s = Number(status);
+			if (s == 1099) //取消的2种
+				where.JOIN_STATUS = ['in', [10, 99]]
+			else
+				where.JOIN_STATUS = s;
+		}
+
+		// 签到筛选
+		if (util.isDefined(isCheckin)) {
+			// 签到筛选通常隐含只看成功的预约？或者看需求。
+			// 这里假设看全部状态下的签到情况，或者前端已经组合了 status=1
+			if (Number(isCheckin) == 1) {
+				where.JOIN_IS_CHECKIN = 1;
+			} else {
+				where.JOIN_IS_CHECKIN = 0;
+			}
+		}
+
+		// 兼容旧的 sortType 逻辑 (如果前端还在用)
+		if (!util.isDefined(search) && sortType && util.isDefined(sortVal)) {
 			// 搜索菜单
 			switch (sortType) {
 				case 'status':
 					// 按类型
-					sortVal = Number(sortVal);
-					if (sortVal == 1099) //取消的2种
-						where.JOIN_STATUS = ['in', [10, 99]]
-					else
-						where.JOIN_STATUS = Number(sortVal);
+					if (!util.isDefined(status)) { // 防止覆盖 explicit status
+						let s = Number(sortVal);
+						if (s == 1099) //取消的2种
+							where.JOIN_STATUS = ['in', [10, 99]]
+						else
+							where.JOIN_STATUS = s;
+					}
 					break;
 				case 'checkin':
 					// 签到
-					where.JOIN_STATUS = JoinModel.STATUS.SUCC;
-					if (sortVal == 1) {
-						where.JOIN_IS_CHECKIN = 1;
-					} else {
-						where.JOIN_IS_CHECKIN = 0;
+					if (!util.isDefined(isCheckin)) { // 防止覆盖 explicit isCheckin
+						where.JOIN_STATUS = JoinModel.STATUS.SUCC;
+						if (sortVal == 1) {
+							where.JOIN_IS_CHECKIN = 1;
+						} else {
+							where.JOIN_IS_CHECKIN = 0;
+						}
 					}
 					break;
 			}
