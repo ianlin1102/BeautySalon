@@ -93,8 +93,9 @@ class AdminPurchaseController extends BaseAdminController {
 			let statusMap = {
 				0: '待支付',
 				1: '待确认',
-				2: '已完成',
-				'-1': '已取消'
+				2: '已同意',
+				'-1': '已取消',
+				'-2': '已拒绝'
 			};
 			list[k].PURCHASE_STATUS_DESC = statusMap[String(list[k].PURCHASE_STATUS)] || '未知';
 
@@ -220,13 +221,14 @@ class AdminPurchaseController extends BaseAdminController {
 	}
 
 	/**
-	 * 拒绝/取消购买
+	 * 拒绝购买（区别于取消，拒绝是管理员审核不通过）
 	 */
 	async rejectPurchase() {
 		await this.isAdmin();
 
 		let rules = {
 			purchaseId: 'must|string|name=订单号',
+			reason: 'string|max:200|name=拒绝原因',
 		};
 
 		let input = this.validateData(rules);
@@ -245,18 +247,23 @@ class AdminPurchaseController extends BaseAdminController {
 
 		let order = orderRes.data[0];
 
-		// 更新订单状态
+		// 更新订单状态为 -2（已拒绝），区别于 -1（已取消）
+		let updateData = {
+			PURCHASE_STATUS: -2,
+			PURCHASE_UPDATE_TIME: Date.now(),
+		};
+		if (input.reason) {
+			updateData.PURCHASE_REJECT_REASON = input.reason;
+		}
+
 		await db.collection('ax_purchase_history')
 			.where({ PURCHASE_ID: input.purchaseId })
 			.update({
-				data: {
-					PURCHASE_STATUS: -1,
-					PURCHASE_UPDATE_TIME: Date.now(),
-				}
+				data: updateData
 			});
 
 		// 记录操作日志
-		this.log(`拒绝购买订单 ${input.purchaseId}，用户：${order.PURCHASE_USER_NAME || order.PURCHASE_USER_ID}，卡项：${order.PURCHASE_CARD_TITLE}`, LogModel.TYPE.PURCHASE);
+		this.log(`拒绝购买订单 ${input.purchaseId}，用户：${order.PURCHASE_USER_NAME || order.PURCHASE_USER_ID}，卡项：${order.PURCHASE_CARD_TITLE}${input.reason ? '，原因：' + input.reason : ''}`, LogModel.TYPE.PURCHASE);
 
 		return { message: '已拒绝' };
 	}
