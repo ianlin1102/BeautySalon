@@ -85,6 +85,11 @@ Page({
 				label: '预约/活动',
 				type: 'type',
 				value: 1
+			},
+			{
+				label: '购买/充值',
+				type: 'type',
+				value: 3
 			}
 		]
 

@@ -93,6 +93,47 @@ class AdminUserCardController extends BaseAdminController {
 		return result;
 	}
 
+	/** 统一搜索用户（手机号、email、用户ID、卡项唯一ID）*/
+	async searchUser() {
+		await this.isAdmin();
+
+		let rules = {
+			keyword: 'must|string|min:2|max:50|name=搜索关键词'
+		};
+
+		let input = this.validateData(rules);
+
+		let service = new AdminUserCardService();
+		let result = await service.searchUser(input.keyword.trim());
+
+		if (!result) {
+			throw new AppError('未找到匹配的用户', appCode.LOGIC);
+		}
+
+		// 格式化卡项数据
+		if (result.cards && result.cards.list) {
+			for (let k in result.cards.list) {
+				result.cards.list[k].USER_CARD_ADD_TIME = timeUtil.timestamp2Time(result.cards.list[k].USER_CARD_ADD_TIME, 'Y-M-D h:m');
+				if (result.cards.list[k].USER_CARD_EXPIRE_TIME) {
+					result.cards.list[k].USER_CARD_EXPIRE_TIME = timeUtil.timestamp2Time(result.cards.list[k].USER_CARD_EXPIRE_TIME, 'Y-M-D');
+				}
+				result.cards.list[k].USER_CARD_TYPE_DESC = result.cards.list[k].USER_CARD_TYPE === 1 ? '次数卡' : '余额卡';
+				let statusMap = { 0: '已用完', 1: '使用中', 2: '已过期' };
+				result.cards.list[k].USER_CARD_STATUS_DESC = statusMap[result.cards.list[k].USER_CARD_STATUS] || '未知';
+			}
+		}
+
+		// 格式化匹配的卡项
+		if (result.matchedCard) {
+			result.matchedCard.USER_CARD_ADD_TIME = timeUtil.timestamp2Time(result.matchedCard.USER_CARD_ADD_TIME, 'Y-M-D h:m');
+			if (result.matchedCard.USER_CARD_EXPIRE_TIME) {
+				result.matchedCard.USER_CARD_EXPIRE_TIME = timeUtil.timestamp2Time(result.matchedCard.USER_CARD_EXPIRE_TIME, 'Y-M-D');
+			}
+		}
+
+		return result;
+	}
+
 	/** 获取用户卡项列表 */
 	async getUserCardList() {
 		await this.isAdmin();

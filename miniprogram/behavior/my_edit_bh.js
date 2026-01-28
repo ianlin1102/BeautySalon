@@ -46,13 +46,27 @@ module.exports = Behavior({
 				return;
 			};
 
-			this.setData({ 
+			// 解析手机号：分离国家代码和号码
+			let mobile = user.USER_MOBILE || '';
+			let countryCodeIndex = 0; // 默认美国 +1
+
+			if (mobile.startsWith('+86')) {
+				countryCodeIndex = 1; // 中国
+				mobile = mobile.substring(3); // 去掉 +86
+			} else if (mobile.startsWith('+1')) {
+				countryCodeIndex = 0; // 美国
+				mobile = mobile.substring(2); // 去掉 +1
+			}
+			// 如果号码不以+开头，保持原样（可能是纯数字）
+
+			this.setData({
 				isLoad: true,
 				formName: user.USER_NAME,
-				formMobile: user.USER_MOBILE,
+				formMobile: mobile,
 				formTrade: user.USER_TRADE,
 				formWork: user.USER_WORK,
-				formCity: user.USER_CITY
+				formCity: user.USER_CITY,
+				countryCodeIndex: countryCodeIndex
 			})
 		},
 

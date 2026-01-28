@@ -148,3 +148,13 @@ page {
 	text-align: right;
 	font-size: 24rpx;
 }
+
+/* 用户筛选提示 */
+.user-filter-hint {
+	font-size: 28rpx;
+	color: var(--adminColor);
+	font-weight: bold;
+	padding: 10rpx 20rpx;
+	background-color: #e8f4fd;
+	border-radius: 8rpx;
+}

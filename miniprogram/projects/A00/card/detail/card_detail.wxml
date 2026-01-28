@@ -1,151 +1,157 @@
-<view class="main">
-	<!-- 卡项信息卡片 -->
-	<view wx:if="{{card}}" class="card-info-section">
-		<!-- 卡项头部 -->
-		<view class="card-header">
-			<view class="card-name">{{card.USER_CARD_CARD_NAME}}</view>
-			<view class="card-status status-{{card.USER_CARD_STATUS}}">
-				<text wx:if="{{card.USER_CARD_STATUS === 0}}">已用完</text>
-				<text wx:elif="{{card.USER_CARD_STATUS === 1}}">使用中</text>
-				<text wx:elif="{{card.USER_CARD_STATUS === 2}}">已过期</text>
-			</view>
-		</view>
+<view class="neon-page">
+	<!-- 背景装饰光斑 -->
+	<view class="bg-glow bg-glow-1"></view>
+	<view class="bg-glow bg-glow-2"></view>
 
-		<!-- 唯一识别码 -->
-		<view class="card-unique-id">
-			<text class="unique-id-label">识别码:</text>
-			<text class="unique-id-value">{{card.USER_CARD_UNIQUE_ID}}</text>
-			<text class="copy-btn" bindtap="onCopyId">复制</text>
-		</view>
-
-		<!-- 卡项统计信息 -->
-		<view class="stats-section">
-			<!-- 次数卡 -->
-			<view wx:if="{{card.USER_CARD_TYPE === 1}}" class="stats-row">
-				<view class="stat-item">
-					<text class="stat-label">剩余次数</text>
-					<text class="stat-value remain">{{card.USER_CARD_REMAIN_TIMES}}次</text>
-				</view>
-				<view class="stat-divider"></view>
-				<view class="stat-item">
-					<text class="stat-label">总次数</text>
-					<text class="stat-value">{{card.USER_CARD_TOTAL_TIMES}}次</text>
-				</view>
-				<view class="stat-divider"></view>
-				<view class="stat-item">
-					<text class="stat-label">已使用</text>
-					<text class="stat-value used">{{card.USER_CARD_TOTAL_TIMES - card.USER_CARD_REMAIN_TIMES}}次</text>
+	<view class="main">
+		<!-- 卡项信息卡片 -->
+		<view wx:if="{{card}}" class="card-info-section">
+			<!-- 卡项头部 -->
+			<view class="card-header">
+				<view class="card-name">{{card.USER_CARD_CARD_NAME}}</view>
+				<view class="card-status status-{{card.USER_CARD_STATUS}}">
+					<text wx:if="{{card.USER_CARD_STATUS === 0}}">已用完</text>
+					<text wx:elif="{{card.USER_CARD_STATUS === 1}}">使用中</text>
+					<text wx:elif="{{card.USER_CARD_STATUS === 2}}">已过期</text>
 				</view>
 			</view>
 
-			<!-- 余额卡 -->
-			<view wx:else class="stats-row">
-				<view class="stat-item">
-					<text class="stat-label">剩余余额</text>
-					<text class="stat-value remain">${{card.USER_CARD_REMAIN_AMOUNT}}</text>
-				</view>
-				<view class="stat-divider"></view>
-				<view class="stat-item">
-					<text class="stat-label">总余额</text>
-					<text class="stat-value">${{card.USER_CARD_TOTAL_AMOUNT}}</text>
-				</view>
-				<view class="stat-divider"></view>
-				<view class="stat-item">
-					<text class="stat-label">已消费</text>
-					<text class="stat-value used">${{card.USER_CARD_TOTAL_AMOUNT - card.USER_CARD_REMAIN_AMOUNT}}</text>
-				</view>
+			<!-- 唯一识别码 -->
+			<view class="card-unique-id">
+				<text class="unique-id-label">识别码</text>
+				<text class="unique-id-value">{{card.USER_CARD_UNIQUE_ID}}</text>
+				<text class="copy-btn" bindtap="onCopyId">复制</text>
 			</view>
 
-			<!-- 进度条 -->
-			<view class="progress-section">
-				<view class="progress-bar">
-					<view class="progress-fill"
-						wx:if="{{card.USER_CARD_TYPE === 1}}"
-						style="width: {{card.progressPercent}}%"></view>
-					<view class="progress-fill"
-						wx:else
-						style="width: {{card.progressPercent}}%"></view>
-				</view>
-				<view class="progress-text">
-					<text>剩余 {{card.progressText}}%</text>
-				</view>
-			</view>
-		</view>
-
-		<!-- 时间信息 -->
-		<view class="time-info">
-			<view class="time-item">
-				<text class="time-label">添加时间</text>
-				<text class="time-value">{{card.USER_CARD_ADD_TIME}}</text>
-			</view>
-			<view wx:if="{{card.USER_CARD_EXPIRE_TIME}}" class="time-item">
-				<text class="time-label">过期时间</text>
-				<text class="time-value">{{card.USER_CARD_EXPIRE_TIME}}</text>
-			</view>
-			<view wx:else class="time-item">
-				<text class="time-label">有效期</text>
-				<text class="time-value permanent">永久有效</text>
-			</view>
-		</view>
-	</view>
-
-	<!-- 使用记录标题 -->
-	<view class="section-title">
-		<text class="title-icon">📝</text>
-		<text class="title-text">使用记录</text>
-		<text class="title-count">({{total}}条)</text>
-	</view>
-
-	<!-- 使用记录列表 -->
-	<view class="records-list">
-		<view wx:for="{{records}}" wx:key="_id" class="record-item">
-			<view class="record-left">
-				<view class="record-type {{item.RECORD_CHANGE_TIMES > 0 || item.RECORD_CHANGE_AMOUNT > 0 ? 'type-add' : 'type-use'}}">
-					<text wx:if="{{item.RECORD_CHANGE_TIMES > 0 || item.RECORD_CHANGE_AMOUNT > 0}}">充值</text>
-					<text wx:else>使用</text>
-				</view>
-			</view>
-
-			<view class="record-main">
-				<view class="record-header">
-					<view class="record-change">
-						<text wx:if="{{item.RECORD_CHANGE_TIMES !== 0}}" class="{{item.RECORD_CHANGE_TIMES > 0 ? 'change-add' : 'change-use'}}">
-							{{item.RECORD_CHANGE_TIMES > 0 ? '+' : ''}}{{item.RECORD_CHANGE_TIMES}}次
-						</text>
-						<text wx:if="{{item.RECORD_CHANGE_AMOUNT !== 0}}" class="{{item.RECORD_CHANGE_AMOUNT > 0 ? 'change-add' : 'change-use'}}">
-							{{item.RECORD_CHANGE_AMOUNT > 0 ? '+' : ''}}${{item.RECORD_CHANGE_AMOUNT}}
-						</text>
+			<!-- 卡项统计信息 -->
+			<view class="stats-section">
+				<!-- 次数卡 -->
+				<view wx:if="{{card.USER_CARD_TYPE === 1}}" class="stats-row">
+					<view class="stat-item">
+						<text class="stat-label">剩余次数</text>
+						<text class="stat-value remain">{{card.USER_CARD_REMAIN_TIMES}}次</text>
 					</view>
-					<text class="record-time">{{item.RECORD_ADD_TIME}}</text>
+					<view class="stat-divider"></view>
+					<view class="stat-item">
+						<text class="stat-label">总次数</text>
+						<text class="stat-value">{{card.USER_CARD_TOTAL_TIMES}}次</text>
+					</view>
+					<view class="stat-divider"></view>
+					<view class="stat-item">
+						<text class="stat-label">已使用</text>
+						<text class="stat-value used">{{card.USER_CARD_TOTAL_TIMES - card.USER_CARD_REMAIN_TIMES}}次</text>
+					</view>
 				</view>
 
-				<view wx:if="{{item.RECORD_REASON}}" class="record-reason">
-					<text>{{item.RECORD_REASON}}</text>
+				<!-- 余额卡 -->
+				<view wx:else class="stats-row">
+					<view class="stat-item">
+						<text class="stat-label">剩余余额</text>
+						<text class="stat-value remain">${{card.USER_CARD_REMAIN_AMOUNT}}</text>
+					</view>
+					<view class="stat-divider"></view>
+					<view class="stat-item">
+						<text class="stat-label">总余额</text>
+						<text class="stat-value">${{card.USER_CARD_TOTAL_AMOUNT}}</text>
+					</view>
+					<view class="stat-divider"></view>
+					<view class="stat-item">
+						<text class="stat-label">已消费</text>
+						<text class="stat-value used">${{card.USER_CARD_TOTAL_AMOUNT - card.USER_CARD_REMAIN_AMOUNT}}</text>
+					</view>
 				</view>
 
-				<view class="record-balance">
-					<!-- 次数卡只显示次数余额 -->
-					<text wx:if="{{card.USER_CARD_TYPE === 1 && item.RECORD_AFTER_TIMES !== undefined}}">余额: {{item.RECORD_AFTER_TIMES}}次</text>
-					<!-- 余额卡只显示金额余额 -->
-					<text wx:if="{{card.USER_CARD_TYPE === 2 && item.RECORD_AFTER_AMOUNT !== undefined}}">余额: ${{item.RECORD_AFTER_AMOUNT}}</text>
+				<!-- 进度条 -->
+				<view class="progress-section">
+					<view class="progress-bar">
+						<view class="progress-fill"
+							wx:if="{{card.USER_CARD_TYPE === 1}}"
+							style="width: {{card.progressPercent}}%"></view>
+						<view class="progress-fill"
+							wx:else
+							style="width: {{card.progressPercent}}%"></view>
+					</view>
+					<view class="progress-text">
+						<text>剩余 {{card.progressText}}%</text>
+					</view>
+				</view>
+			</view>
+
+			<!-- 时间信息 -->
+			<view class="time-info">
+				<view class="time-item">
+					<text class="time-label">添加时间</text>
+					<text class="time-value text-neon-dim">{{card.USER_CARD_ADD_TIME}}</text>
+				</view>
+				<view wx:if="{{card.USER_CARD_EXPIRE_TIME}}" class="time-item">
+					<text class="time-label">过期时间</text>
+					<text class="time-value">{{card.USER_CARD_EXPIRE_TIME}}</text>
+				</view>
+				<view wx:else class="time-item">
+					<text class="time-label">有效期</text>
+					<text class="time-value permanent">永久有效</text>
 				</view>
 			</view>
 		</view>
 
-		<!-- 空状态 -->
-		<view wx:if="{{records.length === 0 && !isLoad}}" class="empty-state">
-			<text class="empty-icon">📋</text>
-			<text class="empty-text">暂无使用记录</text>
+		<!-- 使用记录标题 -->
+		<view class="section-title">
+			<text class="title-icon">📝</text>
+			<text class="title-text">使用记录</text>
+			<text class="title-count">({{total}}条)</text>
 		</view>
 
-		<!-- 加载中 -->
-		<view wx:if="{{isLoad}}" class="loading">
-			<text>加载中...</text>
-		</view>
+		<!-- 使用记录列表 -->
+		<view class="records-list">
+			<view wx:for="{{records}}" wx:key="_id" class="record-item">
+				<view class="record-left">
+					<view class="record-type {{item.RECORD_CHANGE_TIMES > 0 || item.RECORD_CHANGE_AMOUNT > 0 ? 'type-add' : 'type-use'}}">
+						<text wx:if="{{item.RECORD_CHANGE_TIMES > 0 || item.RECORD_CHANGE_AMOUNT > 0}}">充值</text>
+						<text wx:else>使用</text>
+					</view>
+				</view>
 
-		<!-- 没有更多 -->
-		<view wx:if="{{!isLoadMore && records.length > 0}}" class="no-more">
-			<text>没有更多了</text>
+				<view class="record-main">
+					<view class="record-header">
+						<view class="record-change">
+							<text wx:if="{{item.RECORD_CHANGE_TIMES !== 0}}" class="{{item.RECORD_CHANGE_TIMES > 0 ? 'change-add' : 'change-use'}}">
+								{{item.RECORD_CHANGE_TIMES > 0 ? '+' : ''}}{{item.RECORD_CHANGE_TIMES}}次
+							</text>
+							<text wx:if="{{item.RECORD_CHANGE_AMOUNT !== 0}}" class="{{item.RECORD_CHANGE_AMOUNT > 0 ? 'change-add' : 'change-use'}}">
+								{{item.RECORD_CHANGE_AMOUNT > 0 ? '+' : ''}}${{item.RECORD_CHANGE_AMOUNT}}
+							</text>
+						</view>
+						<text class="record-time">{{item.RECORD_ADD_TIME}}</text>
+					</view>
+
+					<view wx:if="{{item.RECORD_REASON}}" class="record-reason">
+						<text>{{item.RECORD_REASON}}</text>
+					</view>
+
+					<view class="record-balance">
+						<!-- 次数卡只显示次数余额 -->
+						<text wx:if="{{card.USER_CARD_TYPE === 1 && item.RECORD_AFTER_TIMES !== undefined}}">余额: {{item.RECORD_AFTER_TIMES}}次</text>
+						<!-- 余额卡只显示金额余额 -->
+						<text wx:if="{{card.USER_CARD_TYPE === 2 && item.RECORD_AFTER_AMOUNT !== undefined}}">余额: ${{item.RECORD_AFTER_AMOUNT}}</text>
+					</view>
+				</view>
+			</view>
+
+			<!-- 空状态 -->
+			<view wx:if="{{records.length === 0 && !isLoad}}" class="empty-state">
+				<text class="empty-icon">📋</text>
+				<text class="empty-text">暂无使用记录</text>
+			</view>
+
+			<!-- 加载中 -->
+			<view wx:if="{{isLoad}}" class="loading">
+				<text>加载中...</text>
+			</view>
+
+			<!-- 没有更多 -->
+			<view wx:if="{{!isLoadMore && records.length > 0}}" class="no-more">
+				<text>没有更多了</text>
+			</view>
 		</view>
 	</view>
 </view>

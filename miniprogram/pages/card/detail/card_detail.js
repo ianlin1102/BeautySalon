@@ -11,6 +11,14 @@ Page({
 		isLoad: false,
 		card: null,
 		agreedDisclaimer: false, // 是否同意免责声明
+
+		// Purchase flow state
+		showPurchaseModal: false,
+		showUploadModal: false,
+		purchaseId: '',
+		proofImage: '',
+		uploading: false,
+		purchaseSuccess: false,
 	},
 
 	/**
@@ -114,7 +122,7 @@ Page({
 	},
 
 	/**
-	 * 立即购买按钮
+	 * 立即购买按钮 - 显示购买确认弹窗
 	 */
 	bindPurchaseTap: function () {
 		// 检查是否同意免责声明
@@ -124,12 +132,125 @@ Page({
 		}
 
 		// 检查登录状态
-		if (!PassportBiz.check(this)) {
+		if (!PassportBiz.isLoggedIn()) {
+			pageHelper.showModal('请先登录');
 			return;
 		}
 
-		// TODO: 实现购买流程
-		pageHelper.showModal('购买功能即将上线，敬请期待！');
+		this.setData({ showPurchaseModal: true });
+	},
+
+	/**
+	 * 确认购买 - 创建订单
+	 */
+	bindConfirmPurchase: async function () {
+		try {
+			const PurchaseBiz = require('../../../biz/purchase_biz.js');
+			let card = this.data.card;
+			let result = await PurchaseBiz.createOrder(card._id, 'zelle');
+
+			this.setData({
+				showPurchaseModal: false,
+				showUploadModal: true,
+				purchaseId: result.purchaseId,
+			});
+		} catch (err) {
+			console.error('创建订单失败:', err);
+			pageHelper.showModal('创建订单失败，请重试');
+		}
+	},
+
+	/**
+	 * 选择凭证图片
+	 */
+	bindChooseImage: function () {
+		wx.chooseMedia({
+			count: 1,
+			mediaType: ['image'],
+			sourceType: ['album', 'camera'],
+			sizeType: ['compressed'],
+			success: (res) => {
+				let tempFilePath = res.tempFiles[0].tempFilePath;
+				this.setData({ proofImage: tempFilePath });
+			}
+		});
+	},
+
+	/**
+	 * 上传凭证
+	 */
+	bindUploadProof: async function () {
+		if (!this.data.proofImage) {
+			pageHelper.showModal('请先选择支付凭证图片');
+			return;
+		}
+
+		this.setData({ uploading: true });
+
+		try {
+			const PurchaseBiz = require('../../../biz/purchase_biz.js');
+			await PurchaseBiz.uploadProof(this.data.purchaseId, this.data.proofImage);
+
+			this.setData({
+				uploading: false,
+				purchaseSuccess: true,
+			});
+		} catch (err) {
+			console.error('上传凭证失败:', err);
+			this.setData({ uploading: false });
+			pageHelper.showModal('上传失败，请重试');
+		}
+	},
+
+	/**
+	 * 关闭购买确认弹窗
+	 */
+	bindClosePurchaseModal: function () {
+		this.setData({ showPurchaseModal: false });
+	},
+
+	/**
+	 * 关闭上传弹窗（未上传凭证则取消订单）
+	 */
+	bindCloseUploadModal: async function () {
+		let purchaseId = this.data.purchaseId;
+		this.setData({
+			showUploadModal: false,
+			proofImage: '',
+			purchaseId: '',
+		});
+		// 未上传凭证，取消该订单（作废处理）
+		if (purchaseId && !this.data.purchaseSuccess) {
+			try {
+				await cloudHelper.callCloudSumbit('purchase/cancel', { purchaseId }, { hint: false });
+			} catch (err) {
+				console.log('取消订单:', err);
+			}
+		}
+	},
+
+	/**
+	 * 关闭成功弹窗
+	 */
+	bindCloseSuccessModal: function () {
+		this.setData({
+			purchaseSuccess: false,
+			showUploadModal: false,
+			proofImage: '',
+			purchaseId: '',
+		});
+	},
+
+	/**
+	 * 预览凭证图片
+	 */
+	bindPreviewProof: function () {
+		if (this.data.proofImage) {
+			wx.previewImage({
+				current: this.data.proofImage,
+				urls: [this.data.proofImage]
+			});
+		}
 	},
 
 	/**

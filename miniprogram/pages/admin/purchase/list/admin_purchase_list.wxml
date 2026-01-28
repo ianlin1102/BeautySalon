@@ -1,0 +1,80 @@
+<view wx:if="{{!isLoad}}" class="margin-top load loading text-l text-admin"></view>
+
+<view wx:if="{{isLoad}}" class="main-admin">
+
+	<!-- 用户筛选提示 -->
+	<view wx:if="{{userId}}" class="user-filter-bar">
+		<text class="user-filter-text">{{userName || '用户'}} 的购买记录</text>
+	</view>
+
+	<!-- 统计 -->
+	<view class="stat-bar">
+		<text class="stat-text">共 {{total}} 条购买凭证</text>
+	</view>
+
+	<!-- 按月分组列表 -->
+	<block wx:for="{{groups}}" wx:key="month">
+		<view class="month-header">
+			<text class="month-title">{{item.month}}</text>
+			<text class="month-count">{{item.items.length}} 条</text>
+		</view>
+
+		<view class="purchase-item" wx:for="{{item.items}}" wx:for-item="record" wx:key="_id">
+			<!-- 凭证图片 -->
+			<view class="proof-img-wrap" bindtap="bindPreviewProof" data-url="{{record.PURCHASE_PROOF_URL}}">
+				<image class="proof-img" src="{{record.PURCHASE_PROOF_URL}}" mode="aspectFill"></image>
+			</view>
+
+			<!-- 购买信息 -->
+			<view class="purchase-info">
+				<view class="info-row">
+					<text class="info-label">卡项</text>
+					<text class="info-value text-bold">{{record.PURCHASE_CARD_TITLE || '未知卡项'}}</text>
+				</view>
+				<view class="info-row">
+					<text class="info-label">用户</text>
+					<text class="info-value">{{record.PURCHASE_USER_NAME || record.PURCHASE_USER_ID || '未知'}}</text>
+				</view>
+				<view class="info-row">
+					<text class="info-label">金额</text>
+					<text class="info-value text-price">${{record.PURCHASE_CARD_PRICE || 0}}</text>
+				</view>
+				<view class="info-row">
+					<text class="info-label">方式</text>
+					<text class="info-value">{{record.PURCHASE_PAYMENT_METHOD || 'Zelle'}}</text>
+				</view>
+				<view class="info-row">
+					<text class="info-label">时间</text>
+					<text class="info-value text-grey">{{record.PURCHASE_CREATE_TIME_FMT}}</text>
+				</view>
+				<view class="info-row">
+					<text class="info-label">状态</text>
+					<text class="info-value status-{{record.PURCHASE_STATUS}}">{{record.PURCHASE_STATUS_DESC}}</text>
+				</view>
+
+				<!-- 操作按钮 -->
+				<view class="action-row">
+					<block wx:if="{{record.PURCHASE_STATUS == 1}}">
+						<button class="btn-confirm" size="mini" catchtap="bindConfirmPurchase" data-id="{{record.PURCHASE_ID}}">确认</button>
+						<button class="btn-reject" size="mini" catchtap="bindRejectPurchase" data-id="{{record.PURCHASE_ID}}">拒绝</button>
+					</block>
+					<button class="btn-delete" size="mini" catchtap="bindDeletePurchase" data-id="{{record.PURCHASE_ID}}">删除</button>
+				</view>
+			</view>
+		</view>
+	</block>
+
+	<!-- 空状态 -->
+	<view wx:if="{{isLoad && list.length === 0}}" class="empty-state">
+		<text class="empty-text">暂无购买凭证记录</text>
+	</view>
+
+	<!-- 加载更多 -->
+	<view wx:if="{{loading}}" class="load-more">
+		<text class="text-grey">加载中...</text>
+	</view>
+	<view wx:if="{{!hasMore && list.length > 0}}" class="load-more">
+		<text class="text-grey">- 已加载全部 -</text>
+	</view>
+
+</view>

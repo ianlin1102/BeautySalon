@@ -59,6 +59,36 @@ class AdminSetupService extends BaseAdminService {
 		return upload.fileID;
 	}
 
+	/** 获取免责声明 */
+	async getDisclaimer() {
+		let setup = await SetupModel.getOne({});
+		if (!setup) {
+			return {
+				title: '',
+				sections: []
+			};
+		}
+		return {
+			title: setup.SETUP_DISCLAIMER_TITLE || '',
+			sections: setup.SETUP_DISCLAIMER_SECTIONS || []
+		};
+	}
+
+	/** 保存免责声明 */
+	async saveDisclaimer({ title, sections }) {
+		let data = {
+			SETUP_DISCLAIMER_TITLE: title || '卡项购买免责声明',
+			SETUP_DISCLAIMER_SECTIONS: sections || []
+		};
+
+		// 检查是否已有设置记录
+		let setup = await SetupModel.getOne({});
+		if (setup) {
+			await SetupModel.edit({}, data);
+		} else {
+			await SetupModel.insert(data);
+		}
+	}
 }
 
 module.exports = AdminSetupService;

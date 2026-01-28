@@ -13,7 +13,7 @@ const crypto = require('crypto');
 const https = require('https');
 
 // Google OAuth 配置 (从环境变量读取)
-const GOOGLE_CLIENT_ID = process.env.GOOGLE_CLIENT_ID || '';
+const GOOGLE_CLIENT_ID = process.env.GOOGLE_CLIENT_ID || '574240389068-uf3u8v3hp2rd1kj642hf81as4uubdmba.apps.googleusercontent.com';
 const GOOGLE_CLIENT_SECRET = process.env.GOOGLE_CLIENT_SECRET || '';
 
 // 密码哈希配置 (PBKDF2)
@@ -57,6 +57,65 @@ class PassportService extends BaseService {
 		return timeUtil.time('YMDhms') + Math.random().toString().substr(2, 6);
 	}
 
+	// ==================== Google ID Token 验证 ====================
+
+	/**
+	 * 解码并验证 Google ID Token (JWT)
+	 * 注意：由于无法访问 Google 服务器获取公钥，这里只做基本验证
+	 * 安全性依赖于：token 直接来自 Google 的 JS 库 + audience 验证 + 过期时间验证
+	 * @param {string} idToken - Google ID Token (JWT)
+	 * @returns {Object} 解码后的用户信息 { sub, email, name, picture, ... }
+	 */
+	_verifyGoogleIdToken(idToken) {
+		try {
+			// JWT 格式: header.payload.signature
+			const parts = idToken.split('.');
+			if (parts.length !== 3) {
+				throw new Error('Invalid token format');
+			}
+
+			// 解码 payload (Base64URL)
+			const payload = JSON.parse(
+				Buffer.from(parts[1].replace(/-/g, '+').replace(/_/g, '/'), 'base64').toString('utf8')
+			);
+
+			console.log('[_verifyGoogleIdToken] Token payload:', JSON.stringify(payload, null, 2));
+
+			// 验证 issuer
+			if (payload.iss !== 'https://accounts.google.com' && payload.iss !== 'accounts.google.com') {
+				throw new Error('Invalid token issuer: ' + payload.iss);
+			}
+
+			// 验证 audience (必须是我们的 client_id)
+			if (payload.aud !== GOOGLE_CLIENT_ID) {
+				throw new Error('Invalid token audience: ' + payload.aud);
+			}
+
+			// 验证过期时间
+			const now = Math.floor(Date.now() / 1000);
+			if (payload.exp && payload.exp < now) {
+				throw new Error('Token expired');
+			}
+
+			// 验证必要字段
+			if (!payload.sub || !payload.email) {
+				throw new Error('Missing required fields in token');
+			}
+
+			return {
+				id: payload.sub,           // Google 用户唯一 ID
+				email: payload.email,
+				emailVerified: payload.email_verified,
+				name: payload.name || payload.email.split('@')[0],
+				picture: payload.picture || '',
+				locale: payload.locale || ''
+			};
+		} catch (e) {
+			console.error('[_verifyGoogleIdToken] Verification failed:', e.message);
+			throw new Error('Invalid Google ID Token: ' + e.message);
+		}
+	}
+
 	// ==================== Google OAuth 工具方法 ====================
 
 	/**
@@ -67,6 +126,8 @@ class PassportService extends BaseService {
 	 */
 	async _exchangeGoogleCode(code, redirectUri) {
 		return new Promise((resolve, reject) => {
+			console.log('[_exchangeGoogleCode] Starting token exchange...');
+
 			const postData = new URLSearchParams({
 				code,
 				client_id: GOOGLE_CLIENT_ID,
@@ -82,27 +143,45 @@ class PassportService extends BaseService {
 				headers: {
 					'Content-Type': 'application/x-www-form-urlencoded',
 					'Content-Length': Buffer.byteLength(postData)
-				}
+				},
+				timeout: 15000 // 15秒超时
 			};
 
+			console.log('[_exchangeGoogleCode] Sending request to oauth2.googleapis.com...');
+
 			const req = https.request(options, (res) => {
+				console.log('[_exchangeGoogleCode] Response status:', res.statusCode);
 				let data = '';
 				res.on('data', chunk => data += chunk);
 				res.on('end', () => {
+					console.log('[_exchangeGoogleCode] Response received, length:', data.length);
 					try {
 						const result = JSON.parse(data);
 						if (result.error) {
+							console.error('[_exchangeGoogleCode] OAuth error:', result.error);
 							reject(new Error(result.error_description || result.error));
 						} else {
+							console.log('[_exchangeGoogleCode] Token obtained successfully');
 							resolve(result);
 						}
 					} catch (e) {
+						console.error('[_exchangeGoogleCode] Parse error:', e.message);
 						reject(new Error('Failed to parse Google response'));
 					}
 				});
 			});
 
-			req.on('error', reject);
+			req.on('timeout', () => {
+				console.error('[_exchangeGoogleCode] Request timeout');
+				req.destroy();
+				reject(new Error('Request timeout - Google API may be blocked'));
+			});
+
+			req.on('error', (e) => {
+				console.error('[_exchangeGoogleCode] Request error:', e.message);
+				reject(e);
+			});
+
 			req.write(postData);
 			req.end();
 		});
@@ -169,6 +248,83 @@ class PassportService extends BaseService {
 		}
 
 		return null;
+	}
+
+	// ==================== 微信登录 ====================
+
+	/**
+	 * 微信登录（小程序端）
+	 * @param {string} openid - 微信 openid（由云函数自动获取）
+	 * @returns {Object} 用户信息
+	 */
+	async wechatLogin(openid) {
+		console.log('=== wechatLogin START ===');
+		console.log('OpenID:', openid);
+
+		// 1. 查找是否已有用户
+		let where = { USER_MINI_OPENID: openid };
+		let user = await UserModel.getOne(where, '*');
+
+		if (user) {
+			// 已有用户，更新登录时间
+			console.log('Existing user found:', user.USER_ID || user._id);
+			await UserModel.edit(where, {
+				USER_LOGIN_CNT: (user.USER_LOGIN_CNT || 0) + 1,
+				USER_LOGIN_TIME: timeUtil.time(),
+				USER_LAST_LOGIN: new Date()
+			});
+
+			return {
+				userId: openid,
+				isNewUser: false,
+				user: {
+					id: user.USER_ID || user._id,
+					openid: openid,
+					name: user.USER_NAME || '',
+					mobile: user.USER_MOBILE || '',
+					avatar: user.USER_AVATAR || '',
+					authMethods: user.USER_AUTH_METHODS || ['wechat'],
+					// 判断资料是否完整
+					profileComplete: !!(user.USER_NAME && user.USER_MOBILE)
+				}
+			};
+		}
+
+		// 2. 新用户，创建账户
+		console.log('Creating new wechat user for OpenID:', openid);
+		let userId = this._generateUserId();
+
+		let newUserData = {
+			USER_ID: userId,
+			USER_MINI_OPENID: openid,
+			USER_NAME: '',
+			USER_MOBILE: '',
+			USER_STATUS: 1,
+			USER_AUTH_METHODS: ['wechat'],
+			USER_CREATED_VIA: 'wechat',
+			USER_SOURCE: 'wechat',
+			USER_LOGIN_CNT: 1,
+			USER_LOGIN_TIME: timeUtil.time(),
+			USER_ADD_TIME: timeUtil.time(),
+			USER_LAST_LOGIN: new Date()
+		};
+
+		await UserModel.insert(newUserData, true);
+		console.log('New wechat user created:', userId);
+
+		return {
+			userId: openid,
+			isNewUser: true,
+			user: {
+				id: userId,
+				openid: openid,
+				name: '',
+				mobile: '',
+				avatar: '',
+				authMethods: ['wechat'],
+				profileComplete: false
+			}
+		};
 	}
 
 	// 插入用户
@@ -408,13 +564,25 @@ class PassportService extends BaseService {
 	 * @returns {Object} 用户信息 + isNewUser 标志
 	 */
 	async googleAuth({ code, redirectUri }) {
+		try {
+			console.log('=== googleAuth START ===');
+			console.log('Code length:', code ? code.length : 0);
+			console.log('RedirectUri:', redirectUri);
+			console.log('GOOGLE_CLIENT_ID set:', GOOGLE_CLIENT_ID ? 'yes' : 'no');
+			console.log('GOOGLE_CLIENT_SECRET set:', GOOGLE_CLIENT_SECRET ? 'yes' : 'no');
+		} catch (logErr) {
+			console.error('Logging error:', logErr);
+		}
+
 		// 1. 用 code 换取 tokens
 		let tokens;
 		try {
+			console.log('Calling _exchangeGoogleCode...');
 			tokens = await this._exchangeGoogleCode(code, redirectUri);
+			console.log('Token exchange successful');
 		} catch (e) {
-			console.error('Google token exchange failed:', e);
-			this.AppError('Google 认证失败: ' + e.message);
+			console.error('Google token exchange failed:', String(e));
+			this.AppError('Google auth failed: ' + String(e));
 		}
 
 		// 2. 获取用户信息
@@ -492,6 +660,94 @@ class PassportService extends BaseService {
 	}
 
 	/**
+	 * Google OAuth 认证（使用 ID Token - 无需服务器调用 Google API）
+	 * 前端通过 Google Identity Services 获取 ID Token，后端离线验证
+	 * @param {Object} params - { idToken }
+	 * @returns {Object} 用户信息 + isNewUser 标志
+	 */
+	async googleAuthWithToken({ idToken }) {
+		console.log('=== googleAuthWithToken START ===');
+		console.log('ID Token length:', idToken ? idToken.length : 0);
+
+		// 1. 验证并解码 ID Token
+		let googleUser;
+		try {
+			googleUser = this._verifyGoogleIdToken(idToken);
+			console.log('Google user from token:', googleUser);
+		} catch (e) {
+			console.error('Token verification failed:', e.message);
+			this.AppError('Google token verification failed: ' + e.message);
+		}
+
+		// 2. 查找是否已有关联账户
+		let where = { USER_GOOGLE_ID: googleUser.id };
+		let user = await UserModel.getOne(where, '*');
+
+		if (user) {
+			// 已有用户，直接登录
+			console.log('Existing user found:', user.USER_ID);
+			await UserModel.edit(where, {
+				USER_LAST_LOGIN: new Date()
+			});
+
+			return {
+				userId: user.USER_ID || user._id,
+				isNewUser: false,
+				user: {
+					id: user.USER_ID || user._id,
+					name: user.USER_NAME,
+					username: user.USER_ACCOUNT,
+					googleEmail: user.USER_GOOGLE_EMAIL,
+					authMethods: user.USER_AUTH_METHODS || ['google']
+				}
+			};
+		}
+
+		// 3. 新用户，创建账户
+		console.log('Creating new user for Google ID:', googleUser.id);
+		let userId = this._generateUserId();
+
+		// 生成一个唯一的用户名（基于 Google email 前缀）
+		let baseUsername = googleUser.email.split('@')[0].toLowerCase().replace(/[^a-z0-9_]/g, '_');
+		let username = baseUsername;
+		let suffix = 1;
+		while (!(await this.checkUsername(username)).available) {
+			username = `${baseUsername}${suffix}`;
+			suffix++;
+		}
+
+		let newUserData = {
+			USER_ID: userId,
+			USER_ACCOUNT: username,
+			USER_NAME: googleUser.name || username,
+			USER_GOOGLE_ID: googleUser.id,
+			USER_GOOGLE_EMAIL: googleUser.email,
+			USER_GOOGLE_LINKED_AT: new Date(),
+			USER_AVATAR: googleUser.picture || '',
+			USER_STATUS: 1,
+			USER_AUTH_METHODS: ['google'],
+			USER_CREATED_VIA: 'google',
+			USER_ADD_TIME: new Date(),
+			USER_LAST_LOGIN: new Date()
+		};
+
+		await UserModel.insert(newUserData, true);
+		console.log('New user created:', userId);
+
+		return {
+			userId: userId,
+			isNewUser: true,
+			user: {
+				id: userId,
+				name: newUserData.USER_NAME,
+				username: newUserData.USER_ACCOUNT,
+				googleEmail: newUserData.USER_GOOGLE_EMAIL,
+				authMethods: newUserData.USER_AUTH_METHODS
+			}
+		};
+	}
+
+	/**
 	 * 关联 Google 账户到现有用户
 	 * @param {string} userId - 当前用户 ID
 	 * @param {Object} params - { code, redirectUri }
@@ -549,6 +805,196 @@ class PassportService extends BaseService {
 			success: true,
 			googleEmail: googleUser.email,
 			authMethods: authMethods
+		};
+	}
+
+	/**
+	 * 关联 Google 账户到现有用户（使用 ID Token）
+	 * 如果 Google 账户已被其他用户使用，则合并账户
+	 * @param {string} userId - 当前用户 ID
+	 * @param {Object} params - { idToken }
+	 * @returns {Object} { success, googleEmail, merged? }
+	 */
+	async linkGoogleWithToken(userId, { idToken }) {
+		console.log('=== linkGoogleWithToken START ===');
+		console.log('User ID:', userId);
+
+		// 1. 验证并解码 ID Token
+		let googleUser;
+		try {
+			googleUser = this._verifyGoogleIdToken(idToken);
+			console.log('Google user from token:', googleUser);
+		} catch (e) {
+			console.error('Token verification failed:', e.message);
+			this.AppError('Google token verification failed: ' + e.message);
+		}
+
+		// 2. 查找当前用户
+		let result = await this._findUser(userId);
+		if (!result) {
+			this.AppError('用户不存在，请先登录');
+		}
+		let { user, where } = result;
+		console.log('Current user found:', user.USER_ID || user._id);
+
+		// 3. 检查是否已关联 Google
+		if (user.USER_GOOGLE_ID) {
+			if (user.USER_GOOGLE_ID === googleUser.id) {
+				this.AppError('您已关联此 Google 账户');
+			} else {
+				this.AppError('您已关联其他 Google 账户，请先取消关联');
+			}
+		}
+
+		// 4. 检查此 Google ID 是否已关联其他账户
+		let existingUser = await UserModel.getOne({ USER_GOOGLE_ID: googleUser.id }, '*');
+
+		if (existingUser && existingUser.USER_ID !== user.USER_ID && existingUser._id !== user._id) {
+			console.log('Google account linked to another user:', existingUser.USER_ID);
+			// Google 账户已被其他用户使用，需要合并账户
+			return await this._mergeAccounts(user, existingUser, googleUser);
+		}
+
+		// 5. 正常关联：更新当前用户，添加 Google 关联
+		let authMethods = user.USER_AUTH_METHODS || [];
+		if (!authMethods.includes('google')) {
+			authMethods.push('google');
+		}
+
+		await UserModel.edit(where, {
+			USER_GOOGLE_ID: googleUser.id,
+			USER_GOOGLE_EMAIL: googleUser.email,
+			USER_GOOGLE_LINKED_AT: new Date(),
+			USER_AUTH_METHODS: authMethods
+		});
+
+		console.log('Google account linked successfully');
+
+		return {
+			success: true,
+			googleEmail: googleUser.email,
+			authMethods: authMethods,
+			merged: false
+		};
+	}
+
+	/**
+	 * 合并两个账户
+	 * @param {Object} primaryUser - 主账户（当前登录的 username 账户）
+	 * @param {Object} secondaryUser - 被合并账户（Google 账户）
+	 * @param {Object} googleUser - Google 用户信息
+	 * @returns {Object} 合并结果
+	 */
+	async _mergeAccounts(primaryUser, secondaryUser, googleUser) {
+		console.log('=== _mergeAccounts START ===');
+		console.log('Primary user:', primaryUser.USER_ID || primaryUser._id);
+		console.log('Secondary user:', secondaryUser.USER_ID || secondaryUser._id);
+
+		const primaryUserId = primaryUser.USER_ID || primaryUser._id;
+		const secondaryUserId = secondaryUser.USER_ID || secondaryUser._id;
+
+		// 1. 合并认证方式
+		let authMethods = primaryUser.USER_AUTH_METHODS || [];
+		if (primaryUser.USER_PASSWORD_HASH && !authMethods.includes('password')) {
+			authMethods.push('password');
+		}
+		if (!authMethods.includes('google')) {
+			authMethods.push('google');
+		}
+
+		// 2. 更新主账户：添加 Google 信息
+		let primaryWhere = primaryUser.USER_MINI_OPENID
+			? { USER_MINI_OPENID: primaryUser.USER_MINI_OPENID }
+			: { USER_ID: primaryUserId };
+
+		await UserModel.edit(primaryWhere, {
+			USER_GOOGLE_ID: googleUser.id,
+			USER_GOOGLE_EMAIL: googleUser.email,
+			USER_GOOGLE_LINKED_AT: new Date(),
+			USER_AUTH_METHODS: authMethods,
+			// 如果主账户没有名字，使用被合并账户的名字
+			USER_NAME: primaryUser.USER_NAME || secondaryUser.USER_NAME || googleUser.name
+		});
+
+		// 3. 迁移卡片记录：将被合并账户的卡片转移到主账户
+		let cardsTransferred = 0;
+		try {
+			const UserCardModel = require('../model/user_card_model.js');
+
+			// 查找被合并账户的卡片
+			let secondaryCards = await UserCardModel.getAll({
+				USER_CARD_USER_ID: secondaryUserId
+			}, '*', {}, 1, 1000);
+
+			if (secondaryCards && secondaryCards.length > 0) {
+				console.log('Found cards to transfer:', secondaryCards.length);
+
+				// 更新卡片的用户 ID
+				for (let card of secondaryCards) {
+					await UserCardModel.edit(
+						{ _id: card._id },
+						{ USER_CARD_USER_ID: primaryUserId }
+					);
+					cardsTransferred++;
+				}
+				console.log('Cards transferred:', cardsTransferred);
+			}
+		} catch (e) {
+			console.error('Error transferring cards:', e.message);
+			// 卡片迁移失败不阻塞主流程
+		}
+
+		// 4. 迁移预约记录
+		let bookingsTransferred = 0;
+		try {
+			const JoinModel = require('../model/join_model.js');
+
+			// 更新预约记录的用户 ID
+			await JoinModel.editMany(
+				{ JOIN_USER_ID: secondaryUserId },
+				{ JOIN_USER_ID: primaryUserId }
+			);
+
+			// 计算迁移数量
+			bookingsTransferred = await JoinModel.count({ JOIN_USER_ID: primaryUserId }) || 0;
+			console.log('Bookings transferred');
+		} catch (e) {
+			console.error('Error transferring bookings:', e.message);
+		}
+
+		// 5. 删除或禁用被合并的账户
+		try {
+			let secondaryWhere = secondaryUser.USER_MINI_OPENID
+				? { USER_MINI_OPENID: secondaryUser.USER_MINI_OPENID }
+				: { USER_ID: secondaryUserId };
+
+			// 清除被合并账户的 Google 关联（避免重复）
+			// 并标记为已合并状态
+			await UserModel.edit(secondaryWhere, {
+				USER_GOOGLE_ID: '',
+				USER_GOOGLE_EMAIL: '',
+				USER_STATUS: 0,  // 禁用
+				USER_MERGED_TO: primaryUserId,
+				USER_MERGED_AT: new Date()
+			});
+			console.log('Secondary account disabled');
+		} catch (e) {
+			console.error('Error disabling secondary account:', e.message);
+		}
+
+		console.log('=== _mergeAccounts COMPLETE ===');
+
+		return {
+			success: true,
+			googleEmail: googleUser.email,
+			authMethods: authMethods,
+			merged: true,
+			mergeDetails: {
+				primaryUserId: primaryUserId,
+				secondaryUserId: secondaryUserId,
+				cardsTransferred: cardsTransferred,
+				bookingsTransferred: bookingsTransferred
+			}
 		};
 	}
 

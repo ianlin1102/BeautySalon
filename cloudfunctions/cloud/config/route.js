@@ -4,16 +4,19 @@
  * Date: 2025-10-14 07:00:00
  */
 
-module.exports = { 
+module.exports = {
 	'home/setup_all': 'home_controller@getSetupAll', //获取全局配置(所有)
+	'setup/disclaimer_get': 'home_controller@getDisclaimer', //获取免责声明(公开)
 
 	'passport/phone': 'passport_controller@getPhone',
 	'passport/my_detail': 'passport_controller@getMyDetail',
 	'passport/edit_base': 'passport_controller@editBase',
+	'passport/wechat_login': 'passport_controller@wechatLogin',    // 微信登录（小程序端）
 	'passport/register': 'passport_controller@register',           // 用户注册
 	'passport/login': 'passport_controller@login',                 // 用户登录
 	'passport/check_username': 'passport_controller@checkUsername', // 检查用户名
-	'passport/google_auth': 'passport_controller@googleAuth',      // Google OAuth
+	'passport/google_auth': 'passport_controller@googleAuth',             // Google OAuth (旧方法-需要服务器调用 Google)
+	'passport/google_auth_token': 'passport_controller@googleAuthWithToken', // Google OAuth (新方法-ID Token 离线验证)
 
 	'news/list': 'news_controller@getNewsList',
 	'news/home_list': 'news_controller@getHomeNewsList',
@@ -39,7 +42,8 @@ module.exports = {
 	// 用户资料管理（Web端使用）
 	'my/detail': 'passport_controller@getMyDetail',           // 获取用户详情
 	'my/edit_base': 'passport_controller@editBase',           // 编辑用户基本信息
-	'my/link_google': 'passport_controller@linkGoogle',       // 关联 Google 账户
+	'my/link_google': 'passport_controller@linkGoogle',       // 关联 Google 账户（旧-需要服务器调用 Google）
+	'my/link_google_token': 'passport_controller@linkGoogleWithToken',  // 关联 Google 账户（新-ID Token）
 	'my/unlink_google': 'passport_controller@unlinkGoogle',   // 取消关联 Google
 	'my/auth_methods': 'passport_controller@getAuthMethods',  // 获取认证方式
 
@@ -71,8 +75,10 @@ module.exports = {
 	'admin/clear_cache': 'admin/admin_home_controller@clearCache#noDemo',
 
 	'admin/setup_about': 'admin/admin_setup_controller@setupAbout#noDemo',
-	'admin/setup_contact': 'admin/admin_setup_controller@setupContact#noDemo', 
-	'admin/setup_qr': 'admin/admin_setup_controller@genMiniQr', 
+	'admin/setup_contact': 'admin/admin_setup_controller@setupContact#noDemo',
+	'admin/setup_qr': 'admin/admin_setup_controller@genMiniQr',
+	'admin/disclaimer_get': 'admin/admin_setup_controller@getDisclaimer',
+	'admin/disclaimer_save': 'admin/admin_setup_controller@saveDisclaimer#noDemo', 
 
 	'admin/news_list': 'admin/admin_news_controller@getNewsList',
 	'admin/news_insert': 'admin/admin_news_controller@insertNews#noDemo',
@@ -191,13 +197,22 @@ module.exports = {
 	'admin/user_card_adjust': 'admin/admin_user_card_controller@adjustUserCard#noDemo',       // 调整用户卡（扣减/增加）
 	'admin/user_card_records': 'admin/admin_user_card_controller@getUserCardRecords',         // 用户使用记录
 	'admin/user_card_info': 'admin/admin_user_card_controller@getUserInfo',                   // 获取用户信息（含卡项汇总）
+	'admin/user_search': 'admin/admin_user_card_controller@searchUser',                       // 统一搜索用户
+
+	// 管理后台 - 购买凭证管理
+	'admin/purchase_proof_list': 'admin/admin_purchase_controller@getPurchaseProofList',
+	'admin/purchase_confirm': 'admin/admin_purchase_controller@confirmPurchase#noDemo',
+	'admin/purchase_reject': 'admin/admin_purchase_controller@rejectPurchase#noDemo',
+	'admin/purchase_delete': 'admin/admin_purchase_controller@deletePurchase#noDemo',
 
 	//***########### PURCHASE / RECHARGE ################## */
 	// 购买/充值模块
 	'purchase/test': 'purchase_controller@test',                       // 测试购买模块
 	'purchase/create': 'purchase_controller@createOrder',              // 创建购买订单
 	'purchase/upload_proof': 'purchase_controller@uploadProof',        // 上传支付凭证
+	'purchase/upload_proof_mini': 'purchase_controller@uploadProofMini', // 小程序端上传支付凭证（fileID）
 	'purchase/detail': 'purchase_controller@getOrderDetail',           // 获取订单详情
 	'purchase/my_orders': 'purchase_controller@getMyOrders',           // 获取我的订单列表
+	'purchase/cancel': 'purchase_controller@cancelOrder',              // 取消订单（放弃上传凭证）
 
 }

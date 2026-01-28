@@ -22,9 +22,50 @@
 		return text.substring(0, maxLen) + '...';
 	};
 
+	// 检查课程是否已开始（当前时间 > 课程开始时间）
+	// day: "2026-01-28", timeStart: "14:00"
+	var isClassStarted = function(day, timeStart) {
+		if (!day || !timeStart) return false;
+
+		// 获取当前时间
+		var now = getDate();
+		var nowYear = now.getFullYear();
+		var nowMonth = now.getMonth() + 1;
+		var nowDay = now.getDate();
+		var nowHour = now.getHours();
+		var nowMinute = now.getMinutes();
+
+		// 解析课程日期 "2026-01-28"
+		var dateParts = day.split('-');
+		var classYear = parseInt(dateParts[0]);
+		var classMonth = parseInt(dateParts[1]);
+		var classDay = parseInt(dateParts[2]);
+
+		// 解析课程开始时间 "14:00"
+		var timeParts = timeStart.split(':');
+		var classHour = parseInt(timeParts[0]);
+		var classMinute = parseInt(timeParts[1]) || 0;
+
+		// 比较日期
+		if (nowYear > classYear) return true;
+		if (nowYear < classYear) return false;
+		if (nowMonth > classMonth) return true;
+		if (nowMonth < classMonth) return false;
+		if (nowDay > classDay) return true;
+		if (nowDay < classDay) return false;
+
+		// 同一天，比较时间
+		if (nowHour > classHour) return true;
+		if (nowHour < classHour) return false;
+		if (nowMinute >= classMinute) return true;
+
+		return false;
+	};
+
 	module.exports = {
 		isDateInRange: isDateInRange,
-		truncateText: truncateText
+		truncateText: truncateText,
+		isClassStarted: isClassStarted
 	};
 </wxs>
 
@@ -44,7 +85,7 @@
 			<text wx:elif="{{list.length==0}}" class="no-project icon-emoji text-l text-grey"> 本日没有可预约的项目哦~</text>
 
 			<!-- 新的卡片样式 - 左中右三个区域 + 侧边指示条 -->
-			<view class="meet-card-horizontal category-{{item.typeId}}" wx:for="{{list}}" wx:key="_id" bindtap="url" data-url="../../meet/detail/meet_detail?id={{item.meetId}}&day={{item.day}}&timeStart={{item.timeStart}}&timeEnd={{item.timeEnd}}">
+			<view class="meet-card-horizontal category-{{item.typeId}} {{dateHelper.isClassStarted(item.day, item.timeStart) ? 'card-started' : ''}}" wx:for="{{list}}" wx:key="_id" bindtap="{{dateHelper.isClassStarted(item.day, item.timeStart) ? '' : 'url'}}" data-url="../../meet/detail/meet_detail?id={{item.meetId}}&day={{item.day}}&timeStart={{item.timeStart}}&timeEnd={{item.timeEnd}}">
 
 				<!-- 左侧区域：日期 + 头像 -->
 				<view class="card-left-section">
@@ -97,7 +138,7 @@
 
 				<!-- 右侧区域：预约按钮 -->
 				<view class="card-right-section">
-					<button class="book-button">预约</button>
+					<button class="book-button {{dateHelper.isClassStarted(item.day, item.timeStart) ? 'button-started' : ''}}">{{dateHelper.isClassStarted(item.day, item.timeStart) ? '已开始' : '预约'}}</button>
 				</view>
 			</view>
 

@@ -106,6 +106,32 @@ Page({
 		}
 	},
 
+	// 点击用户跳转详情页
+	bindUserTap: function(e) {
+		let user = e.currentTarget.dataset.user;
+		// 优先使用各平台的用户ID
+		let userId = user.USER_MINI_OPENID || user.USER_GOOGLE_ID || user.USER_ID || user._id;
+		wx.navigateTo({
+			url: '../detail/admin_user_detail?userId=' + encodeURIComponent(userId)
+		});
+	},
+
+	// 复制用户ID
+	bindCopyId: function(e) {
+		let id = e.currentTarget.dataset.id;
+		let type = e.currentTarget.dataset.type;
+		if (!id) {
+			wx.showToast({ title: '无可复制内容', icon: 'none' });
+			return;
+		}
+		wx.setClipboardData({
+			data: id,
+			success: function() {
+				wx.showToast({ title: type + '已复制', icon: 'success' });
+			}
+		});
+	},
+
 	_getSearchMenu: async function () {
 
 		let sortItems = [];

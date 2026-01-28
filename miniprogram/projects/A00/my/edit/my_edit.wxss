@@ -65,12 +65,15 @@ page {
 }
 
 .country-code-display {
-	color: #06b6d4;
+	background: rgba(6, 182, 212, 0.15) !important;
+	border: 1px solid rgba(6, 182, 212, 0.3);
+	color: #06b6d4 !important;
 	font-weight: bold;
-	font-size: 30rpx;
+	font-size: 28rpx;
 	display: flex;
 	align-items: center;
 	gap: 8rpx;
+	border-radius: 8rpx;
 }
 
 .country-code-display .arrow {

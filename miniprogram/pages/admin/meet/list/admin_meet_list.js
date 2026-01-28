@@ -274,6 +274,16 @@ Page({
 				type: 'status',
 				value: 10
 			},
+			{
+				label: '已过期',
+				type: 'expired',
+				value: 1
+			},
+			{
+				label: '未过期',
+				type: 'expired',
+				value: 0
+			},
 
 		];
 		sortMenus = sortMenus.concat(arr);

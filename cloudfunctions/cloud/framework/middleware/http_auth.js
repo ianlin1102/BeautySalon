@@ -90,10 +90,14 @@ function requiresAuth(route) {
     'admin/join_status',
     'admin/join_del',
     'admin/meet_day_list',
+    'admin/purchase_proof_list',
+    'admin/purchase_confirm',
+    'admin/purchase_reject',
     'passport/register',       // 用户注册
     'passport/login',          // 用户登录
     'passport/check_username', // 检查用户名
-    'passport/google_auth',    // Google OAuth
+    'passport/google_auth',       // Google OAuth (旧)
+    'passport/google_auth_token', // Google OAuth (ID Token)
     'home/setup_all',
     'card/list',
     'card/home_list',
@@ -116,7 +120,8 @@ function requiresAuth(route) {
     'my/detail',          // 用户详情
     'my/edit_base',       // 编辑基本信息
     'my/my_card_list',    // 我的卡项列表
-    'my/link_google',     // 关联 Google 账户
+    'my/link_google',     // 关联 Google 账户（旧）
+    'my/link_google_token', // 关联 Google 账户（ID Token）
     'my/unlink_google',   // 取消关联 Google
     'my/auth_methods',    // 获取认证方式
     'debug/check_checkin',
@@ -129,8 +134,10 @@ function requiresAuth(route) {
     'purchase/test',
     'purchase/create',
     'purchase/upload_proof',
+    'purchase/upload_proof_mini',
     'purchase/detail',
-    'purchase/my_orders'
+    'purchase/my_orders',
+    'purchase/cancel'
   ]
 
   return !publicRoutes.includes(route)

@@ -1,99 +1,175 @@
 <view wx:if="{{isLoad==null}}" class="margin-top load loading text-l"></view>
 <view wx:if="{{!isLoad}}" class="margin-top load loading text-l text-grey"></view>
 
-<view wx:if="{{isLoad}}" class="main">
-	<!-- 卡项图片 -->
-	<view class="card-cover" wx:if="{{card.CARD_PIC && card.CARD_PIC.length>0}}">
-		<image src="{{card.CARD_PIC[0]}}" mode="widthFix" bindtap="bindViewImage" data-url="{{card.CARD_PIC[0]}}"></image>
-	</view>
+<view wx:if="{{isLoad}}" class="neon-page">
+	<!-- 背景装饰光斑 -->
+	<view class="bg-glow bg-glow-1"></view>
+	<view class="bg-glow bg-glow-2"></view>
 
-	<!-- 卡项基本信息 -->
-	<view class="card-info">
-		<view class="card-title">{{card.CARD_NAME}}</view>
+	<view class="main">
+		<!-- 卡项图片 -->
+		<view class="card-cover" wx:if="{{card.CARD_PIC && card.CARD_PIC.length>0}}">
+			<image src="{{card.CARD_PIC[0]}}" mode="widthFix" bindtap="bindViewImage" data-url="{{card.CARD_PIC[0]}}"></image>
+		</view>
 
-		<view class="card-meta">
-			<view class="meta-item">
-				<text class="label">类型：</text>
-				<text class="value">
-					<text wx:if="{{card.CARD_TYPE==1}}" class="tag blue">次数卡</text>
-					<text wx:elif="{{card.CARD_TYPE==2}}" class="tag green">余额卡</text>
-				</text>
+		<!-- 卡项基本信息 -->
+		<view class="card-info">
+			<view class="card-title">{{card.CARD_NAME}}</view>
+
+			<view class="card-meta">
+				<view class="meta-item">
+					<text class="label">类型</text>
+					<view class="value">
+						<text wx:if="{{card.CARD_TYPE==1}}" class="tag blue">次数卡</text>
+						<text wx:elif="{{card.CARD_TYPE==2}}" class="tag green">余额卡</text>
+					</view>
+				</view>
+
+				<view class="meta-item" wx:if="{{card.CARD_TYPE==1}}">
+					<text class="label">包含次数</text>
+					<text class="value highlight">{{card.CARD_TIMES}} 次</text>
+				</view>
+
+				<view class="meta-item" wx:if="{{card.CARD_TYPE==2}}">
+					<text class="label">充值金额</text>
+					<text class="value highlight">${{card.CARD_AMOUNT}}</text>
+				</view>
+
+				<view class="meta-item" wx:if="{{card.CARD_VALIDITY_DAYS && card.CARD_VALIDITY_DAYS > 0}}">
+					<text class="label">有效期</text>
+					<text class="value">{{card.CARD_VALIDITY_DAYS}} 天</text>
+				</view>
+
+				<view class="meta-item" wx:else>
+					<text class="label">有效期</text>
+					<text class="value text-neon-dim">永久有效</text>
+				</view>
 			</view>
 
-			<view class="meta-item" wx:if="{{card.CARD_TYPE==1}}">
-				<text class="label">包含次数：</text>
-				<text class="value highlight">{{card.CARD_TIMES}} 次</text>
-			</view>
-
-			<view class="meta-item" wx:if="{{card.CARD_TYPE==2}}">
-				<text class="label">充值金额：</text>
-				<text class="value highlight">${{card.CARD_AMOUNT}}</text>
-			</view>
-
-			<view class="meta-item" wx:if="{{card.CARD_VALIDITY_DAYS && card.CARD_VALIDITY_DAYS > 0}}">
-				<text class="label">有效期：</text>
-				<text class="value">{{card.CARD_VALIDITY_DAYS}} 天</text>
-			</view>
-
-			<view class="meta-item" wx:else>
-				<text class="label">有效期：</text>
-				<text class="value text-grey">永久有效</text>
+			<view class="card-price">
+				<view class="price-label">售价</view>
+				<view class="price-value">
+					<text class="currency">$</text>
+					<text class="amount">{{card.CARD_PRICE}}</text>
+				</view>
 			</view>
 		</view>
 
-		<view class="card-price">
-			<view class="price-label">售价</view>
-			<view class="price-value">
-				<text class="currency">$</text>
-				<text class="amount">{{card.CARD_PRICE}}</text>
+		<!-- 详细内容：显示富文本内容（图文混排） -->
+		<view class="card-content" wx:if="{{card.CARD_CONTENT && card.CARD_CONTENT.length>0}}">
+			<view class="content-title">详细说明</view>
+			<block wx:for="{{card.CARD_CONTENT}}" wx:key="index">
+				<view wx:if="{{item.type=='text'}}" class="content-text">{{item.val}}</view>
+				<image wx:if="{{item.type=='img'}}" src="{{item.val}}" mode="widthFix" class="content-img" bindtap="bindViewImage" data-url="{{item.val}}"></image>
+			</block>
+		</view>
+
+		<!-- 支付信息 -->
+		<view class="payment-info" wx:if="{{card.CARD_PAYMENT_ZELLE || card.CARD_PAYMENT_QR || card.CARD_PAYMENT_INSTRUCTIONS}}">
+			<view class="section-title">支付信息</view>
+
+			<view class="payment-item" wx:if="{{card.CARD_PAYMENT_ZELLE}}">
+				<view class="payment-label">Zelle 账号</view>
+				<view class="payment-value">{{card.CARD_PAYMENT_ZELLE}}</view>
+			</view>
+
+			<view class="payment-item" wx:if="{{card.CARD_PAYMENT_QR}}">
+				<view class="payment-label">支付二维码</view>
+				<image src="{{card.CARD_PAYMENT_QR}}" mode="widthFix" class="payment-qr" bindtap="bindViewImage" data-url="{{card.CARD_PAYMENT_QR}}"></image>
+			</view>
+
+			<view class="payment-item" wx:if="{{card.CARD_PAYMENT_INSTRUCTIONS}}">
+				<view class="payment-label">支付说明</view>
+				<view class="payment-value">{{card.CARD_PAYMENT_INSTRUCTIONS}}</view>
 			</view>
 		</view>
-	</view>
 
-	<!-- 详细内容：显示富文本内容（图文混排） -->
-	<view class="card-content" wx:if="{{card.CARD_CONTENT && card.CARD_CONTENT.length>0}}">
-		<view class="content-title">详细说明</view>
-		<block wx:for="{{card.CARD_CONTENT}}" wx:key="index">
-			<view wx:if="{{item.type=='text'}}" class="content-text">{{item.val}}</view>
-			<image wx:if="{{item.type=='img'}}" src="{{item.val}}" mode="widthFix" class="content-img" bindtap="bindViewImage" data-url="{{item.val}}"></image>
-		</block>
-	</view>
-
-	<!-- 支付信息 -->
-	<view class="payment-info" wx:if="{{card.CARD_PAYMENT_ZELLE || card.CARD_PAYMENT_QR || card.CARD_PAYMENT_INSTRUCTIONS}}">
-		<view class="section-title">支付信息</view>
-
-		<view class="payment-item" wx:if="{{card.CARD_PAYMENT_ZELLE}}">
-			<view class="payment-label">Zelle 账号</view>
-			<view class="payment-value">{{card.CARD_PAYMENT_ZELLE}}</view>
+		<!-- 免责声明勾选 -->
+		<view class="disclaimer-section">
+			<checkbox-group bindchange="bindAgreeDisclaimer">
+				<label class="disclaimer-checkbox">
+					<checkbox value="agreed" color="#00f2ff" checked="{{agreedDisclaimer}}"/>
+					<text class="disclaimer-text">我已阅读并同意</text>
+					<text class="disclaimer-link" catchtap="bindViewDisclaimer">《购买免责声明》</text>
+				</label>
+			</checkbox-group>
 		</view>
 
-		<view class="payment-item" wx:if="{{card.CARD_PAYMENT_QR}}">
-			<view class="payment-label">支付二维码</view>
-			<image src="{{card.CARD_PAYMENT_QR}}" mode="widthFix" class="payment-qr" bindtap="bindViewImage" data-url="{{card.CARD_PAYMENT_QR}}"></image>
+		<!-- 购买按钮 -->
+		<view class="purchase-bar">
+			<button class="purchase-btn" bindtap="bindPurchaseTap" disabled="{{!agreedDisclaimer}}">
+				{{agreedDisclaimer ? '立即购买' : '请先同意免责声明'}}
+			</button>
 		</view>
 
-		<view class="payment-item" wx:if="{{card.CARD_PAYMENT_INSTRUCTIONS}}">
-			<view class="payment-label">支付说明</view>
-			<view class="payment-value">{{card.CARD_PAYMENT_INSTRUCTIONS}}</view>
+		<!-- 购买确认弹窗 -->
+		<view class="modal-mask" wx:if="{{showPurchaseModal}}" catchtap="bindClosePurchaseModal">
+			<view class="modal-content" catchtap="">
+				<view class="modal-header">
+					<text class="modal-title">确认购买</text>
+					<text class="modal-close" catchtap="bindClosePurchaseModal">×</text>
+				</view>
+				<view class="modal-body">
+					<view class="confirm-card-name">{{card.CARD_NAME}}</view>
+					<view class="confirm-card-price">
+						<text class="confirm-label">价格：</text>
+						<text class="confirm-price">${{card.CARD_PRICE}}</text>
+					</view>
+					<view class="confirm-payment">
+						<text class="confirm-label">支付方式：</text>
+						<text>Zelle 转账</text>
+					</view>
+					<view class="confirm-zelle" wx:if="{{card.CARD_PAYMENT_ZELLE}}">
+						<text class="confirm-label">Zelle 账号：</text>
+						<text class="confirm-zelle-value">{{card.CARD_PAYMENT_ZELLE}}</text>
+					</view>
+					<view class="confirm-hint">请先完成 Zelle 转账，然后上传转账截图作为凭证</view>
+				</view>
+				<view class="modal-footer">
+					<button class="modal-btn cancel" catchtap="bindClosePurchaseModal">取消</button>
+					<button class="modal-btn confirm" catchtap="bindConfirmPurchase">已转账，上传凭证</button>
+				</view>
+			</view>
 		</view>
-	</view>
 
-	<!-- 免责声明勾选 -->
-	<view class="disclaimer-section">
-		<checkbox-group bindchange="bindAgreeDisclaimer">
-			<label class="disclaimer-checkbox">
-				<checkbox value="agreed" color="#667eea" checked="{{agreedDisclaimer}}"/>
-				<text class="disclaimer-text">我已阅读并同意</text>
-				<text class="disclaimer-link" catchtap="bindViewDisclaimer">《购买免责声明》</text>
-			</label>
-		</checkbox-group>
-	</view>
+		<!-- 上传凭证弹窗 -->
+		<view class="modal-mask" wx:if="{{showUploadModal && !purchaseSuccess}}" catchtap="bindCloseUploadModal">
+			<view class="modal-content" catchtap="">
+				<view class="modal-header">
+					<text class="modal-title">上传支付凭证</text>
+					<text class="modal-close" catchtap="bindCloseUploadModal">×</text>
+				</view>
+				<view class="modal-body">
+					<view class="upload-area" catchtap="bindChooseImage">
+						<image wx:if="{{proofImage}}" src="{{proofImage}}" mode="aspectFit" class="proof-preview" catchtap="bindPreviewProof"></image>
+						<view wx:else class="upload-placeholder">
+							<text class="upload-icon">+</text>
+							<text class="upload-text">点击选择凭证图片</text>
+						</view>
+					</view>
+					<view class="upload-hint">支持 JPG、PNG 格式</view>
+				</view>
+				<view class="modal-footer">
+					<button class="modal-btn cancel" catchtap="bindCloseUploadModal">取消</button>
+					<button class="modal-btn confirm" catchtap="bindUploadProof" disabled="{{!proofImage || uploading}}">
+						{{uploading ? '上传中..' : '确认上传'}}
+					</button>
+				</view>
+			</view>
+		</view>
 
-	<!-- 购买按钮 -->
-	<view class="purchase-bar">
-		<button class="purchase-btn" bindtap="bindPurchaseTap" disabled="{{!agreedDisclaimer}}">
-			{{agreedDisclaimer ? '立即购买' : '请先同意免责声明'}}
-		</button>
+		<!-- 成功弹窗 -->
+		<view class="modal-mask" wx:if="{{purchaseSuccess}}" catchtap="bindCloseSuccessModal">
+			<view class="modal-content" catchtap="">
+				<view class="modal-body" style="text-align:center;padding:60rpx 40rpx;">
+					<view class="success-icon">✓</view>
+					<view class="success-title">凭证上传成功</view>
+					<view class="success-hint">请等待工作人员确认，确认后将自动为您开通卡项</view>
+				</view>
+				<view class="modal-footer">
+					<button class="modal-btn confirm" catchtap="bindCloseSuccessModal" style="width:100%;">知道了</button>
+				</view>
+			</view>
+		</view>
 	</view>
 </view>

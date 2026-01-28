@@ -14,37 +14,34 @@ class AdminUserCardService extends BaseAdminService {
 	/** 通过手机号搜索用户 */
 	async searchUserByPhone(phone, countryCode = '') {
 		// 构建搜索条件：尝试多种格式匹配
-		// 用户数据库中手机号可能存储为：
-		// 1. 纯号码 (如 1234567890)
-		// 2. 带国家代码 (如 +11234567890 或 +861234567890)
-		let phonesToSearch = [phone];
+		const fields = 'USER_ID,USER_NAME,USER_MOBILE,USER_MINI_OPENID,USER_GOOGLE_ID,USER_GOOGLE_EMAIL,USER_ACCOUNT,USER_SOURCE,USER_WORK,USER_CITY,USER_TRADE,USER_ADD_TIME,USER_LOGIN_TIME';
 
-		// 如果提供了国家代码，添加完整格式
-		if (countryCode) {
+		// 尝试纯号码
+		let user = await UserModel.getOne({ USER_MOBILE: phone }, fields);
+
+		// 如果提供了国家代码，尝试完整格式
+		if (!user && countryCode) {
 			const fullPhone = countryCode + phone;
-			phonesToSearch.push(fullPhone);
+			user = await UserModel.getOne({ USER_MOBILE: fullPhone }, fields);
+
 			// 也尝试不带 + 的格式
-			const codeWithoutPlus = countryCode.replace('+', '');
-			phonesToSearch.push(codeWithoutPlus + phone);
+			if (!user) {
+				const codeWithoutPlus = countryCode.replace('+', '');
+				user = await UserModel.getOne({ USER_MOBILE: codeWithoutPlus + phone }, fields);
+			}
 		}
 
-		// 使用 $in 查询多种格式
-		let where = {
-			USER_MOBILE: { $in: phonesToSearch }
-		};
-
-		let user = await UserModel.getOne(where, 'USER_ID,USER_NAME,USER_MOBILE,USER_MINI_OPENID');
 		if (!user) return null;
 
-		// 关键：使用 USER_MINI_OPENID 作为用户标识，因为这是小程序中的唯一标识
-		let userOpenId = user.USER_MINI_OPENID;
+		// 使用用户标识：优先 USER_MINI_OPENID（微信），其次 USER_ID（Web），最后 _id
+		let userOpenId = user.USER_MINI_OPENID || user.USER_ID || user._id;
 
 		// 获取用户卡项汇总
 		let totalBalance = await UserCardModel.getUserTotalBalance(userOpenId);
 		let totalTimes = await UserCardModel.getUserTotalTimes(userOpenId);
 
 		// 获取用户所有卡项
-		let cards = await UserCardModel.getUserCards(userOpenId, 1, 100);
+		let cards = await UserCardModel.getUserCards(userOpenId, { page: 1, size: 100 });
 
 		return {
 			user: user,
@@ -62,11 +59,14 @@ class AdminUserCardService extends BaseAdminService {
 		let userCard = await UserCardModel.getByUniqueId(uniqueId);
 		if (!userCard) return null;
 
-		// 获取用户信息
-		let user = await UserModel.getOne(
-			{ USER_MINI_OPENID: userCard.USER_CARD_USER_ID },
-			'USER_ID,USER_NAME,USER_MOBILE,USER_MINI_OPENID'
-		);
+		// 获取用户信息 - 支持多种用户类型（顺序查找）
+		let userId = userCard.USER_CARD_USER_ID;
+		const fields = 'USER_ID,USER_NAME,USER_MOBILE,USER_MINI_OPENID,USER_GOOGLE_ID,USER_GOOGLE_EMAIL,USER_ACCOUNT,USER_SOURCE,USER_WORK,USER_CITY,USER_TRADE,USER_ADD_TIME,USER_LOGIN_TIME';
+
+		let user = await UserModel.getOne({ USER_MINI_OPENID: userId }, fields);
+		if (!user) user = await UserModel.getOne({ USER_ID: userId }, fields);
+		if (!user) user = await UserModel.getOne({ USER_GOOGLE_ID: userId }, fields);
+		if (!user) user = await UserModel.getOne({ _id: userId }, fields);
 
 		return {
 			userCard: userCard,
@@ -301,7 +301,7 @@ class AdminUserCardService extends BaseAdminService {
 		let totalTimes = await UserCardModel.getUserTotalTimes(userId);
 
 		// 获取卡项列表
-		let cards = await UserCardModel.getUserCards(userId, 1, 100);
+		let cards = await UserCardModel.getUserCards(userId, { page: 1, size: 100 });
 
 		return {
 			user: user,
@@ -309,6 +309,86 @@ class AdminUserCardService extends BaseAdminService {
 			totalTimes: totalTimes,
 			cards: cards
 		};
+	}
+
+	/** 统一搜索用户（支持手机号、email、用户ID、卡项唯一ID）*/
+	async searchUser(keyword) {
+		// 1. 优先匹配卡项唯一ID（UC开头，忽略大小写）
+		if (keyword.toUpperCase().startsWith('UC')) {
+			let result = await this.searchByUniqueId(keyword.toUpperCase());
+			if (result) {
+				// 获取完整用户信息
+				let userOpenId = result.user?.USER_MINI_OPENID;
+				if (userOpenId) {
+					let totalBalance = await UserCardModel.getUserTotalBalance(userOpenId);
+					let totalTimes = await UserCardModel.getUserTotalTimes(userOpenId);
+					let cards = await UserCardModel.getUserCards(userOpenId, { page: 1, size: 100 });
+					return {
+						user: result.user,
+						userId: userOpenId,
+						totalBalance,
+						totalAmount: totalBalance,
+						totalTimes,
+						cards,
+						matchedBy: 'cardUniqueId',
+						matchedCard: result.userCard
+					};
+				}
+			}
+		}
+
+		// 2. 尝试按用户ID搜索（USER_MINI_OPENID、USER_ID、USER_GOOGLE_ID、_id）
+		const idFields = 'USER_ID,USER_NAME,USER_MOBILE,USER_MINI_OPENID,USER_GOOGLE_ID,USER_GOOGLE_EMAIL,USER_ACCOUNT,USER_SOURCE,USER_WORK,USER_CITY,USER_TRADE,USER_ADD_TIME,USER_LOGIN_TIME';
+		let userById = await UserModel.getOne({ USER_MINI_OPENID: keyword }, idFields);
+		if (!userById) userById = await UserModel.getOne({ USER_ID: keyword }, idFields);
+		if (!userById) userById = await UserModel.getOne({ USER_GOOGLE_ID: keyword }, idFields);
+		if (!userById) userById = await UserModel.getOne({ _id: keyword }, idFields);
+
+		if (userById) {
+			let userOpenId = userById.USER_MINI_OPENID || userById._id;
+			let totalBalance = await UserCardModel.getUserTotalBalance(userOpenId);
+			let totalTimes = await UserCardModel.getUserTotalTimes(userOpenId);
+			let cards = await UserCardModel.getUserCards(userOpenId, { page: 1, size: 100 });
+			return {
+				user: userById,
+				userId: userOpenId,
+				totalBalance,
+				totalAmount: totalBalance,
+				totalTimes,
+				cards,
+				matchedBy: 'userId'
+			};
+		}
+
+		// 3. 尝试按 Google Email 搜索（忽略大小写）
+		if (keyword.includes('@')) {
+			let userByEmail = await UserModel.getOne(
+				{ USER_GOOGLE_EMAIL: keyword.toLowerCase() },
+				'USER_ID,USER_NAME,USER_MOBILE,USER_MINI_OPENID,USER_GOOGLE_ID,USER_GOOGLE_EMAIL,USER_ACCOUNT,USER_SOURCE,USER_WORK,USER_CITY,USER_TRADE,USER_ADD_TIME,USER_LOGIN_TIME'
+			);
+			if (userByEmail) {
+				let userOpenId = userByEmail.USER_MINI_OPENID || userByEmail._id;
+				let totalBalance = await UserCardModel.getUserTotalBalance(userOpenId);
+				let totalTimes = await UserCardModel.getUserTotalTimes(userOpenId);
+				let cards = await UserCardModel.getUserCards(userOpenId, { page: 1, size: 100 });
+				return {
+					user: userByEmail,
+					userId: userOpenId,
+					totalBalance,
+					totalAmount: totalBalance,
+					totalTimes,
+					cards,
+					matchedBy: 'email'
+				};
+			}
+		}
+
+		// 4. 最后尝试按手机号搜索
+		let phoneResult = await this.searchUserByPhone(keyword, '');
+		if (phoneResult) {
+			phoneResult.matchedBy = 'phone';
+		}
+		return phoneResult;
 	}
 }
 

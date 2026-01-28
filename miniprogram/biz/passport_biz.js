@@ -10,8 +10,62 @@ const setting = require('../setting/setting.js');
 const dataHelper = require('../helper/data_helper.js');
 const cloudHelper = require('../helper/cloud_helper.js');
 const cacheHelper = require('../helper/cache_helper.js');
+const constants = require('./constants.js');
 
 class PassportBiz extends BaseBiz {
+
+	/**
+	 * 微信登录
+	 * 调用云函数获取 openid 并登录/注册
+	 * @returns {Object} 用户信息
+	 */
+	static async wechatLogin() {
+		try {
+			console.log('开始微信登录...');
+			let opts = { title: '登录中...' };
+			let result = await cloudHelper.callCloudSumbit('passport/wechat_login', {}, opts);
+
+			if (!result || !result.data) {
+				console.error('微信登录返回为空');
+				return { success: false, error: '登录失败，请重试' };
+			}
+
+			console.log('微信登录成功:', result.data);
+
+			// 保存用户信息到缓存
+			let userData = result.data;
+			cacheHelper.set(constants.CACHE_TOKEN, {
+				id: userData.userId
+			}, 86400 * 7); // 7天有效
+
+			return {
+				success: true,
+				isNewUser: userData.isNewUser,
+				user: userData.user
+			};
+		} catch (e) {
+			console.error('微信登录失败:', e);
+			return { success: false, error: e.msg || '登录失败，请重试' };
+		}
+	}
+
+	/**
+	 * 检查是否已登录
+	 * @returns {boolean}
+	 */
+	static isLoggedIn() {
+		let token = cacheHelper.get(constants.CACHE_TOKEN);
+		return !!(token && token.id);
+	}
+
+	/**
+	 * 获取当前用户 token
+	 * @returns {string|null}
+	 */
+	static getToken() {
+		let token = cacheHelper.get(constants.CACHE_TOKEN);
+		return token ? token.id : null;
+	}
 
 	/**
 	 * 页面初始化 分包下使用

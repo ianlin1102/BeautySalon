@@ -25,6 +25,12 @@ class HomeController extends BaseController {
 		return result;
 
 	}
+
+	/** 获取免责声明 (公开) */
+	async getDisclaimer() {
+		let service = new HomeService();
+		return await service.getDisclaimer();
+	}
 }
 
 module.exports = HomeController;

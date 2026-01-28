@@ -18,6 +18,18 @@ class PassportController extends BaseController {
 		return await service.getMyDetail(this._userId);
 	}
 
+	/** 微信登录（小程序端使用） */
+	async wechatLogin() {
+		// _userId 在小程序端就是 openid（由云函数框架自动获取）
+		let openid = this._userId;
+		if (!openid) {
+			this.AppError('获取微信登录信息失败，请重试');
+		}
+
+		let service = new PassportService();
+		return await service.wechatLogin(openid);
+	}
+
 	/** 获取手机号码 */
 	async getPhone() {
 
@@ -99,7 +111,7 @@ class PassportController extends BaseController {
 		return await service.login(input);
 	}
 
-	/** Google OAuth 认证 */
+	/** Google OAuth 认证（使用授权码 - 旧方法） */
 	async googleAuth() {
 		let rules = {
 			code: 'must|string|name=授权码',
@@ -111,7 +123,18 @@ class PassportController extends BaseController {
 		return await service.googleAuth(input);
 	}
 
-	/** 关联 Google 账户 */
+	/** Google OAuth 认证（使用 ID Token - 推荐，无需服务器访问 Google） */
+	async googleAuthWithToken() {
+		let rules = {
+			idToken: 'must|string|name=ID Token',
+		};
+
+		let input = this.validateData(rules);
+		let service = new PassportService();
+		return await service.googleAuthWithToken(input);
+	}
+
+	/** 关联 Google 账户（旧方法，使用授权码） */
 	async linkGoogle() {
 		let rules = {
 			code: 'must|string|name=授权码',
@@ -121,6 +144,17 @@ class PassportController extends BaseController {
 		let input = this.validateData(rules);
 		let service = new PassportService();
 		return await service.linkGoogle(this._userId, input);
+	}
+
+	/** 关联 Google 账户（使用 ID Token - 推荐） */
+	async linkGoogleWithToken() {
+		let rules = {
+			idToken: 'must|string|name=ID Token',
+		};
+
+		let input = this.validateData(rules);
+		let service = new PassportService();
+		return await service.linkGoogleWithToken(this._userId, input);
 	}
 
 	/** 取消关联 Google 账户 */

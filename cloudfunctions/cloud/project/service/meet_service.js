@@ -151,7 +151,7 @@ class MeetService extends BaseService {
 	}
 
 	// 预约逻辑
-	async join(userId, meetId, timeMark, forms, cardId) {
+	async join(userId, meetId, timeMark, forms, cardId, source = 'miniprogram') {
 		// 预约时段是否存在
 		let meetWhere = {
 			_id: meetId
@@ -174,6 +174,18 @@ class MeetService extends BaseService {
 		// 规则校验
 		await this.checkMeetRules(userId, meetId, timeMark);
 
+		// 检查用户资料完整性（姓名和手机号必须填写）
+		let userInfo = await UserModel.getOne({ USER_ID: userId }, 'USER_NAME,USER_MOBILE');
+		if (!userInfo) {
+			this.AppError('用户不存在，请先登录');
+		}
+		if (!userInfo.USER_NAME || !userInfo.USER_NAME.trim()) {
+			this.AppError('请先完善您的姓名信息后再预约');
+		}
+		if (!userInfo.USER_MOBILE || !userInfo.USER_MOBILE.trim()) {
+			this.AppError('请先完善您的手机号信息后再预约');
+		}
+
 
 		let data = {};
 
@@ -193,6 +205,16 @@ class MeetService extends BaseService {
 		data.JOIN_START_TIME = timeUtil.time2Timestamp(daySet.day + ' ' + timeSet.start + ':00');
 
 		data.JOIN_FORMS = forms;
+
+		// 保存预约来源
+		data.JOIN_SOURCE = source;
+
+		// 获取用户信息并冗余保存
+		let user = await UserModel.getOne({ USER_ID: userId }, 'USER_NAME,USER_MOBILE');
+		if (user) {
+			data.JOIN_USER_NAME = user.USER_NAME || '';
+			data.JOIN_USER_MOBILE = user.USER_MOBILE || '';
+		}
 
 		// 卡项扣费处理
 		if (cardId && meet.MEET_COST_SET && meet.MEET_COST_SET.isEnabled) {

@@ -5,14 +5,20 @@
 
 	<cmpt-comm-list id="cmpt-comm-list" type="admin-meet-join-list" search="{{search}}" _params="{{_params}}" _menus="{{sortMenus}}" _items="{{sortItems}}" route="admin/meet_join_list" topBottom="50" placeholder="搜索" sortMenusDefaultIndex="0" bind:list="bindCommListCmpt">
 
-		<view slot="searchEnd">
+		<!-- 时段模式下显示操作按钮 -->
+		<view slot="searchEnd" wx:if="{{!userId}}">
 			<button bindtap="url" data-url="../self/admin_meet_self?mark={{mark}}&title={{titleEn}}" class="btn radius mid bg-blue margin-right-xs">自助签到码</button>
-			<button bindtap="bindCancelAllTap" class="btn mid radius bg-orange margin-right-xs">取消所有</button> 
+			<button bindtap="bindCancelAllTap" class="btn mid radius bg-orange margin-right-xs">取消所有</button>
+		</view>
+
+		<!-- 用户模式下显示用户信息 -->
+		<view slot="searchEnd" wx:if="{{userId}}">
+			<view class="user-filter-hint">{{userName || '用户'}} 的预约记录</view>
 		</view>
 
 		<!-- List Begin -->
 		<view class="join-list">
-			<view class="time-line text-grey">({{time}})</view>
+			<view class="time-line text-grey" wx:if="{{time}}">({{time}})</view>
 			<view wx:if="{{dataList && dataList.total }}" class="load text-grey">共有{{dataList.total}}条符合条件记录
 				<text wx:if="{{isAllFold}}" bindtap="bindUnFoldAllTap" class="margin-left-xs icon-unfold  text-admin">全部展开</text>
 				<text wx:else bindtap="bindFoldAllTap" class="margin-left-xs icon-fold  text-admin">全部收起</text>

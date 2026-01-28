@@ -19,10 +19,21 @@ class AdminUserService extends BaseAdminService {
 		userId,
 		fields = '*'
 	}) {
-		let where = {
-			USER_MINI_OPENID: userId,
-		}
-		return await UserModel.getOne(where, fields);
+		// 先尝试 USER_MINI_OPENID（微信用户）
+		let user = await UserModel.getOne({ USER_MINI_OPENID: userId }, fields);
+		if (user) return user;
+
+		// 再尝试 USER_ID（Web 用户）
+		user = await UserModel.getOne({ USER_ID: userId }, fields);
+		if (user) return user;
+
+		// 再尝试 USER_GOOGLE_ID（Google 用户）
+		user = await UserModel.getOne({ USER_GOOGLE_ID: userId }, fields);
+		if (user) return user;
+
+		// 最后尝试 _id
+		user = await UserModel.getOne({ _id: userId }, fields);
+		return user;
 	}
 
 	/** 取得用户分页列表 */
@@ -65,6 +76,9 @@ class AdminUserService extends BaseAdminService {
 				},
 				{
 					USER_ACCOUNT: ['like', search]  // 也搜索账号名
+				},
+				{
+					USER_GOOGLE_EMAIL: ['like', search]  // 搜索 Google 邮箱
 				},
 			];
 

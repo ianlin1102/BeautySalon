@@ -78,8 +78,13 @@ async function app(event, context) {
 			openId = event._httpAdmin.adminId;
 			requestType = 'HTTP_AUTH';
 			console.log(`【HTTP 认证】管理员: ${event._httpAdmin.adminName}, adminId=${openId}`);
+		} else if (event.token) {
+			// 公开的 HTTP 请求但有 token：使用前端传入的用户 ID
+			openId = event.token;
+			requestType = 'HTTP_USER';
+			console.log(`【HTTP 用户】使用前端传入的 token: ${openId}`);
 		} else {
-			// 公开的 HTTP 请求：使用固定 guest ID
+			// 公开的 HTTP 请求且无 token：使用 guest ID
 			openId = 'http-guest';
 			requestType = 'HTTP_PUBLIC';
 			console.log(`【HTTP 公开】使用 guest ID: ${openId}`);

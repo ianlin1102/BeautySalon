@@ -108,6 +108,16 @@
 
 				<view class="menu-divider"></view>
 
+				<view class="menu-item" bindtap="url" data-url="../purchase/my_purchase">
+					<view class="menu-item-left">
+						<text class="icon-cart menu-icon" style="color: #ff00de;"></text>
+						<text class="menu-label">购买记录 (Purchase History)</text>
+					</view>
+					<text class="icon-right menu-arrow"></text>
+				</view>
+
+				<view class="menu-divider"></view>
+
 				<view class="menu-item" bindtap="bindSetTap">
 					<view class="menu-item-left">
 						<text class="icon-settings menu-icon" style="color: rgba(255,255,255,0.6);"></text>

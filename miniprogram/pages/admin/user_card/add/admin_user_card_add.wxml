@@ -1,0 +1,66 @@
+<view class="container">
+	<view class="header">
+		<text class="title">添加卡项</text>
+		<text class="subtitle" wx:if="{{userName}}">用户: {{userName}}</text>
+	</view>
+
+	<!-- 表单 -->
+	<view class="form-section">
+		<!-- 卡项名称 -->
+		<view class="form-item">
+			<text class="form-label">卡项名称 <text class="required">*</text></text>
+			<input class="form-input" placeholder="如：10次卡、月卡等"
+			       value="{{cardName}}" bindinput="onCardNameInput"/>
+		</view>
+
+		<!-- 卡项类型 -->
+		<view class="form-item">
+			<text class="form-label">卡项类型 <text class="required">*</text></text>
+			<picker mode="selector" range="{{['次数卡', '余额卡']}}"
+			        value="{{cardType - 1}}" bindchange="onTypeChange">
+				<view class="form-picker">
+					<text>{{cardType == 1 ? '次数卡' : '余额卡'}}</text>
+					<text class="icon-right"></text>
+				</view>
+			</picker>
+		</view>
+
+		<!-- 次数（次数卡） -->
+		<view class="form-item" wx:if="{{cardType == 1}}">
+			<text class="form-label">次数 <text class="required">*</text></text>
+			<input class="form-input" type="number" placeholder="请输入次数"
+			       value="{{times}}" bindinput="onTimesInput"/>
+		</view>
+
+		<!-- 金额（余额卡） -->
+		<view class="form-item" wx:if="{{cardType == 2}}">
+			<text class="form-label">金额 ($) <text class="required">*</text></text>
+			<input class="form-input" type="digit" placeholder="请输入金额"
+			       value="{{amount}}" bindinput="onAmountInput"/>
+		</view>
+
+		<!-- 充值原因 -->
+		<view class="form-item">
+			<text class="form-label">充值原因 <text class="required">*</text></text>
+			<textarea class="form-textarea" placeholder="请输入充值原因，如：购买套餐、赠送、补偿等"
+			          value="{{reason}}" bindinput="onReasonInput"/>
+		</view>
+
+		<!-- 支付方式 -->
+		<view class="form-item">
+			<text class="form-label">支付方式</text>
+			<picker mode="selector" range="{{paymentMethods}}" bindchange="onPaymentChange">
+				<view class="form-picker">
+					<text>{{paymentMethod || '请选择'}}</text>
+					<text class="icon-right"></text>
+				</view>
+			</picker>
+		</view>
+	</view>
+
+	<!-- 按钮 -->
+	<view class="btn-section">
+		<button class="btn cancel-btn" bindtap="bindCancel">取消</button>
+		<button class="btn submit-btn" bindtap="bindSubmit">确认添加</button>
+	</view>
+</view>

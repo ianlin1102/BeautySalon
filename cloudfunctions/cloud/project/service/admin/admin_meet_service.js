@@ -373,6 +373,8 @@ class AdminMeetService extends BaseAdminService {
 		mark,
 		status,
 		isCheckin,
+		expired, // 过期筛选：1=已过期, 0=未过期
+		userId, // 按用户筛选
 		page,
 		size,
 		isTotal = true,
@@ -382,11 +384,12 @@ class AdminMeetService extends BaseAdminService {
 		orderBy = orderBy || {
 			'JOIN_EDIT_TIME': 'desc'
 		};
-		let fields = 'JOIN_IS_CHECKIN,JOIN_CODE,JOIN_ID,JOIN_REASON,JOIN_USER_ID,JOIN_MEET_ID,JOIN_MEET_TITLE,JOIN_MEET_DAY,JOIN_MEET_TIME_START,JOIN_MEET_TIME_END,JOIN_MEET_TIME_MARK,JOIN_FORMS,JOIN_STATUS,JOIN_EDIT_TIME,JOIN_CHECKIN_TIME,JOIN_USER_NAME';
+		let fields = 'JOIN_IS_CHECKIN,JOIN_CODE,JOIN_ID,JOIN_REASON,JOIN_USER_ID,JOIN_MEET_ID,JOIN_MEET_TITLE,JOIN_MEET_DAY,JOIN_MEET_TIME_START,JOIN_MEET_TIME_END,JOIN_MEET_TIME_MARK,JOIN_FORMS,JOIN_STATUS,JOIN_EDIT_TIME,JOIN_CHECKIN_TIME,JOIN_USER_NAME,JOIN_USER_MOBILE,JOIN_SOURCE';
 
 		let where = {};
 		if (meetId) where.JOIN_MEET_ID = meetId;
 		if (mark) where.JOIN_MEET_TIME_MARK = mark;
+		if (userId) where.JOIN_USER_ID = userId;
 
 		if (util.isDefined(search) && search) {
 			where['JOIN_FORMS.val'] = {
@@ -412,6 +415,18 @@ class AdminMeetService extends BaseAdminService {
 				where.JOIN_IS_CHECKIN = 1;
 			} else {
 				where.JOIN_IS_CHECKIN = 0;
+			}
+		}
+
+		// 过期筛选
+		if (util.isDefined(expired)) {
+			let today = timeUtil.time('Y-M-D');
+			if (Number(expired) == 1) {
+				// 已过期：预约日期小于今天
+				where.JOIN_MEET_DAY = ['<', today];
+			} else if (Number(expired) == 0) {
+				// 未过期：预约日期大于等于今天
+				where.JOIN_MEET_DAY = ['>=', today];
 			}
 		}
 
@@ -466,6 +481,8 @@ class AdminMeetService extends BaseAdminService {
 		let fields = 'MEET_TYPE,MEET_TYPE_NAME,MEET_TITLE,MEET_STATUS,MEET_DAYS,MEET_ADD_TIME,MEET_EDIT_TIME,MEET_ORDER';
 
 		let where = {};
+		let today = timeUtil.time('Y-M-D');
+
 		if (util.isDefined(search) && search) {
 			where.MEET_TITLE = {
 				$regex: '.*' + search,
@@ -490,7 +507,11 @@ class AdminMeetService extends BaseAdminService {
 							'MEET_ADD_TIME': 'desc'
 						};
 					}
-
+					break;
+				case 'expired':
+					// 过期筛选在 controller 层基于 leaveDay 处理
+					// 因为 MEET_DAYS 是数组，简单比较运算符无法正确筛选
+					// 这里标记需要过期筛选，controller 会处理
 					break;
 			}
 		}

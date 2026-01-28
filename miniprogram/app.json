@@ -2,6 +2,8 @@
 	"pages": [
 		"projects/A00/my/index/my_index",
 		"pages/admin/user_card/manage/admin_user_card_manage",
+		"pages/admin/user_card/add/admin_user_card_add",
+		"pages/admin/user_card/adjust/admin_user_card_adjust",
 		"pages/card/store/card_store",
 		"pages/card/search/card_search",
 		"pages/card/records/card_records",
@@ -34,6 +36,7 @@
 		"projects/A00/my/join/my_join",
 		"projects/A00/my/join_detail/my_join_detail",
 		"projects/A00/my/points/my_points",
+		"projects/A00/my/purchase/my_purchase",
 		"projects/A00/news/index/news_index",
 		"projects/A00/news/detail/news_detail",
 		"projects/A00/news/cate1/news_cate1",
@@ -43,6 +46,7 @@
 		"cmpts/public/form/form_set/field/form_set_field",
 		"pages/admin/index/home/admin_home",
 		"pages/admin/index/login/admin_login",
+		"pages/admin/info/admin_info_list",
 		"pages/admin/content/admin_content",
 		"pages/admin/meet/content/admin_meet_content",
 		"pages/admin/meet/cover/admin_meet_cover",
@@ -63,12 +67,15 @@
 		"pages/admin/setup/about/admin_setup_about",
 		"pages/admin/setup/contact/admin_setup_contact",
 		"pages/admin/setup/qr/admin_setup_qr",
+		"pages/admin/setup/disclaimer/admin_setup_disclaimer",
 		"pages/admin/user/list/admin_user_list",
-		"pages/admin/user/export/admin_user_export"
+		"pages/admin/user/detail/admin_user_detail",
+		"pages/admin/user/export/admin_user_export",
+		"pages/admin/purchase/list/admin_purchase_list"
 
 	],
 	"window": {
-		"backgroundColor": "#ffffff",
+		"backgroundColor": "#0d1528",
 		"backgroundTextStyle": "dark",
 		"navigationBarBackgroundColor": "#0d1528",
 		"navigationBarTitleText": "Dplus",

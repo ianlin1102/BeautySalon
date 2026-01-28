@@ -1,23 +1,86 @@
 <view class="container">
 	<view class="header">
-		<text class="title">管理用户卡项</text>
-		<text class="admin-status" wx:if="{{isAdmin}}" style="color: #07c160;">管理员</text>
-		<text class="admin-status" wx:else style="color: #ff976a;">普通用户</text>
+		<text class="title">用户卡项管理</text>
 	</view>
 
-	<!-- 导航按钮 -->
-	<view class="section">
-		<view class="nav-buttons">
-			<button class="btn-nav" bindtap="goBack">← 返回</button>
-			<button class="btn-nav btn-home" bindtap="goHome">首页</button>
+	<!-- 搜索区域 -->
+	<view class="search-section">
+		<view class="search-box">
+			<input class="search-input"
+			       placeholder="手机号 / Email / 卡项ID / 用户ID"
+			       value="{{keyword}}"
+			       bindinput="onKeywordInput"
+			       bindconfirm="bindSearch"/>
+			<button class="search-btn" bindtap="bindSearch">搜索</button>
+		</view>
+		<view class="search-hint">
+			支持搜索：手机号、Google邮箱、卡项唯一ID(UC...)、用户ID
 		</view>
 	</view>
 
-	<!-- 快速访问 -->
-	<view class="section">
-		<view class="section-title">快速访问</view>
-		<button class="btn btn-warning" bindtap="goCardStore">卡项商城</button>
-		<button class="btn btn-warning" bindtap="goCardSearch">卡项搜索</button>
-		<view class="hint">快速跳转到常用页面</view>
+	<!-- 搜索结果 -->
+	<block wx:if="{{isSearched}}">
+		<block wx:if="{{user}}">
+			<!-- 匹配方式提示 -->
+			<view class="match-hint" wx:if="{{matchedBy}}">
+				<text wx:if="{{matchedBy == 'phone'}}">通过手机号匹配</text>
+				<text wx:elif="{{matchedBy == 'email'}}">通过 Email 匹配</text>
+				<text wx:elif="{{matchedBy == 'userId'}}">通过用户ID匹配</text>
+				<text wx:elif="{{matchedBy == 'cardUniqueId'}}">通过卡项ID匹配</text>
+			</view>
+
+			<!-- 用户信息卡片 -->
+			<view class="user-card" bindtap="bindViewUserDetail">
+				<view class="user-info">
+					<view class="user-name">{{user.USER_NAME || '未设置姓名'}}</view>
+					<view class="user-phone" wx:if="{{user.USER_MOBILE}}">{{user.USER_MOBILE}}</view>
+					<view class="user-email" wx:if="{{user.USER_GOOGLE_EMAIL}}">{{user.USER_GOOGLE_EMAIL}}</view>
+				</view>
+				<view class="user-summary">
+					<view class="summary-item">
+						<text class="summary-value">${{totalBalance}}</text>
+						<text class="summary-label">余额</text>
+					</view>
+					<view class="summary-item">
+						<text class="summary-value">{{totalTimes}}</text>
+						<text class="summary-label">次数</text>
+					</view>
+				</view>
+				<view class="view-detail">
+					<text>查看详情 ></text>
+				</view>
+			</view>
+
+			<!-- 快捷操作 -->
+			<view class="quick-actions">
+				<button class="action-btn primary" bindtap="bindAddCard">添加卡项</button>
+			</view>
+
+			<!-- 卡项列表 -->
+			<view class="card-section" wx:if="{{cards.length > 0}}">
+				<view class="section-title">持有卡项 ({{cards.length}})</view>
+				<view class="card-item" wx:for="{{cards}}" wx:key="_id"
+				      bindtap="bindCardTap" data-card="{{item}}">
+					<view class="card-main">
+						<view class="card-name">{{item.USER_CARD_CARD_NAME}}</view>
+						<view class="card-id">{{item.USER_CARD_UNIQUE_ID}}</view>
+					</view>
+					<view class="card-value">
+						<text wx:if="{{item.USER_CARD_TYPE == 1}}">{{item.USER_CARD_REMAIN_TIMES}}次</text>
+						<text wx:else>${{item.USER_CARD_REMAIN_AMOUNT}}</text>
+					</view>
+				</view>
+			</view>
+		</block>
+
+		<!-- 未找到 -->
+		<view class="not-found" wx:else>
+			<text>未找到匹配的用户</text>
+		</view>
+	</block>
+
+	<!-- 初始状态 -->
+	<view class="initial-hint" wx:if="{{!isSearched}}">
+		<text>请输入关键词搜索用户</text>
 	</view>
 </view>

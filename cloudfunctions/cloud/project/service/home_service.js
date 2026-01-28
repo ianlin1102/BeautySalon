@@ -12,7 +12,7 @@ const config = require('../../config/config.js');
 class HomeService extends BaseService {
 	/**
 	 * 取得系统设置
-	 * @param {*} param0 
+	 * @param {*} param0
 	 */
 	async getSetup(fields = '*') {
 		let where = {}
@@ -27,6 +27,23 @@ class HomeService extends BaseService {
 		}
 		return setup;
 
+	}
+
+	/**
+	 * 获取免责声明 (公开)
+	 */
+	async getDisclaimer() {
+		let setup = await SetupModel.getOne({}, 'SETUP_DISCLAIMER_TITLE,SETUP_DISCLAIMER_SECTIONS');
+		if (!setup) {
+			return {
+				title: '',
+				sections: []
+			};
+		}
+		return {
+			title: setup.SETUP_DISCLAIMER_TITLE || '',
+			sections: setup.SETUP_DISCLAIMER_SECTIONS || []
+		};
 	}
 }
 

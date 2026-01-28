@@ -49,10 +49,31 @@ class AdminSetupController extends BaseAdminController {
 	} 
  
 	async genMiniQr() {
-		await this.isAdmin(); 
+		await this.isAdmin();
 		let service = new AdminSetupService();
-		return await service.genMiniQr(); 
-	} 
+		return await service.genMiniQr();
+	}
+
+	/** 获取免责声明 (管理员) */
+	async getDisclaimer() {
+		await this.isAdmin();
+		let service = new AdminSetupService();
+		return await service.getDisclaimer();
+	}
+
+	/** 保存免责声明 */
+	async saveDisclaimer() {
+		await this.isAdmin();
+
+		let rules = {
+			title: 'string|max:100|name=标题',
+			sections: 'array|name=声明内容',
+		};
+
+		let input = this.validateData(rules);
+		let service = new AdminSetupService();
+		await service.saveDisclaimer(input);
+	}
 }
 
 module.exports = AdminSetupController;

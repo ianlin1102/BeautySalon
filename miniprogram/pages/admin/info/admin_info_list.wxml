@@ -1,0 +1,127 @@
+<view wx:if="{{isLoad===false}}" class="margin-top load loading text-l text-grey"></view>
+
+<block wx:if="{{isAdmin&&isLoad}}">
+
+	<cmpt-comm-list id="cmpt-comm-list" type="admin-meet-join-list" search="{{search}}" _params="{{_params}}" _menus="{{sortMenus}}" _items="{{sortItems}}" route="admin/meet_join_list" topBottom="50" placeholder="搜索姓名/手机号" sortMenusDefaultIndex="0" bind:list="bindCommListCmpt">
+
+		<!-- List Begin -->
+		<view class="join-list">
+			<view wx:if="{{dataList && dataList.total }}" class="load text-grey">共有{{dataList.total}}条预约记录
+				<text wx:if="{{isAllFold}}" bindtap="bindUnFoldAllTap" class="margin-left-xs icon-unfold text-admin">全部展开</text>
+				<text wx:else bindtap="bindFoldAllTap" class="margin-left-xs icon-fold text-admin">全部收起</text>
+			</view>
+
+			<view class="item" wx:for="{{dataList.list}}" wx:key="key">
+				<view class="header">
+					<view class="left">
+						<text class="icon-calendar margin-right-xxs"></text>
+						<text class="">{{item.JOIN_MEET_DAY}} ({{item.JOIN_MEET_TIME_START}}～{{item.JOIN_MEET_TIME_END}})</text>
+					</view>
+					<view class="right" bindtap="bindCopyTap" data-idx="{{index}}">
+						<text class="icon-copy margin-right-xxs"></text>复制
+					</view>
+				</view>
+
+				<view class="meet-title">
+					<text class="icon-activityfill text-admin margin-right-xxs"></text>
+					<text>{{item.JOIN_MEET_TITLE}}</text>
+				</view>
+
+				<view class="info">
+					<view class="info-item">
+						<view class="title text-admin">状态</view>
+						<view class="mao">：</view>
+						<view class="content">
+							<view wx:if="{{item.JOIN_STATUS==1}}" class="text-black">
+								<text class="icon-roundcheck margin-right-xxs"></text>预约成功
+								<text wx:if="{{item.JOIN_IS_CHECKIN==1}}" class="text-green">，已签到</text>
+								<text class="text-grey" wx:else>，未签到</text>
+							</view>
+							<view wx:elif="{{item.JOIN_STATUS==10}}" class="text-orange">用户取消</view>
+							<view wx:elif="{{item.JOIN_STATUS==99}}" class="text-red">系统取消</view>
+						</view>
+					</view>
+
+					<view class="info-item">
+						<view class="title text-admin">来源</view>
+						<view class="mao">：</view>
+						<view class="content">
+							<text wx:if="{{item.JOIN_SOURCE=='web'}}" class="text-blue">网页端</text>
+							<text wx:elif="{{item.JOIN_SOURCE=='miniprogram'}}" class="text-green">小程序</text>
+							<text wx:else class="text-grey">小程序</text>
+						</view>
+					</view>
+
+					<view class="info-item" wx:if="{{item.JOIN_USER_NAME || item.JOIN_USER_MOBILE}}">
+						<view class="title text-admin">用户</view>
+						<view class="mao">：</view>
+						<view class="content">
+							<text wx:if="{{item.JOIN_USER_NAME}}">{{item.JOIN_USER_NAME}}</text>
+							<text wx:if="{{item.JOIN_USER_NAME && item.JOIN_USER_MOBILE}}" class="margin-left-xs margin-right-xs">/</text>
+							<text wx:if="{{item.JOIN_USER_MOBILE}}" bindtap="url" data-type="phone" data-url="{{item.JOIN_USER_MOBILE}}">{{item.JOIN_USER_MOBILE}} <text class="icon-phone text-black"></text></text>
+						</view>
+					</view>
+
+					<view class="info-item" wx:if="{{item.JOIN_STATUS==99 && item.JOIN_REASON}}">
+						<view class="title text-admin">取消原因</view>
+						<view class="mao">：</view>
+						<view class="content">{{item.JOIN_REASON}}</view>
+					</view>
+
+					<view class="info-item" wx:for="{{item.JOIN_FORMS}}" wx:key="key1" wx:for-item="form" wx:for-index="formindex" wx:if="{{formindex<3||!item.fold}}">
+						<view class="title">{{form.title}}</view>
+						<view class="mao">：</view>
+						<view wx:if="{{form.type=='mobile'}}" class="content" bindtap="url" data-type="phone" data-url="{{form.val}}">
+							<text wx:for="{{form.valArr}}" wx:key="key2" wx:for-item="valItem" class="{{valItem===search?'text-red text-bold':''}}">{{valItem}}</text>
+							<text class="margin-left-xs icon-phone text-black text-normal"></text>
+						</view>
+						<view wx:else class="content" bindtap="url" data-type="copy" data-url="{{form.title+'：'+form.val}}">
+							<text wx:for="{{form.valArr}}" wx:key="key2" wx:for-item="valItem" class="{{valItem===search?'text-red text-bold':''}}">{{valItem}}</text>
+						</view>
+					</view>
+
+					<view bindtap="bindUnFoldTap" data-idx="{{index}}" wx:if="{{item.fold && item.JOIN_FORMS.length>3}}" class="fold">
+						<text class="icon-unfold margin-right-xs"></text>更多资料...
+					</view>
+
+					<view bindtap="bindFoldTap" data-idx="{{index}}" wx:if="{{!item.fold && item.JOIN_FORMS.length>3}}" class="fold">
+						<text class="icon-fold margin-right-xs"></text>收起
+					</view>
+
+					<view class="info-item add-time">
+						<view class="title text-grey">提交时间</view>
+						<view class="mao text-grey">：</view>
+						<view class="content text-grey">{{item.JOIN_EDIT_TIME}}</view>
+					</view>
+
+					<view class="oprt">
+						<block wx:if="{{item.JOIN_STATUS==1}}">
+							<view wx:if="{{item.JOIN_IS_CHECKIN==0}}" bindtap="bindCheckinTap" data-idx="{{index}}" data-flag="1" class="btn bg-purple margin-right-s light">签到</view>
+							<view wx:else bindtap="bindCheckinTap" data-idx="{{index}}" data-flag="0" class="btn bg-grey light margin-right-s">取消签到</view>
+						</block>
+
+						<block wx:if="{{item.JOIN_STATUS==1}}">
+							<view bindtap="bindCancelTap" data-idx="{{index}}" class="btn bg-grey light margin-right-s">取消预约</view>
+						</block>
+
+						<block wx:if="{{item.JOIN_STATUS==10 || item.JOIN_STATUS==99}}">
+							<view bindtap="bindStatusTap" data-idx="{{index}}" data-status="1" class="btn bg-olive light margin-right-s">恢复预约</view>
+						</block>
+
+						<view bindtap="bindDelTap" data-idx="{{index}}" class="btn bg-orange light margin-right-s">删除</view>
+					</view>
+				</view>
+
+				<view class="no">{{index+1}}</view>
+			</view>
+		</view>
+		<!-- List END -->
+
+		<!--load begin-->
+		<import src="../../../tpls/public/list_load_tpl.wxml" />
+		<template is="listLoadTpl" data="{{dataList,skin:'text-grey',noHint:'暂无预约记录'}}" />
+		<!--load end-->
+
+	</cmpt-comm-list>
+
+</block>

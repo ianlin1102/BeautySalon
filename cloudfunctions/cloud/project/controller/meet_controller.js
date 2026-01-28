@@ -414,6 +414,7 @@ class MeetController extends BaseController {
 			timeMark: 'must|string',
 			forms: 'array|default=[]',  // 允许为空数组
 			cardId: 'string', // 卡项ID（可选）
+			source: 'string|default=miniprogram', // 预约来源：miniprogram/web
 		};
 
 		// 取得数据
@@ -421,7 +422,7 @@ class MeetController extends BaseController {
 
 		let service = new MeetService();
 		let admin = null;
-		return await service.join(this._userId, input.meetId, input.timeMark, input.forms, input.cardId);
+		return await service.join(this._userId, input.meetId, input.timeMark, input.forms, input.cardId, input.source);
 	}
 
 

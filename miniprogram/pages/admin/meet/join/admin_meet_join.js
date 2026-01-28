@@ -23,6 +23,8 @@ Page({
 
 		meetId: '',
 		mark: '',
+		userId: '',
+		userName: '',
 
 		title: '',
 		titleEn: '',
@@ -40,11 +42,34 @@ Page({
 	onLoad: function (options) {
 		if (!AdminBiz.isAdmin(this)) return;
 
-		// 附加参数 
-		if (options && options.meetId && options.mark) {
-			//设置搜索菜单 
-			this._getSearchMenu();
+		//设置搜索菜单
+		this._getSearchMenu();
 
+		// 按用户筛选模式
+		if (options && options.userId) {
+			let userId = decodeURIComponent(options.userId);
+			let userName = options.userName ? decodeURIComponent(options.userName) : '';
+
+			this.setData({
+				userId: userId,
+				userName: userName,
+				_params: {
+					userId: userId,
+				}
+			}, () => (
+				this.setData({
+					isLoad: true
+				})
+			));
+
+			wx.setNavigationBarTitle({
+				title: userName ? userName + ' 的预约记录' : '用户预约记录'
+			});
+			return;
+		}
+
+		// 按时段筛选模式
+		if (options && options.meetId && options.mark) {
 			this.setData({
 				meetId: options.meetId,
 				mark: options.mark,
@@ -79,7 +104,13 @@ Page({
 	 * 生命周期函数--监听页面初次渲染完成
 	 */
 	onReady: function () {
-
+		// 如果是用户筛选模式，需要手动触发组件重新加载以确保 _params 生效
+		if (this.data.userId) {
+			let commList = this.selectComponent('#cmpt-comm-list');
+			if (commList && commList.reload) {
+				commList.reload();
+			}
+		}
 	},
 
 	/**

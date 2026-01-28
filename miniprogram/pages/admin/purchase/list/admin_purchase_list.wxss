@@ -1,0 +1,195 @@
+@import '../../../../style/project/base/admin.wxss';
+
+page {
+	background-color: #f5f5f5;
+}
+
+/* 统计栏 */
+.stat-bar {
+	width: 100%;
+	padding: 20rpx 0;
+	margin-bottom: 10rpx;
+}
+
+.stat-text {
+	font-size: 26rpx;
+	color: #999;
+}
+
+/* 用户筛选提示 */
+.user-filter-bar {
+	width: 100%;
+	padding: 20rpx;
+	background-color: #e8f4fd;
+	border-radius: 8rpx;
+	margin-bottom: 20rpx;
+}
+
+.user-filter-text {
+	font-size: 28rpx;
+	color: var(--adminColor);
+	font-weight: bold;
+}
+
+/* 月份分组头 */
+.month-header {
+	width: 100%;
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	padding: 20rpx 0;
+	margin-top: 10rpx;
+}
+
+.month-title {
+	font-size: 32rpx;
+	font-weight: bold;
+	color: #333;
+}
+
+.month-count {
+	font-size: 24rpx;
+	color: #999;
+}
+
+/* 购买记录卡片 */
+.purchase-item {
+	width: 100%;
+	background-color: #fff;
+	border-radius: 10rpx;
+	overflow: hidden;
+	margin-bottom: 20rpx;
+	display: flex;
+	flex-direction: row;
+	border: 1rpx solid #eee;
+}
+
+/* 凭证图片 */
+.proof-img-wrap {
+	width: 220rpx;
+	min-height: 220rpx;
+	flex-shrink: 0;
+	background-color: #f8f8f8;
+}
+
+.proof-img {
+	width: 220rpx;
+	height: 100%;
+	min-height: 220rpx;
+}
+
+/* 购买信息 */
+.purchase-info {
+	flex: 1;
+	padding: 20rpx;
+	display: flex;
+	flex-direction: column;
+	justify-content: flex-start;
+}
+
+.info-row {
+	display: flex;
+	align-items: flex-start;
+	margin-bottom: 10rpx;
+	font-size: 24rpx;
+	line-height: 1.6;
+}
+
+.info-label {
+	width: 70rpx;
+	color: #999;
+	flex-shrink: 0;
+}
+
+.info-value {
+	flex: 1;
+	color: #333;
+	word-break: break-all;
+}
+
+.info-value.text-bold {
+	font-weight: bold;
+}
+
+.info-value.text-price {
+	color: var(--adminRedColor);
+	font-weight: bold;
+}
+
+.info-value.text-grey {
+	color: #999;
+}
+
+/* 状态颜色 */
+.status-0 {
+	color: #999;
+}
+
+.status-1 {
+	color: #ff9900;
+	font-weight: bold;
+}
+
+.status-2 {
+	color: #09bb07;
+	font-weight: bold;
+}
+
+.status--1 {
+	color: #e54d42;
+}
+
+/* 操作按钮 */
+.action-row {
+	display: flex;
+	gap: 16rpx;
+	margin-top: 12rpx;
+}
+
+.btn-confirm {
+	background-color: var(--adminColor) !important;
+	color: #fff !important;
+	font-size: 24rpx !important;
+	padding: 0 24rpx !important;
+	line-height: 2.2 !important;
+	border-radius: 8rpx !important;
+}
+
+.btn-reject {
+	background-color: #f5f5f5 !important;
+	color: #e54d42 !important;
+	font-size: 24rpx !important;
+	padding: 0 24rpx !important;
+	line-height: 2.2 !important;
+	border-radius: 8rpx !important;
+	border: 1rpx solid #eee !important;
+}
+
+.btn-delete {
+	background-color: #e54d42 !important;
+	color: #fff !important;
+	font-size: 24rpx !important;
+	padding: 0 24rpx !important;
+	line-height: 2.2 !important;
+	border-radius: 8rpx !important;
+}
+
+/* 空状态 */
+.empty-state {
+	width: 100%;
+	text-align: center;
+	padding: 100rpx 0;
+}
+
+.empty-text {
+	font-size: 28rpx;
+	color: #ccc;
+}
+
+/* 加载更多 */
+.load-more {
+	width: 100%;
+	text-align: center;
+	padding: 30rpx 0;
+	font-size: 24rpx;
+}

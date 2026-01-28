@@ -2,7 +2,7 @@
 	"usingComponents": {
 	},
 	"navigationBarTitleText": "关于我们",
-	"navigationBarBackgroundColor": "#333333",
+	"navigationBarBackgroundColor": "#050511",
 	"navigationBarTextStyle": "white",
 	"enablePullDownRefresh": true
 }

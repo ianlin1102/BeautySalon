@@ -46,12 +46,12 @@ class PurchaseController extends BaseController {
 		let cardInfo = {};
 		if (input.cardId) {
 			try {
-				const cardRes = await db.collection('ax_card').doc(input.cardId).get();
+				const cardRes = await db.collection('ax_card_item').doc(input.cardId).get();
 				if (cardRes.data) {
 					cardInfo = cardRes.data;
 				}
 			} catch (e) {
-				console.log('获取卡项信息失败:', e);
+				console.error('【Purchase】获取卡项信息失败, cardId=' + input.cardId + ':', e.message);
 			}
 		}
 
@@ -62,8 +62,11 @@ class PurchaseController extends BaseController {
 			PURCHASE_USER_NAME: input.userName || '',
 			PURCHASE_USER_PHONE: input.userPhone || '',
 			PURCHASE_CARD_ID: input.cardId,
-			PURCHASE_CARD_TITLE: cardInfo.CARD_TITLE || input.cardInfo?.CARD_TITLE || '',
-			PURCHASE_CARD_PRICE: cardInfo.CARD_PRICE || input.cardInfo?.CARD_PRICE || 0,
+			PURCHASE_CARD_TITLE: cardInfo.CARD_NAME ?? '',
+			PURCHASE_CARD_PRICE: cardInfo.CARD_PRICE ?? 0,
+			PURCHASE_CARD_TYPE: cardInfo.CARD_TYPE ?? 0,
+			PURCHASE_CARD_TIMES: cardInfo.CARD_TIMES ?? 0,
+			PURCHASE_CARD_AMOUNT: cardInfo.CARD_AMOUNT ?? 0,
 			PURCHASE_PAYMENT_METHOD: input.paymentMethod,
 			PURCHASE_STATUS: 0, // 0:待支付 1:待确认 2:已完成 -1:已取消
 			PURCHASE_PROOF_URL: '',
@@ -154,6 +157,46 @@ class PurchaseController extends BaseController {
 	}
 
 	/**
+	 * 小程序端上传支付凭证（接收 fileID，非 base64）
+	 */
+	async uploadProofMini() {
+		let rules = {
+			purchaseId: 'must|string',
+			fileID: 'must|string',
+		};
+
+		let input = this.validateData(rules);
+
+		const cloud = cloudBase.getCloud();
+		const db = cloud.database();
+
+		// 验证订单是否存在
+		const orderRes = await db.collection('ax_purchase_history')
+			.where({ PURCHASE_ID: input.purchaseId })
+			.get();
+
+		if (!orderRes.data || orderRes.data.length === 0) {
+			throw new Error('订单不存在');
+		}
+
+		// 更新订单记录
+		await db.collection('ax_purchase_history')
+			.where({ PURCHASE_ID: input.purchaseId })
+			.update({
+				data: {
+					PURCHASE_PROOF_URL: input.fileID,
+					PURCHASE_STATUS: 1,
+					PURCHASE_UPDATE_TIME: Date.now(),
+				}
+			});
+
+		return {
+			fileID: input.fileID,
+			message: '凭证上传成功，请等待工作人员确认'
+		};
+	}
+
+	/**
 	 * 获取订单详情
 	 */
 	async getOrderDetail() {
@@ -178,7 +221,7 @@ class PurchaseController extends BaseController {
 	}
 
 	/**
-	 * 获取我的订单列表
+	 * 获取我的订单列表（排除未上传凭证的作废订单）
 	 */
 	async getMyOrders() {
 		let rules = {
@@ -192,9 +235,14 @@ class PurchaseController extends BaseController {
 
 		const cloud = cloudBase.getCloud();
 		const db = cloud.database();
+		const _ = db.command;
 
+		// 只返回有凭证的订单（状态非0），状态0且无凭证视为作废
 		const orderRes = await db.collection('ax_purchase_history')
-			.where({ PURCHASE_USER_ID: this._userId })
+			.where({
+				PURCHASE_USER_ID: this._userId,
+				PURCHASE_PROOF_URL: _.neq('')
+			})
 			.orderBy('PURCHASE_CREATE_TIME', 'desc')
 			.skip((page - 1) * size)
 			.limit(size)
@@ -205,6 +253,51 @@ class PurchaseController extends BaseController {
 			page,
 			size,
 		};
+	}
+
+	/**
+	 * 取消订单（用户放弃上传凭证时调用）
+	 */
+	async cancelOrder() {
+		let rules = {
+			purchaseId: 'must|string',
+		};
+
+		let input = this.validateData(rules);
+
+		const cloud = cloudBase.getCloud();
+		const db = cloud.database();
+
+		const orderRes = await db.collection('ax_purchase_history')
+			.where({
+				PURCHASE_ID: input.purchaseId,
+				PURCHASE_USER_ID: this._userId
+			})
+			.get();
+
+		if (!orderRes.data || orderRes.data.length === 0) {
+			return { message: '订单不存在' };
+		}
+
+		let order = orderRes.data[0];
+		// 只有待支付状态才能取消
+		if (order.PURCHASE_STATUS !== 0) {
+			return { message: '该订单无法取消' };
+		}
+
+		await db.collection('ax_purchase_history')
+			.where({
+				PURCHASE_ID: input.purchaseId,
+				PURCHASE_USER_ID: this._userId
+			})
+			.update({
+				data: {
+					PURCHASE_STATUS: -1,
+					PURCHASE_UPDATE_TIME: Date.now(),
+				}
+			});
+
+		return { message: '订单已取消' };
 	}
 }
 

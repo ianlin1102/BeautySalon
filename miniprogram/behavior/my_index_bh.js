@@ -219,25 +219,39 @@ module.exports = Behavior({
 
 		_loadUser: async function (e) {
 			try {
-				console.log('开始刷新用户信息...');
+				console.log('开始加载用户信息...');
+
+				// 首先尝试微信登录（自动获取 openid）
+				if (!PassortBiz.isLoggedIn()) {
+					console.log('用户未登录，尝试微信自动登录...');
+					let loginResult = await PassortBiz.wechatLogin();
+					if (loginResult.success) {
+						console.log('微信登录成功:', loginResult.isNewUser ? '新用户' : '已有用户');
+					} else {
+						console.error('微信登录失败:', loginResult.error);
+					}
+				}
+
 				let opts = {
 					title: 'bar'
 				}
 				let user = await cloudHelper.callCloudData('passport/my_detail', {}, opts);
-				
+
 				if (user) {
 					console.log('用户信息更新:', {
 						name: user.USER_NAME,
 						mobile: user.USER_MOBILE,
 						city: user.USER_CITY
 					});
+					// 检查用户资料是否完整
+					user.profileComplete = !!(user.USER_NAME && user.USER_MOBILE);
 				}
-				
+
 				// 设置用户数据，即使为空也要设置，这样页面可以正确显示注册提示
 				this.setData({
 					user: user || null
 				});
-				
+
 				console.log('用户信息加载结果:', user ? `已登录 - ${user.USER_NAME}` : '未登录');
 			} catch (err) {
 				console.log('加载用户信息失败:', err);

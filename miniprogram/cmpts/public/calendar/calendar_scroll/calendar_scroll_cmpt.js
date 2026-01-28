@@ -41,18 +41,12 @@ Component({
 
 	observers: {
 		'hasDays': function(hasDays) {
-			console.log('====== hasDays 变化 ======');
-			console.log('hasDays:', hasDays);
-			console.log('hasDays 长度:', hasDays ? hasDays.length : 0);
-
 			// 当hasDays变化时，重新生成周数据（仅在week模式下）
 			if (this.data.mode === 'week' && this.data.scrollWeeks.length > 0) {
-				console.log('重新生成周数据，标记哪些周有预约');
 				const scrollWeeks = this._generateFutureWeeks(2);
 				this.setData({
 					scrollWeeks
 				});
-				console.log('更新后的周数据:', scrollWeeks);
 			}
 		}
 	},
@@ -200,9 +194,6 @@ Component({
 					}
 				}
 
-				if (matchedDays.length > 0) {
-					console.log(`周 ${range} 有数据，匹配的天:`, matchedDays);
-				}
 
 				// 计算这是第几周（从本周开始计数）
 				const weekIndex = weeks.length;
@@ -238,7 +229,6 @@ Component({
 				weekMonday.setDate(weekMonday.getDate() + 7);
 			}
 
-			console.log('生成的周数据:', weeks);
 			return weeks;
 		},
 
@@ -355,12 +345,6 @@ Component({
 		bindWeekTap(e) {
 			const weekData = e.currentTarget.dataset.item;
 			const startDate = weekData.startDate;
-
-			console.log('====== 点击周 ======');
-			console.log('周数据:', weekData);
-			console.log('周范围:', weekData.range);
-			console.log('开始日期 (周一):', weekData.startDate);
-			console.log('结束日期 (周日):', weekData.endDate);
 
 			this.setData({
 				selectedDayData: startDate

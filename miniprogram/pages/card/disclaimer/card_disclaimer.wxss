@@ -1,5 +1,6 @@
 page {
-	background-color: #f8f8f8;
+	--themeColor: #2499f2;
+	background-color: #f5f5f5;
 	height: 100%;
 }
 
@@ -12,7 +13,7 @@ page {
 
 /* 头部 */
 .disclaimer-header {
-	background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+	background: var(--themeColor);
 	padding: 60rpx 30rpx 40rpx;
 	text-align: center;
 	color: #fff;
@@ -49,7 +50,7 @@ page {
 	color: #333;
 	margin-bottom: 20rpx;
 	padding-left: 20rpx;
-	border-left: 6rpx solid #667eea;
+	border-left: 6rpx solid var(--themeColor);
 }
 
 .section-text {
@@ -67,6 +68,7 @@ page {
 	right: 0;
 	background: #fff;
 	padding: 20rpx 30rpx;
+	padding-bottom: calc(20rpx + env(safe-area-inset-bottom));
 	box-shadow: 0 -2rpx 10rpx rgba(0, 0, 0, 0.1);
 	display: flex;
 	gap: 20rpx;
@@ -74,8 +76,8 @@ page {
 
 .btn-agree {
 	flex: 1;
-	background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-	color: #fff;
+	background: var(--themeColor) !important;
+	color: #fff !important;
 	border: none;
 	border-radius: 50rpx;
 	padding: 24rpx;
@@ -86,11 +88,19 @@ page {
 
 .btn-cancel {
 	flex: 1;
-	background: #fff;
-	color: #999;
+	background: #fff !important;
+	color: #999 !important;
 	border: 2rpx solid #e0e0e0;
 	border-radius: 50rpx;
 	padding: 24rpx;
 	font-size: 32rpx;
 	line-height: 1.5;
+}
+
+/* 加载状态 */
+.loading-state {
+	text-align: center;
+	padding: 100rpx 0;
+	color: #999;
+	font-size: 28rpx;
 }

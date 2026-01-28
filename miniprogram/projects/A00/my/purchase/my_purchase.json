@@ -1,0 +1,7 @@
+{
+	"usingComponents": {},
+	"enablePullDownRefresh": true,
+	"navigationBarBackgroundColor": "#050511",
+	"navigationBarTextStyle": "white",
+	"navigationBarTitleText": "购买记录"
+}

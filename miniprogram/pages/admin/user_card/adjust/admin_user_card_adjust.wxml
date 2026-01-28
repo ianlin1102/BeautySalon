@@ -1,0 +1,86 @@
+<view class="container" wx:if="{{isLoad}}">
+	<!-- 卡项信息 -->
+	<view class="card-info" wx:if="{{card}}">
+		<view class="card-header">
+			<view class="card-name">{{card.USER_CARD_CARD_NAME}}</view>
+			<view class="card-type">{{card.USER_CARD_TYPE_DESC}}</view>
+		</view>
+		<view class="card-detail">
+			<view class="detail-item">
+				<text class="detail-label">卡项ID</text>
+				<text class="detail-value">{{card.USER_CARD_UNIQUE_ID}}</text>
+			</view>
+			<view class="detail-item">
+				<text class="detail-label">状态</text>
+				<text class="detail-value status-{{card.USER_CARD_STATUS}}">{{card.USER_CARD_STATUS_DESC}}</text>
+			</view>
+			<view class="detail-item" wx:if="{{card.USER_CARD_TYPE == 1}}">
+				<text class="detail-label">剩余次数</text>
+				<text class="detail-value highlight">{{card.USER_CARD_REMAIN_TIMES}} 次</text>
+			</view>
+			<view class="detail-item" wx:else>
+				<text class="detail-label">剩余余额</text>
+				<text class="detail-value highlight">${{card.USER_CARD_REMAIN_AMOUNT}}</text>
+			</view>
+			<view class="detail-item" wx:if="{{card.USER_CARD_EXPIRE_TIME}}">
+				<text class="detail-label">过期时间</text>
+				<text class="detail-value">{{card.USER_CARD_EXPIRE_TIME}}</text>
+			</view>
+		</view>
+	</view>
+
+	<!-- 调整表单 -->
+	<view class="form-section" wx:if="{{card}}">
+		<view class="section-title">调整卡项</view>
+
+		<!-- 调整类型 -->
+		<view class="form-item">
+			<text class="form-label">调整类型 <text class="required">*</text></text>
+			<radio-group class="radio-group" bindchange="onAdjustTypeChange">
+				<label class="radio-item {{adjustType == 'add' ? 'active' : ''}}">
+					<radio value="add" checked="{{adjustType == 'add'}}"/>
+					<text>增加</text>
+				</label>
+				<label class="radio-item {{adjustType == 'sub' ? 'active' : ''}}">
+					<radio value="sub" checked="{{adjustType == 'sub'}}"/>
+					<text>减少</text>
+				</label>
+			</radio-group>
+		</view>
+
+		<!-- 变动数值 -->
+		<view class="form-item">
+			<text class="form-label">
+				{{card.USER_CARD_TYPE == 1 ? '变动次数' : '变动金额'}}
+				<text class="required">*</text>
+			</text>
+			<input class="form-input" type="digit"
+			       placeholder="{{card.USER_CARD_TYPE == 1 ? '请输入次数' : '请输入金额'}}"
+			       value="{{changeValue}}" bindinput="onChangeValueInput"/>
+		</view>
+
+		<!-- 调整原因 -->
+		<view class="form-item">
+			<text class="form-label">调整原因 <text class="required">*</text></text>
+			<textarea class="form-textarea"
+			          placeholder="请输入调整原因，如：消费核销、退款、补偿等"
+			          value="{{reason}}" bindinput="onReasonInput"/>
+		</view>
+	</view>
+
+	<!-- 按钮 -->
+	<view class="btn-section" wx:if="{{card}}">
+		<button class="btn cancel-btn" bindtap="bindCancel">取消</button>
+		<button class="btn submit-btn" bindtap="bindSubmit">确认调整</button>
+	</view>
+
+	<!-- 无卡项 -->
+	<view class="empty" wx:if="{{!card}}">
+		<text>未找到卡项信息</text>
+	</view>
+</view>
+
+<!-- Loading -->
+<view class="loading" wx:if="{{!isLoad}}">
+	<text>加载中...</text>
+</view>

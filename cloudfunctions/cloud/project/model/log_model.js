@@ -39,12 +39,14 @@ LogModel.TYPE = {
 	USER: 0,
 	MEET: 1,
 	NEWS: 2,
+	PURCHASE: 3,
 	SYS: 99
 }
 LogModel.TYPE_DESC = {
 	USER: '用户',
 	MEET: '预约/活动',
 	NEWS: '内容/文章',
+	PURCHASE: '购买/充值',
 	SYS: '系统'
 }
 

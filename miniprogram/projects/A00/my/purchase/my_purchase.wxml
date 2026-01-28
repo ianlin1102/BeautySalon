@@ -1,0 +1,73 @@
+<view wx:if="{{!isLoad}}" class="neon-page loading-page">
+	<view class="loading-text">加载中...</view>
+</view>
+
+<view wx:if="{{isLoad}}" class="neon-page">
+	<!-- 背景装饰光斑 -->
+	<view class="bg-glow bg-glow-1"></view>
+	<view class="bg-glow bg-glow-2"></view>
+
+	<view class="main">
+		<!-- 按月分组列表 -->
+		<block wx:for="{{groups}}" wx:key="month">
+			<view class="month-header">
+				<view class="month-indicator"></view>
+				<text class="month-title">{{item.month}}</text>
+				<text class="month-count">{{item.items.length}} 笔</text>
+			</view>
+
+			<view class="purchase-card glass-panel" wx:for="{{item.items}}" wx:for-item="record" wx:key="_id">
+				<!-- 凭证图片（点击可预览，不可修改） -->
+				<view class="proof-section" wx:if="{{record.PURCHASE_PROOF_URL}}" bindtap="bindPreviewProof" data-url="{{record.PURCHASE_PROOF_URL}}">
+					<image class="proof-img" src="{{record.PURCHASE_PROOF_URL}}" mode="aspectFill"></image>
+					<view class="proof-overlay">
+						<text class="proof-hint">点击查看大图</text>
+					</view>
+				</view>
+
+				<!-- 购买信息 -->
+				<view class="purchase-detail">
+					<view class="detail-header">
+						<text class="card-title">{{record.PURCHASE_CARD_TITLE || '未知卡项'}}</text>
+						<text class="status status-{{record.PURCHASE_STATUS}}">{{record.statusDesc}}</text>
+					</view>
+
+					<view class="detail-row">
+						<text class="detail-label">金额</text>
+						<text class="detail-value price">${{record.PURCHASE_CARD_PRICE || 0}}</text>
+					</view>
+
+					<view class="detail-row">
+						<text class="detail-label">方式</text>
+						<text class="detail-value">{{record.PURCHASE_PAYMENT_METHOD || 'Zelle'}}</text>
+					</view>
+
+					<view class="detail-row">
+						<text class="detail-label">时间</text>
+						<text class="detail-value dim">{{record.createTimeFmt}}</text>
+					</view>
+
+					<view class="detail-row" wx:if="{{record.PURCHASE_ID}}">
+						<text class="detail-label">订单号</text>
+						<text class="detail-value dim mono">{{record.PURCHASE_ID}}</text>
+					</view>
+				</view>
+			</view>
+		</block>
+
+		<!-- 空状态 -->
+		<view wx:if="{{isLoad && list.length === 0}}" class="empty-state">
+			<text class="empty-icon">📋</text>
+			<text class="empty-title">暂无购买记录</text>
+			<text class="empty-hint">购买卡项后，记录将显示在这里</text>
+		</view>
+
+		<!-- 加载更多 -->
+		<view wx:if="{{loading}}" class="load-more">
+			<text>加载中...</text>
+		</view>
+		<view wx:if="{{!hasMore && list.length > 0}}" class="load-more">
+			<text>- 已加载全部 -</text>
+		</view>
+	</view>
+</view>

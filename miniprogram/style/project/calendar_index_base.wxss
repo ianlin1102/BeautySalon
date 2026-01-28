@@ -761,3 +761,29 @@ page {
 	white-space: pre-wrap;
 	word-break: break-word;
 }
+
+/* ========== 课程已开始状态 ========== */
+.meet-card-horizontal.card-started {
+	opacity: 0.5;
+	filter: grayscale(0.6);
+	pointer-events: none;
+}
+
+.meet-card-horizontal.card-started::before {
+	background: #6b7280;
+	box-shadow: none;
+}
+
+.meet-card-horizontal.card-started:active {
+	transform: none;
+	background: rgba(20, 20, 30, 0.6);
+}
+
+/* 已开始状态的按钮 */
+.card-right-section .book-button.button-started {
+	background: #4b5563;
+	box-shadow: none;
+	animation: none;
+	color: rgba(255, 255, 255, 0.6);
+	pointer-events: none;
+}

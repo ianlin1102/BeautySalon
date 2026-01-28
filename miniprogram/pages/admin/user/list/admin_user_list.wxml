@@ -1,5 +1,5 @@
 <block wx:if="{{isAdmin}}">
-	<cmpt-comm-list type="admin-meet" search="{{search}}" _menus="{{sortMenus}}" _items="{{sortItems}}" route="admin/user_list" sortMenusDefaultIndex="0" topBottom="50" placeholder="搜索" bind:list="bindCommListCmpt" sortMenusDefaultIndex="0">
+	<cmpt-comm-list type="admin-meet" search="{{search}}" _menus="{{sortMenus}}" _items="{{sortItems}}" route="admin/user_list" sortMenusDefaultIndex="0" topBottom="50" placeholder="搜索" bind:list="bindCommListCmpt">
 
 		<view slot="searchEnd">
 			<button bindtap="url" data-url="../export/admin_user_export?condition={{dataList.condition}}" class="btn mid radius bg-admin text-white margin-right-s"><text class="icon-down margin-right-xxs"></text>导出用户资料</button>
@@ -9,58 +9,26 @@
 		<view class="admin-comm-list">
 			<view wx:if="{{dataList && dataList.total }}" class="load text-grey">共有{{dataList.total}}条符合条件记录 </view>
 
-			<view class="item" wx:for="{{dataList.list}}" wx:key="key">
-				<view class="header">
-					<view class="left text-cut">{{item.USER_NAME}}
-						<!-- 用户来源标签 -->
+			<view class="item user-item" wx:for="{{dataList.list}}" wx:key="key" bindtap="bindUserTap" data-user="{{item}}">
+				<view class="user-row">
+					<view class="user-info">
+						<!-- 来源标签 -->
 						<text wx:if="{{item.USER_MINI_OPENID}}" class="source-tag source-wechat">微信</text>
 						<text wx:elif="{{item.USER_GOOGLE_ID}}" class="source-tag source-google">Google</text>
 						<text wx:elif="{{item.USER_ACCOUNT}}" class="source-tag source-web">Web</text>
 						<text wx:else class="source-tag source-unknown">未知</text>
+						<!-- 用户名 -->
+						<text class="user-name">{{item.USER_NAME || '未设置姓名'}}</text>
 					</view>
-					<view class="right">
-						<!-- 状态标签 -->
-						<text wx:if="{{item.USER_STATUS == 1}}" class="status-tag status-normal">正常</text>
-						<text wx:else class="status-tag status-pending">待审核</text>
+					<view class="user-arrow">
+						<text class="icon-right"></text>
 					</view>
 				</view>
-
-				<view class="info">
-					<view class="info-item" bindtap="url" data-type="phone" data-url="{{item.USER_MOBILE}}">
-						<view class="title">手机</view>
-						<view class="mao">：</view>
-						<view class="content">{{item.USER_MOBILE||'未填写'}} <text wx:if="{{item.USER_MOBILE}}" class="icon-phone margin-left-s"></text></view>
-					</view> 
-
-					<view class="info-item">
-						<view class="title">城市</view>
-						<view class="mao">：</view>
-						<view class="content">{{item.USER_CITY}}</view>
-					</view>
-
-					<view class="info-item">
-						<view class="title">行业</view>
-						<view class="mao">：</view>
-						<view class="content">{{item.USER_TRADE}}</view>
-					</view>
-
-					<view class="info-item">
-						<view class="title">单位</view>
-						<view class="mao">：</view>
-						<view class="content">{{item.USER_WORK}}</view>
-					</view>
-
-					<view class="info-item">
-						<view class="title">注册</view>
-						<view class="mao">：</view>
-						<view class="content">{{item.USER_ADD_TIME}}</view>
-					</view>
-
-					<view class="oprt">
-
-						<view bindtap="bindDelTap" data-id="{{item.USER_MINI_OPENID}}" class="btn  margin-right-s"><text class="icon-delete margin-right-xxs text-orange"></text>删除</view>
-
-					</view>
+				<!-- 用户标识信息 - 可复制 -->
+				<view class="user-id-row" catchtap="bindCopyId" data-id="{{item.USER_GOOGLE_EMAIL || item.USER_MINI_OPENID || item.USER_ACCOUNT || item.USER_ID || item._id}}" data-type="{{item.USER_GOOGLE_EMAIL ? 'Email' : (item.USER_MINI_OPENID ? 'OpenID' : (item.USER_ACCOUNT ? '账号' : 'ID'))}}">
+					<text class="user-id-label">{{item.USER_GOOGLE_EMAIL ? 'Email' : (item.USER_MINI_OPENID ? 'OpenID' : (item.USER_ACCOUNT ? '账号' : 'ID'))}}:</text>
+					<text class="user-id-value">{{item.USER_GOOGLE_EMAIL || item.USER_MINI_OPENID || item.USER_ACCOUNT || item.USER_ID || item._id}}</text>
+					<text class="copy-icon icon-copy"></text>
 				</view>
 			</view>
 		</view>

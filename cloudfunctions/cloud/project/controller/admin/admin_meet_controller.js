@@ -181,18 +181,37 @@ class AdminMeetController extends BaseAdminController {
 		// 取得数据
 		let input = this.validateData(rules);
 
+		// 检查是否需要过期筛选（MEET_DAYS 是数组，需要在 controller 层处理）
+		let expiredFilter = null;
+		if (input.sortType === 'expired') {
+			expiredFilter = Number(input.sortVal);
+			// 过期筛选需要获取更多数据后筛选，增大 size
+			input.size = 100; // 获取更多记录用于筛选
+		}
+
 		let service = new AdminMeetService();
 		let result = await service.getMeetList(input);
 
 		// 数据格式化
 		let list = result.list;
 		for (let k in list) {
-
 			list[k].MEET_ADD_TIME = timeUtil.timestamp2Time(list[k].MEET_ADD_TIME);
 			list[k].MEET_EDIT_TIME = timeUtil.timestamp2Time(list[k].MEET_EDIT_TIME);
 			list[k].leaveDay = this._getLeaveDay(list[k].MEET_DAYS);
-
 		}
+
+		// 过期筛选：基于 leaveDay（剩余可用天数）
+		if (expiredFilter !== null) {
+			if (expiredFilter === 1) {
+				// 已过期：leaveDay === 0
+				list = list.filter(item => item.leaveDay === 0);
+			} else if (expiredFilter === 0) {
+				// 未过期：leaveDay > 0
+				list = list.filter(item => item.leaveDay > 0);
+			}
+			result.total = list.length;
+		}
+
 		result.list = list;
 
 		return result;
@@ -213,6 +232,8 @@ class AdminMeetController extends BaseAdminController {
 			mark: 'string',
 			status: 'int',
 			isCheckin: 'int',
+			expired: 'int', // 过期筛选：1=已过期, 0=未过期
+			userId: 'string|name=用户ID', // 按用户筛选
 			page: 'must|int|default=1',
 			size: 'int|default=10',
 			isTotal: 'bool',

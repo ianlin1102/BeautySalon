@@ -1,0 +1,148 @@
+<view class="container" wx:if="{{isLoad}}">
+	<!-- 用户基本信息卡片 -->
+	<view class="user-card">
+		<view class="user-header">
+			<view class="user-avatar">
+				<text class="icon-user"></text>
+			</view>
+			<view class="user-main">
+				<view class="user-name">{{user.USER_NAME || '未设置姓名'}}</view>
+				<view class="user-source">{{sourceDesc}}</view>
+			</view>
+		</view>
+
+		<view class="user-info-list">
+			<view class="info-item" wx:if="{{user.USER_MOBILE}}">
+				<text class="label">手机</text>
+				<text class="value">{{user.USER_MOBILE}}</text>
+			</view>
+			<view class="info-item" wx:if="{{user.USER_GOOGLE_EMAIL}}">
+				<text class="label">Email</text>
+				<text class="value">{{user.USER_GOOGLE_EMAIL}}</text>
+			</view>
+			<view class="info-item" wx:if="{{user.USER_ACCOUNT}}">
+				<text class="label">账号</text>
+				<text class="value">{{user.USER_ACCOUNT}}</text>
+			</view>
+			<view class="info-item" wx:if="{{user.USER_WORK}}">
+				<text class="label">单位</text>
+				<text class="value">{{user.USER_WORK}}</text>
+			</view>
+			<view class="info-item" wx:if="{{user.USER_CITY}}">
+				<text class="label">城市</text>
+				<text class="value">{{user.USER_CITY}}</text>
+			</view>
+			<view class="info-item" wx:if="{{user.USER_TRADE}}">
+				<text class="label">职业</text>
+				<text class="value">{{user.USER_TRADE}}</text>
+			</view>
+			<view class="info-item" wx:if="{{userAddTime}}">
+				<text class="label">注册时间</text>
+				<text class="value">{{userAddTime}}</text>
+			</view>
+			<view class="info-item" wx:if="{{userLoginTime}}">
+				<text class="label">最近登录</text>
+				<text class="value">{{userLoginTime}}</text>
+			</view>
+		</view>
+
+		<!-- 用户ID - 可复制 -->
+		<view class="user-id-section">
+			<view class="id-row" catchtap="bindCopyId" data-id="{{userId}}" data-type="ID">
+				<text class="id-label">用户ID</text>
+				<text class="id-value">{{userId}}</text>
+				<text class="copy-icon icon-copy"></text>
+			</view>
+		</view>
+	</view>
+
+	<!-- 卡项汇总 -->
+	<view class="summary-card">
+		<view class="summary-item">
+			<view class="summary-badge balance-badge">
+				<view class="summary-value">${{totalBalance}}</view>
+			</view>
+			<view class="summary-label">余额</view>
+		</view>
+		<view class="summary-item">
+			<view class="summary-badge times-badge">
+				<view class="summary-value">{{totalTimes}}</view>
+			</view>
+			<view class="summary-label">次数</view>
+		</view>
+	</view>
+
+	<!-- 操作按钮 -->
+	<view class="action-section">
+		<view class="section-title">操作</view>
+		<view class="action-grid">
+			<view class="action-item" bindtap="bindShowActionModal">
+				<text class="icon-add action-icon"></text>
+				<text class="action-text">添加卡项</text>
+			</view>
+			<view class="action-item" bindtap="bindViewMeets">
+				<text class="icon-calendar action-icon"></text>
+				<text class="action-text">预约管理</text>
+			</view>
+			<view class="action-item" bindtap="bindViewPurchases">
+				<text class="icon-cart action-icon"></text>
+				<text class="action-text">购买凭证</text>
+			</view>
+		</view>
+	</view>
+
+	<!-- 卡项列表 -->
+	<view class="card-section" wx:if="{{cards.length > 0}}">
+		<view class="section-title">持有卡项 ({{cards.length}})</view>
+		<view class="card-list">
+			<view class="card-item" wx:for="{{cards}}" wx:key="_id"
+			      bindtap="bindCardTap" data-card="{{item}}">
+				<view class="card-left">
+					<view class="card-name">{{item.USER_CARD_CARD_NAME}}</view>
+					<view class="card-id">{{item.USER_CARD_UNIQUE_ID}}</view>
+				</view>
+				<view class="card-right">
+					<view class="card-value" wx:if="{{item.USER_CARD_TYPE == 1}}">
+						{{item.USER_CARD_REMAIN_TIMES}}次
+					</view>
+					<view class="card-value" wx:else>
+						${{item.USER_CARD_REMAIN_AMOUNT}}
+					</view>
+					<view class="card-status status-{{item.USER_CARD_STATUS}}">
+						{{item.USER_CARD_STATUS_DESC}}
+					</view>
+				</view>
+			</view>
+		</view>
+	</view>
+
+	<view class="empty-card" wx:else>
+		<text>暂无卡项</text>
+	</view>
+</view>
+
+<!-- Loading -->
+<view class="loading" wx:if="{{!isLoad}}">
+	<text>加载中...</text>
+</view>
+
+<!-- 添加卡项 Modal -->
+<view class="modal-mask" wx:if="{{showActionModal}}" bindtap="bindCloseModal"></view>
+<view class="modal-container" wx:if="{{showActionModal}}">
+	<view class="modal-header">
+		<text class="modal-title">添加卡项</text>
+		<text class="modal-close icon-close" bindtap="bindCloseModal"></text>
+	</view>
+	<view class="modal-body">
+		<view class="modal-tip">请先复制用户ID，然后前往卡项管理页面为该用户添加卡项</view>
+		<view class="modal-id-row" catchtap="bindCopyIdFromModal">
+			<text class="modal-id-label">用户ID:</text>
+			<text class="modal-id-value">{{userId}}</text>
+			<text class="copy-icon icon-copy"></text>
+		</view>
+	</view>
+	<view class="modal-footer">
+		<button class="modal-btn cancel-btn" bindtap="bindCloseModal">取消</button>
+		<button class="modal-btn confirm-btn" bindtap="bindGoToCardManage">前往卡项管理</button>
+	</view>
+</view>

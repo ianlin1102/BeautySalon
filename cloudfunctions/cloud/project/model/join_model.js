@@ -66,6 +66,10 @@ JoinModel.DB_STRUCTURE = {
 
 	JOIN_REASON: 'string|false|comment=审核拒绝或者取消理由',
 
+	JOIN_SOURCE: 'string|false|comment=预约来源 miniprogram/web',
+	JOIN_USER_NAME: 'string|false|comment=用户姓名(冗余)',
+	JOIN_USER_MOBILE: 'string|false|comment=用户手机号(冗余)',
+
 	JOIN_ADD_TIME: 'int|true',
 	JOIN_EDIT_TIME: 'int|true',
 	JOIN_ADD_IP: 'string|false',

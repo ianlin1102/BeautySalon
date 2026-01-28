@@ -1,0 +1,107 @@
+.join-list {
+	padding: 20rpx;
+}
+
+.join-list .item {
+	background: #fff;
+	border-radius: 16rpx;
+	margin-bottom: 20rpx;
+	position: relative;
+	overflow: hidden;
+}
+
+.join-list .item .header {
+	background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+	color: #fff;
+	padding: 20rpx 30rpx;
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+	font-size: 26rpx;
+}
+
+.join-list .item .header .left {
+	display: flex;
+	align-items: center;
+}
+
+.join-list .item .header .right {
+	opacity: 0.8;
+}
+
+.join-list .item .meet-title {
+	padding: 20rpx 30rpx;
+	background: #f8f9fa;
+	font-size: 28rpx;
+	color: #333;
+	border-bottom: 1rpx solid #eee;
+}
+
+.join-list .item .info {
+	padding: 20rpx 30rpx;
+}
+
+.join-list .item .info-item {
+	display: flex;
+	padding: 10rpx 0;
+	font-size: 26rpx;
+	line-height: 1.6;
+}
+
+.join-list .item .info-item .title {
+	min-width: 120rpx;
+	color: #666;
+}
+
+.join-list .item .info-item .mao {
+	color: #999;
+	margin: 0 8rpx;
+}
+
+.join-list .item .info-item .content {
+	flex: 1;
+	color: #333;
+	word-break: break-all;
+}
+
+.join-list .item .info-item.add-time {
+	border-top: 1rpx dashed #eee;
+	margin-top: 10rpx;
+	padding-top: 16rpx;
+}
+
+.join-list .item .fold {
+	color: #667eea;
+	font-size: 24rpx;
+	padding: 10rpx 0;
+}
+
+.join-list .item .oprt {
+	display: flex;
+	flex-wrap: wrap;
+	padding-top: 20rpx;
+	border-top: 1rpx solid #eee;
+	margin-top: 10rpx;
+}
+
+.join-list .item .oprt .btn {
+	padding: 12rpx 24rpx;
+	border-radius: 8rpx;
+	font-size: 24rpx;
+	margin-bottom: 10rpx;
+}
+
+.join-list .item .no {
+	position: absolute;
+	right: 20rpx;
+	bottom: 20rpx;
+	font-size: 48rpx;
+	font-weight: bold;
+	color: #f0f0f0;
+}
+
+.load {
+	text-align: center;
+	padding: 20rpx;
+	font-size: 26rpx;
+}
