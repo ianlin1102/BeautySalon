@@ -81,20 +81,18 @@ page {
 	color: #73bdf5 !important;
 }
 
-/* ========== 下拉菜单霓虹化 ========== */
+/* ========== 隐藏排序下拉菜单 ========== */
 .sort {
-	background: rgba(27, 23, 40, 0.98) !important;
-	border: 1rpx solid rgba(255, 255, 255, 0.08);
+	display: none !important;
 }
 
-.sort .sort-item {
-	color: rgba(255, 255, 255, 0.7) !important;
-	border-bottom: 1rpx solid rgba(255, 255, 255, 0.06) !important;
+.pulldown-mask {
+	display: none !important;
 }
 
-.sort .sort-item.cur,
-.sort .sort-item.text-orange {
-	color: #73bdf5 !important;
+/* 隐藏 tabs 中的排序触发器 */
+.tabs .tab.pulldown {
+	display: none !important;
 }
 
 /* ========== 列表容器霓虹化 ========== */
