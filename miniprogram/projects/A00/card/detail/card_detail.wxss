@@ -1,27 +1,38 @@
 @import "../../../../style/project/neon_theme.wxss";
+@import "../../skin/skin.wxss";
 
 page {
 	background-color: #050511;
-	padding-bottom: 60rpx;
+}
+
+.neon-page {
+	min-height: 100vh;
+	position: relative;
+	overflow: hidden;
 }
 
 .main {
 	min-height: 100vh;
 	padding: 20rpx;
+	padding-bottom: 60rpx;
 	position: relative;
 	z-index: 1;
 }
 
-/* 卡项信息卡片 */
+/* 卡项信息卡片 - 玻璃态 + 紫色主题 */
 .card-info-section {
-	background: rgba(255, 255, 255, 0.03);
-	backdrop-filter: blur(10px);
-	-webkit-backdrop-filter: blur(10px);
-	border: 1rpx solid rgba(255, 255, 255, 0.05);
+	background: linear-gradient(160deg, rgba(189, 0, 255, 0.08) 0%, rgba(20, 20, 35, 0.4) 100%);
+	backdrop-filter: blur(15px);
+	-webkit-backdrop-filter: blur(15px);
+	border-top: 2rpx solid rgba(189, 0, 255, 0.4);
+	border-left: 1rpx solid rgba(255, 255, 255, 0.1);
+	border-right: 1rpx solid rgba(255, 255, 255, 0.05);
+	border-bottom: 1rpx solid rgba(0, 0, 0, 0.2);
 	border-radius: 32rpx;
 	padding: 40rpx 30rpx;
 	margin-bottom: 30rpx;
 	box-shadow: 0 16rpx 64rpx 0 rgba(0, 0, 0, 0.3);
+	animation: breathe-purple 4s infinite ease-in-out;
 }
 
 /* 卡项头部 */
@@ -31,7 +42,7 @@ page {
 	align-items: center;
 	margin-bottom: 30rpx;
 	padding-bottom: 20rpx;
-	border-bottom: 1rpx solid rgba(255, 255, 255, 0.05);
+	border-bottom: 1rpx solid rgba(255, 255, 255, 0.08);
 }
 
 .card-name {
@@ -39,6 +50,7 @@ page {
 	font-weight: bold;
 	color: #fff;
 	flex: 1;
+	text-shadow: 0 0 15rpx rgba(255, 255, 255, 0.2);
 }
 
 .card-status {
@@ -60,6 +72,7 @@ page {
 	color: #00f2ff;
 	border: 1rpx solid rgba(0, 242, 255, 0.3);
 	box-shadow: 0 0 15rpx rgba(0, 242, 255, 0.2);
+	animation: breathe-cyan 3s infinite ease-in-out;
 }
 
 .status-2 {
@@ -70,8 +83,8 @@ page {
 
 /* 唯一识别码 */
 .card-unique-id {
-	background: linear-gradient(135deg, rgba(255, 0, 222, 0.15) 0%, rgba(0, 242, 255, 0.1) 100%);
-	border: 1rpx solid rgba(255, 255, 255, 0.1);
+	background: linear-gradient(135deg, rgba(255, 0, 222, 0.12) 0%, rgba(0, 242, 255, 0.08) 100%);
+	border: 1rpx solid rgba(189, 0, 255, 0.2);
 	border-radius: 20rpx;
 	padding: 24rpx 30rpx;
 	margin-bottom: 40rpx;
@@ -97,16 +110,18 @@ page {
 
 .copy-btn {
 	padding: 8rpx 24rpx;
-	background: rgba(255, 255, 255, 0.1);
+	background: rgba(189, 0, 255, 0.2);
 	border-radius: 30rpx;
 	font-size: 24rpx;
-	color: #fff;
+	color: #bd00ff;
 	font-weight: 500;
-	border: 1rpx solid rgba(255, 255, 255, 0.1);
+	border: 1rpx solid rgba(189, 0, 255, 0.3);
+	transition: all 0.2s;
 }
 
 .copy-btn:active {
-	background: rgba(255, 255, 255, 0.2);
+	background: rgba(189, 0, 255, 0.4);
+	transform: scale(0.95);
 }
 
 /* 统计信息 */
@@ -142,7 +157,7 @@ page {
 
 .stat-value.remain {
 	color: #00f2ff;
-	text-shadow: 0 0 15rpx rgba(0, 242, 255, 0.3);
+	text-shadow: 0 0 20rpx rgba(0, 242, 255, 0.4);
 }
 
 .stat-value.used {
@@ -152,7 +167,7 @@ page {
 .stat-divider {
 	width: 1rpx;
 	height: 60rpx;
-	background: rgba(255, 255, 255, 0.1);
+	background: linear-gradient(180deg, transparent, rgba(255, 255, 255, 0.15), transparent);
 }
 
 /* 进度条区域 */
@@ -172,7 +187,7 @@ page {
 
 .progress-fill {
 	height: 100%;
-	background: linear-gradient(90deg, #ff00de 0%, #00f2ff 100%);
+	background: linear-gradient(90deg, #bd00ff 0%, #00f2ff 100%);
 	box-shadow: 0 0 15rpx rgba(0, 242, 255, 0.4);
 	transition: width 0.5s ease-in-out;
 	border-radius: 10rpx;
@@ -198,10 +213,10 @@ page {
 
 /* 时间信息 */
 .time-info {
-	background: rgba(255, 255, 255, 0.02);
+	background: rgba(0, 0, 0, 0.2);
 	border-radius: 20rpx;
 	padding: 24rpx;
-	border: 1rpx solid rgba(255, 255, 255, 0.03);
+	border: 1rpx solid rgba(255, 255, 255, 0.05);
 }
 
 .time-item {
@@ -212,7 +227,7 @@ page {
 }
 
 .time-item:not(:last-child) {
-	border-bottom: 1rpx solid rgba(255, 255, 255, 0.03);
+	border-bottom: 1rpx solid rgba(255, 255, 255, 0.05);
 }
 
 .time-label {
@@ -228,7 +243,7 @@ page {
 .time-value.permanent {
 	color: #FFD700;
 	font-weight: bold;
-	text-shadow: 0 0 10rpx rgba(255, 215, 0, 0.3);
+	text-shadow: 0 0 15rpx rgba(255, 215, 0, 0.4);
 }
 
 /* 使用记录标题 */
@@ -239,9 +254,19 @@ page {
 	margin-top: 20rpx;
 }
 
+.section-title::before {
+	content: '';
+	width: 8rpx;
+	height: 32rpx;
+	background: #bd00ff;
+	border-radius: 4rpx;
+	box-shadow: 0 0 16rpx #bd00ff;
+	margin-right: 16rpx;
+}
+
 .title-icon {
 	font-size: 32rpx;
-	margin-right: 16rpx;
+	margin-right: 12rpx;
 }
 
 .title-text {
@@ -265,13 +290,17 @@ page {
 	display: flex;
 	padding: 30rpx;
 	border-radius: 24rpx;
-	background: rgba(255, 255, 255, 0.03);
+	background: linear-gradient(160deg, rgba(255, 255, 255, 0.03) 0%, rgba(20, 20, 35, 0.3) 100%);
+	backdrop-filter: blur(10px);
+	-webkit-backdrop-filter: blur(10px);
 	margin-bottom: 20rpx;
 	border: 1rpx solid rgba(255, 255, 255, 0.05);
+	transition: all 0.2s;
 }
 
 .record-item:active {
-	background: rgba(255, 255, 255, 0.05);
+	background: rgba(255, 255, 255, 0.08);
+	transform: scale(0.98);
 }
 
 .record-left {
@@ -294,12 +323,14 @@ page {
 	background: rgba(45, 212, 191, 0.15);
 	color: #2dd4bf;
 	border: 1rpx solid rgba(45, 212, 191, 0.3);
+	box-shadow: 0 0 15rpx rgba(45, 212, 191, 0.2);
 }
 
 .type-use {
 	background: rgba(255, 0, 222, 0.1);
 	color: #ff00de;
 	border: 1rpx solid rgba(255, 0, 222, 0.2);
+	box-shadow: 0 0 15rpx rgba(255, 0, 222, 0.2);
 }
 
 .record-main {
@@ -320,10 +351,12 @@ page {
 
 .change-add {
 	color: #2dd4bf;
+	text-shadow: 0 0 10rpx rgba(45, 212, 191, 0.3);
 }
 
 .change-use {
 	color: #fb7185;
+	text-shadow: 0 0 10rpx rgba(251, 113, 133, 0.3);
 }
 
 .record-time {
@@ -336,8 +369,9 @@ page {
 	color: rgba(255, 255, 255, 0.7);
 	margin-bottom: 12rpx;
 	padding: 16rpx 20rpx;
-	background: rgba(0, 0, 0, 0.2);
+	background: rgba(0, 0, 0, 0.3);
 	border-radius: 12rpx;
+	border-left: 4rpx solid rgba(189, 0, 255, 0.5);
 }
 
 .record-balance {
@@ -355,7 +389,7 @@ page {
 	font-size: 120rpx;
 	display: block;
 	margin-bottom: 30rpx;
-	opacity: 0.5;
+	opacity: 0.3;
 }
 
 .empty-text {

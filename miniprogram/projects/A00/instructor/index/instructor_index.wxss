@@ -1,33 +1,76 @@
+@import "../../../../style/project/neon_theme.wxss";
 @import "../../skin/skin.wxss";
 
 page {
-	background-color: #F6F7FF;
+	background-color: #050511;
 }
 
 .instructor-list-page {
 	min-height: 100vh;
 	padding: 30rpx;
+	position: relative;
+	overflow: hidden;
+}
+
+/* 背景光斑装饰 */
+.instructor-list-page::before {
+	content: '';
+	position: fixed;
+	top: -100rpx;
+	left: -100rpx;
+	width: 500rpx;
+	height: 500rpx;
+	background: radial-gradient(circle, rgba(189, 0, 255, 0.3) 0%, transparent 70%);
+	border-radius: 50%;
+	pointer-events: none;
+	z-index: 0;
+	filter: blur(160rpx);
+	animation: pulse-glow 6s infinite alternate;
+}
+
+.instructor-list-page::after {
+	content: '';
+	position: fixed;
+	bottom: 100rpx;
+	right: -120rpx;
+	width: 400rpx;
+	height: 400rpx;
+	background: radial-gradient(circle, rgba(0, 242, 255, 0.25) 0%, transparent 70%);
+	border-radius: 50%;
+	pointer-events: none;
+	z-index: 0;
+	filter: blur(160rpx);
+	animation: pulse-glow 5s infinite alternate-reverse;
 }
 
 /* 导师网格布局 */
 .instructor-grid {
 	display: flex;
 	flex-direction: column;
-	gap: 20rpx;
+	gap: 24rpx;
+	position: relative;
+	z-index: 1;
 }
 
-/* 导师卡片 */
+/* 导师卡片 - 玻璃态 + 紫色呼吸边框 */
 .instructor-card {
-	background-color: #ffffff;
-	border-radius: 20rpx;
+	background: linear-gradient(160deg, rgba(189, 0, 255, 0.08) 0%, rgba(20, 20, 35, 0.4) 100%);
+	backdrop-filter: blur(15px);
+	-webkit-backdrop-filter: blur(15px);
+	border-radius: 32rpx;
 	overflow: hidden;
-	box-shadow: 0 4rpx 12rpx rgba(0, 0, 0, 0.05);
+	border-top: 2rpx solid rgba(189, 0, 255, 0.4);
+	border-left: 1rpx solid rgba(255, 255, 255, 0.1);
+	border-right: 1rpx solid rgba(255, 255, 255, 0.05);
+	border-bottom: 1rpx solid rgba(0, 0, 0, 0.2);
+	box-shadow: 0 16rpx 64rpx rgba(0, 0, 0, 0.3);
 	transition: all 0.3s ease;
+	animation: breathe-purple 4s infinite ease-in-out;
 }
 
 .instructor-card:active {
 	transform: scale(0.98);
-	box-shadow: 0 2rpx 8rpx rgba(0, 0, 0, 0.08);
+	filter: brightness(1.1);
 }
 
 .instructor-card-inner {
@@ -36,12 +79,15 @@ page {
 	padding: 30rpx;
 }
 
+/* 头像容器 - 霓虹光环 */
 .instructor-card-avatar {
 	width: 120rpx;
 	height: 120rpx;
 	border-radius: 50%;
 	flex-shrink: 0;
-	border: 4rpx solid #F6F7FF;
+	border: 4rpx solid rgba(189, 0, 255, 0.5);
+	box-shadow: 0 0 20rpx rgba(189, 0, 255, 0.3);
+	background: #1a1a2e;
 }
 
 .instructor-card-info {
@@ -55,12 +101,13 @@ page {
 .instructor-card-name {
 	font-size: 32rpx;
 	font-weight: bold;
-	color: #333;
+	color: #ffffff;
+	text-shadow: 0 0 10rpx rgba(255, 255, 255, 0.2);
 }
 
 .instructor-card-desc {
 	font-size: 26rpx;
-	color: #666;
+	color: rgba(255, 255, 255, 0.6);
 	line-height: 1.6;
 	overflow: hidden;
 	text-overflow: ellipsis;
@@ -69,13 +116,40 @@ page {
 	-webkit-box-orient: vertical;
 }
 
+/* 箭头指示器 */
+.instructor-card-arrow {
+	width: 60rpx;
+	height: 60rpx;
+	border-radius: 50%;
+	background: rgba(189, 0, 255, 0.15);
+	border: 1rpx solid rgba(189, 0, 255, 0.3);
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	flex-shrink: 0;
+	margin-left: 20rpx;
+}
+
+.instructor-card-arrow text {
+	font-size: 32rpx;
+	color: #bd00ff;
+}
+
 /* 空状态 */
 .empty-state {
 	padding: 200rpx 40rpx;
 	text-align: center;
+	position: relative;
+	z-index: 1;
+}
+
+.empty-icon {
+	font-size: 100rpx;
+	color: rgba(255, 255, 255, 0.15);
+	margin-bottom: 30rpx;
 }
 
 .empty-text {
 	font-size: 28rpx;
-	color: #999;
+	color: rgba(255, 255, 255, 0.4);
 }
