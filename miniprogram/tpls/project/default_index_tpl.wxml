@@ -18,7 +18,7 @@
 		<!-- Main Menu -->
 		<view class="main-menu">
 			<view class="menu-grid card-project shadow-project">
-				<view bindtap="url" data-url="../../meet/index/meet_index" class="menu-item">
+				<view bindtap="url" data-url="../../calendar/index/calendar_index" data-type="switch" class="menu-item">
 					<view class="menu-item-inner">
 						<view class="menu-icon"><image src="../../skin/images/menu_icon/预约-removebg-preview.png" /></view>
 						<view class="menu-title">预约</view>

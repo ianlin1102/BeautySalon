@@ -228,9 +228,9 @@ module.exports = Behavior({
 			let url = currentCarousel.CAROUSEL_URL;
 
 			if (!url) {
-				// 如果没有设置跳转链接，默认跳转到预约页面
-				wx.navigateTo({
-					url: '/projects/A00/meet/index/meet_index'
+				// 如果没有设置跳转链接，默认跳转到日历页面（tabBar页面需要用switchTab）
+				wx.switchTab({
+					url: '/projects/A00/calendar/index/calendar_index'
 				});
 				return;
 			}
