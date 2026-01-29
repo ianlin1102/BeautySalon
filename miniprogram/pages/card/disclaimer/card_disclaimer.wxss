@@ -1,6 +1,7 @@
+@import "../../../style/project/neon_theme.wxss";
+
 page {
-	--themeColor: #2499f2;
-	background-color: #f5f5f5;
+	background-color: #050511;
 	height: 100%;
 }
 
@@ -9,74 +10,137 @@ page {
 	display: flex;
 	flex-direction: column;
 	padding-bottom: 180rpx;
+	position: relative;
+	overflow: hidden;
 }
 
-/* 头部 */
+/* 背景光斑装饰 */
+.disclaimer-page::before {
+	content: '';
+	position: fixed;
+	top: -100rpx;
+	left: -100rpx;
+	width: 500rpx;
+	height: 500rpx;
+	background: radial-gradient(circle, rgba(189, 0, 255, 0.3) 0%, transparent 70%);
+	border-radius: 50%;
+	pointer-events: none;
+	z-index: 0;
+	filter: blur(160rpx);
+	animation: pulse-glow 6s infinite alternate;
+}
+
+.disclaimer-page::after {
+	content: '';
+	position: fixed;
+	bottom: 200rpx;
+	right: -120rpx;
+	width: 400rpx;
+	height: 400rpx;
+	background: radial-gradient(circle, rgba(0, 242, 255, 0.25) 0%, transparent 70%);
+	border-radius: 50%;
+	pointer-events: none;
+	z-index: 0;
+	filter: blur(160rpx);
+	animation: pulse-glow 5s infinite alternate-reverse;
+}
+
+/* 头部 - 渐变背景 */
 .disclaimer-header {
-	background: var(--themeColor);
-	padding: 60rpx 30rpx 40rpx;
+	background: linear-gradient(180deg, rgba(189, 0, 255, 0.25) 0%, transparent 100%);
+	padding: 80rpx 30rpx 50rpx;
 	text-align: center;
 	color: #fff;
+	position: relative;
+	z-index: 1;
 }
 
 .header-title {
-	font-size: 40rpx;
+	font-size: 44rpx;
 	font-weight: bold;
-	margin-bottom: 15rpx;
+	margin-bottom: 20rpx;
+	text-shadow: 0 0 20rpx rgba(255, 255, 255, 0.3);
 }
 
 .header-subtitle {
 	font-size: 26rpx;
-	opacity: 0.9;
+	color: rgba(255, 255, 255, 0.6);
 }
 
 /* 内容区域 */
 .disclaimer-content {
 	flex: 1;
 	padding: 20rpx;
+	position: relative;
+	z-index: 1;
 }
 
+/* 条款区块 - 玻璃态 */
 .section {
-	background: #fff;
-	margin-bottom: 20rpx;
-	border-radius: 12rpx;
+	background: linear-gradient(160deg, rgba(189, 0, 255, 0.05) 0%, rgba(20, 20, 35, 0.4) 100%);
+	backdrop-filter: blur(15px);
+	-webkit-backdrop-filter: blur(15px);
+	margin-bottom: 24rpx;
+	border-radius: 24rpx;
 	padding: 30rpx;
-	box-shadow: 0 2rpx 8rpx rgba(0, 0, 0, 0.05);
+	border-top: 2rpx solid rgba(189, 0, 255, 0.3);
+	border-left: 1rpx solid rgba(255, 255, 255, 0.08);
+	border-right: 1rpx solid rgba(255, 255, 255, 0.05);
+	border-bottom: 1rpx solid rgba(0, 0, 0, 0.2);
+	box-shadow: 0 16rpx 64rpx rgba(0, 0, 0, 0.3);
 }
 
 .section-title {
 	font-size: 32rpx;
 	font-weight: bold;
-	color: #333;
+	color: #fff;
 	margin-bottom: 20rpx;
 	padding-left: 20rpx;
-	border-left: 6rpx solid var(--themeColor);
+	display: flex;
+	align-items: center;
+	gap: 16rpx;
+}
+
+.section-title::before {
+	content: '';
+	position: absolute;
+	left: 30rpx;
+	width: 6rpx;
+	height: 32rpx;
+	background: #bd00ff;
+	border-radius: 3rpx;
+	box-shadow: 0 0 16rpx #bd00ff;
 }
 
 .section-text {
 	font-size: 28rpx;
-	color: #666;
+	color: rgba(255, 255, 255, 0.7);
 	line-height: 2;
 	white-space: pre-line;
+	padding-left: 6rpx;
 }
 
-/* 底部按钮 */
+/* 底部按钮 - 玻璃态底栏 */
 .disclaimer-footer {
 	position: fixed;
 	bottom: 0;
 	left: 0;
 	right: 0;
-	background: #fff;
-	padding: 20rpx 30rpx;
-	padding-bottom: calc(20rpx + env(safe-area-inset-bottom));
-	box-shadow: 0 -2rpx 10rpx rgba(0, 0, 0, 0.1);
+	background: linear-gradient(180deg, rgba(5, 5, 17, 0.9) 0%, rgba(5, 5, 17, 0.98) 100%);
+	backdrop-filter: blur(20px);
+	-webkit-backdrop-filter: blur(20px);
+	padding: 24rpx 30rpx;
+	padding-bottom: calc(24rpx + env(safe-area-inset-bottom));
+	border-top: 1rpx solid rgba(255, 255, 255, 0.08);
 	display: flex;
-	gap: 20rpx;
+	gap: 24rpx;
+	z-index: 100;
 }
 
+/* 同意按钮 - 霓虹渐变 */
 .btn-agree {
 	flex: 1;
-	background: var(--themeColor) !important;
+	background: linear-gradient(135deg, #bd00ff, #00f2ff) !important;
 	color: #fff !important;
 	border: none;
 	border-radius: 50rpx;
@@ -84,23 +148,49 @@ page {
 	font-size: 32rpx;
 	font-weight: bold;
 	line-height: 1.5;
+	box-shadow: 0 0 20rpx rgba(189, 0, 255, 0.4),
+	            0 0 10rpx rgba(0, 242, 255, 0.3);
+	text-shadow: 0 1rpx 2rpx rgba(0, 0, 0, 0.2);
+	transition: all 0.2s;
 }
 
+.btn-agree:active {
+	transform: scale(0.96);
+	filter: brightness(1.2);
+}
+
+.btn-agree::after {
+	border: none;
+}
+
+/* 取消按钮 - 次要样式 */
 .btn-cancel {
 	flex: 1;
-	background: #fff !important;
-	color: #999 !important;
-	border: 2rpx solid #e0e0e0;
+	background: rgba(255, 255, 255, 0.05) !important;
+	color: rgba(255, 255, 255, 0.6) !important;
+	border: 1rpx solid rgba(255, 255, 255, 0.15);
 	border-radius: 50rpx;
 	padding: 24rpx;
 	font-size: 32rpx;
 	line-height: 1.5;
+	transition: all 0.2s;
+}
+
+.btn-cancel:active {
+	background: rgba(255, 255, 255, 0.1) !important;
+	transform: scale(0.96);
+}
+
+.btn-cancel::after {
+	border: none;
 }
 
 /* 加载状态 */
 .loading-state {
 	text-align: center;
 	padding: 100rpx 0;
-	color: #999;
+	color: rgba(255, 255, 255, 0.4);
 	font-size: 28rpx;
+	position: relative;
+	z-index: 1;
 }
