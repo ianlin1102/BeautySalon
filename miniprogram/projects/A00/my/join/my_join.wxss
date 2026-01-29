@@ -83,19 +83,37 @@ page {
 
 /* ========== 排序下拉菜单霓虹化 ========== */
 .sort {
+	position: absolute !important;
+	top: 178rpx !important;
+	left: 0 !important;
+	right: 0 !important;
+	bottom: auto !important;
+	width: 100% !important;
+	height: auto !important;
+	max-height: 600rpx !important;
 	background: rgba(27, 23, 40, 0.98) !important;
 	border: 1rpx solid rgba(115, 189, 245, 0.2) !important;
-	border-radius: 16rpx !important;
+	border-radius: 0 0 16rpx 16rpx !important;
 	box-shadow: 0 8rpx 32rpx rgba(0, 0, 0, 0.4) !important;
-	overflow: hidden;
+	overflow: visible !important;
+	z-index: 1000 !important;
+}
+
+.sort .pulldown-scroll-view {
+	height: auto !important;
+	max-height: 500rpx !important;
+	width: 100% !important;
 }
 
 .sort .sort-item {
-	color: rgba(255, 255, 255, 0.7) !important;
-	background: transparent !important;
-	border-bottom: 1rpx solid rgba(255, 255, 255, 0.06) !important;
-	padding: 24rpx 32rpx !important;
+	color: rgba(255, 255, 255, 0.8) !important;
+	background: rgba(27, 23, 40, 0.95) !important;
+	border-bottom: 1rpx solid rgba(255, 255, 255, 0.08) !important;
+	border-top: none !important;
+	padding: 28rpx 40rpx !important;
 	font-size: 28rpx !important;
+	height: auto !important;
+	line-height: 1.4 !important;
 }
 
 .sort .sort-item:last-child {
@@ -103,10 +121,13 @@ page {
 }
 
 .sort .sort-item.cur,
-.sort .sort-item.text-orange,
-.sort .sort-item:active {
+.sort .sort-item.text-orange {
 	color: #73bdf5 !important;
-	background: rgba(115, 189, 245, 0.1) !important;
+	background: rgba(115, 189, 245, 0.15) !important;
+}
+
+.sort .sort-item:active {
+	background: rgba(115, 189, 245, 0.2) !important;
 }
 
 /* 排序项前的图标 */

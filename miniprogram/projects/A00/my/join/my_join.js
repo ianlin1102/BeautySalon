@@ -12,35 +12,36 @@ Page({
 			isLoadSkin: true,
 		});
 
-		// 覆盖 behavior 中的 getSearchMenu，修复 sortItems 数据结构
+		// 覆盖 behavior 中的 getSearchMenu
 		this._initSearchMenu(skin);
 	},
 
 	/**
-	 * 搜索菜单设置 - 修复版本
-	 * sortItems 结构需要是 [{ items: [...] }] 而不是 [[...]]
+	 * 搜索菜单设置
+	 * _items 传入格式: [[{label, type, value}, ...]]
+	 * 组件内部会包装成: [{ show: false, items: [...] }]
 	 */
 	_initSearchMenu: function (skin) {
 		wx.setNavigationBarTitle({
 			title: '我的' + skin.MEET_NAME
 		});
 
-		// sortItems 需要包含 items 属性
-		let sortItems = [{
-			items: [{
-				label: '排序',
-				type: '',
-				value: ''
-			}, {
-				label: '按时间倒序',
-				type: 'timedesc',
-				value: ''
-			}, {
-				label: '按时间正序',
-				type: 'timeasc',
-				value: ''
-			}]
+		// sortItems 传给组件的 _items，格式是数组的数组
+		let sortItem1 = [{
+			label: '排序',
+			type: '',
+			value: ''
+		}, {
+			label: '按时间倒序',
+			type: 'timedesc',
+			value: ''
+		}, {
+			label: '按时间正序',
+			type: 'timeasc',
+			value: ''
 		}];
+
+		let sortItems = [sortItem1];
 
 		let sortMenus = [{
 			label: '全部',
