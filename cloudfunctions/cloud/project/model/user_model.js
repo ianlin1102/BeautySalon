@@ -50,6 +50,10 @@ UserModel.DB_STRUCTURE = {
 	USER_AUTH_METHODS: 'array|false|comment=认证方式[password,google,wechat]',
 	USER_CREATED_VIA: 'string|false|comment=注册来源(register/google/wechat)',
 	USER_LAST_LOGIN: 'int|false|comment=最后登录时间',
+
+	USER_TERMS_AGREED: 'int|true|default=0|comment=用户条款同意状态 0=未同意,1=已同意',
+	USER_TERMS_VERSION: 'int|true|default=0|comment=已同意的用户条款版本号',
+	USER_TERMS_TIME: 'int|false|comment=最后同意时间戳',
 }
 
 // 字段前缀
