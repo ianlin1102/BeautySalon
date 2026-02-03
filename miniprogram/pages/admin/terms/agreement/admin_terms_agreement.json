@@ -1,0 +1,6 @@
+{
+	"navigationBarTitleText": "同意记录",
+	"usingComponents": {
+		"cmpt-comm-list": "/cmpts/common/list/comm_list"
+	}
+}

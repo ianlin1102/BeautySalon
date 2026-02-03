@@ -1,0 +1,96 @@
+@import '../../../../style/project/base/admin.wxss';
+
+.search-bar {
+	display: flex;
+	gap: 20rpx;
+	margin-bottom: 30rpx;
+	width: 100%;
+}
+
+.search-input {
+	flex: 1;
+	background: #fff;
+	border-radius: 10rpx;
+	padding: 20rpx;
+	font-size: 28rpx;
+}
+
+.search-btn {
+	background: var(--adminColor) !important;
+	color: #fff !important;
+	font-size: 28rpx;
+	padding: 0 30rpx;
+	border-radius: 10rpx;
+	line-height: 80rpx;
+	height: 80rpx;
+}
+
+.agreement-item {
+	background: #fff;
+	border-radius: 10rpx;
+	margin-bottom: 20rpx;
+	overflow: hidden;
+}
+
+.item-main {
+	display: flex;
+	justify-content: space-between;
+	padding: 30rpx;
+}
+
+.item-left {
+	display: flex;
+	flex-direction: column;
+}
+
+.item-name {
+	font-size: 32rpx;
+	font-weight: bold;
+	color: #333;
+}
+
+.item-id {
+	font-size: 24rpx;
+	color: #999;
+	margin-top: 10rpx;
+}
+
+.item-right {
+	display: flex;
+	flex-direction: column;
+	align-items: flex-end;
+}
+
+.item-version {
+	font-size: 28rpx;
+	color: var(--adminColor);
+	font-weight: bold;
+}
+
+.item-time {
+	font-size: 24rpx;
+	color: #999;
+	margin-top: 10rpx;
+}
+
+.item-detail {
+	background: #f8f9fa;
+	padding: 20rpx 30rpx;
+	border-top: 1rpx solid #eee;
+}
+
+.detail-row {
+	display: flex;
+	font-size: 26rpx;
+	line-height: 2;
+}
+
+.detail-label {
+	color: #666;
+	width: 150rpx;
+}
+
+.detail-value {
+	color: #333;
+	flex: 1;
+}

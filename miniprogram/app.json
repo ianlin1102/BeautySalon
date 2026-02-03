@@ -68,6 +68,8 @@
 		"pages/admin/setup/contact/admin_setup_contact",
 		"pages/admin/setup/qr/admin_setup_qr",
 		"pages/admin/setup/disclaimer/admin_setup_disclaimer",
+		"pages/admin/setup/terms/admin_setup_terms",
+		"pages/admin/terms/agreement/admin_terms_agreement",
 		"pages/admin/user/list/admin_user_list",
 		"pages/admin/user/detail/admin_user_detail",
 		"pages/admin/user/export/admin_user_export",

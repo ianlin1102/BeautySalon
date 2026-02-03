@@ -8,6 +8,11 @@ module.exports = {
 	'home/setup_all': 'home_controller@getSetupAll', //获取全局配置(所有)
 	'setup/disclaimer_get': 'home_controller@getDisclaimer', //获取免责声明(公开)
 
+	// 条款模块 (用户端)
+	'terms/get': 'terms_controller@getTerms',                    // 获取条款内容
+	'terms/check_user_terms': 'terms_controller@checkUserTerms', // 检查用户条款状态
+	'terms/agree_user_terms': 'terms_controller@agreeUserTerms', // 同意用户条款
+
 	'passport/phone': 'passport_controller@getPhone',
 	'passport/my_detail': 'passport_controller@getMyDetail',
 	'passport/edit_base': 'passport_controller@editBase',
@@ -78,7 +83,11 @@ module.exports = {
 	'admin/setup_contact': 'admin/admin_setup_controller@setupContact#noDemo',
 	'admin/setup_qr': 'admin/admin_setup_controller@genMiniQr',
 	'admin/disclaimer_get': 'admin/admin_setup_controller@getDisclaimer',
-	'admin/disclaimer_save': 'admin/admin_setup_controller@saveDisclaimer#noDemo', 
+	'admin/disclaimer_save': 'admin/admin_setup_controller@saveDisclaimer#noDemo',
+	'admin/terms_get': 'admin/admin_setup_controller@getTerms',
+	'admin/terms_save': 'admin/admin_setup_controller@saveTerms#noDemo',
+	'admin/terms_agreement_list': 'admin/admin_terms_agreement_controller@getList',
+	'admin/terms_agreement_detail': 'admin/admin_terms_agreement_controller@getDetail',
 
 	'admin/news_list': 'admin/admin_news_controller@getNewsList',
 	'admin/news_insert': 'admin/admin_news_controller@insertNews#noDemo',

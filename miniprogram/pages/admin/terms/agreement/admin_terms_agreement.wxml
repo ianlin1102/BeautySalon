@@ -1,0 +1,53 @@
+<view wx:if="{{!isAdmin}}" class="margin-top load loading text-l text-admin"></view>
+
+<view class="main-admin" wx:if="{{isAdmin && isLoad}}">
+	<!-- 搜索栏 -->
+	<view class="search-bar">
+		<input class="search-input" placeholder="搜索姓名或用户标识" value="{{search}}" bindinput="bindSearchInput" />
+		<button class="search-btn" bindtap="bindSearchTap">搜索</button>
+	</view>
+
+	<!-- 列表 -->
+	<cmpt-comm-list id="cmpt-comm-list" _params="{{_params}}" _dataUrl="admin/terms_agreement_list" _boxFlex="1" _emptyMode="hint">
+		<view slot="list" class="admin-comm-list">
+			<block wx:for="{{list}}" wx:key="_id">
+				<view class="agreement-item" bindtap="bindItemTap" data-id="{{item._id}}">
+					<view class="item-main">
+						<view class="item-left">
+							<text class="item-name">{{item.AGREE_PRINTED_NAME}}</text>
+							<text class="item-id">{{item.AGREE_UNIQUE_TYPE}}:{{item.AGREE_UNIQUE_ID}}</text>
+						</view>
+						<view class="item-right">
+							<text class="item-version">V{{item.AGREE_VERSION}}</text>
+							<text class="item-time">{{item.AGREE_TIME}}</text>
+						</view>
+					</view>
+
+					<!-- 展开详情 -->
+					<view class="item-detail" wx:if="{{expandedId === item._id && detailData}}">
+						<view class="detail-row">
+							<text class="detail-label">IP地址：</text>
+							<text class="detail-value">{{detailData.AGREE_IP || '未知'}}</text>
+						</view>
+						<view class="detail-row">
+							<text class="detail-label">平台：</text>
+							<text class="detail-value">{{detailData.AGREE_DEVICE_INFO.platform || '未知'}}</text>
+						</view>
+						<view class="detail-row">
+							<text class="detail-label">系统：</text>
+							<text class="detail-value">{{detailData.AGREE_DEVICE_INFO.system || '未知'}}</text>
+						</view>
+						<view class="detail-row">
+							<text class="detail-label">设备：</text>
+							<text class="detail-value">{{detailData.AGREE_DEVICE_INFO.brand}} {{detailData.AGREE_DEVICE_INFO.model}}</text>
+						</view>
+						<view class="detail-row">
+							<text class="detail-label">同意时间：</text>
+							<text class="detail-value">{{detailData.AGREE_TIME}}</text>
+						</view>
+					</view>
+				</view>
+			</block>
+		</view>
+	</cmpt-comm-list>
+</view>
