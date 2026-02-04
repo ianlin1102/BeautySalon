@@ -1,0 +1,61 @@
+<view wx:if="{{!isLoad}}" class="load loading text-l"></view>
+
+<view class="terms-page" wx:if="{{isLoad}}">
+	<!-- 标题 -->
+	<view class="terms-header">
+		<text class="terms-title">用户服务条款</text>
+		<text class="terms-version">版本 V{{version}}</text>
+	</view>
+
+	<!-- 条款内容（滚动区域） -->
+	<scroll-view
+		class="terms-content"
+		scroll-y
+		bindscroll="bindScroll"
+		bindscrolltolower="bindScrollToLower"
+		lower-threshold="50"
+	>
+		<block wx:for="{{sections}}" wx:key="index">
+			<view class="terms-section">
+				<view class="section-title">{{item.title}}</view>
+				<view class="section-content">{{item.content}}</view>
+			</view>
+		</block>
+
+		<!-- 滚动提示 -->
+		<view class="scroll-hint" wx:if="{{!scrolledToBottom}}">
+			<text>请继续滚动阅读完整条款</text>
+		</view>
+	</scroll-view>
+
+	<!-- 同意区域（滚动到底部后显示） -->
+	<view class="agree-section {{scrolledToBottom ? 'visible' : ''}}">
+		<view class="agree-checkbox">
+			<checkbox-group bindchange="bindCheckboxChange">
+				<label class="checkbox-label">
+					<checkbox value="agreed" color="#2499f2" checked="{{checkbox}}" />
+					<text>我已阅读并同意上述条款</text>
+				</label>
+			</checkbox-group>
+		</view>
+
+		<view class="agree-name">
+			<text class="name-label">请输入您的法律姓名 (Printed Name)</text>
+			<input
+				class="name-input"
+				placeholder="如：张三 / John Smith"
+				value="{{printedName}}"
+				bindinput="bindNameInput"
+				maxlength="50"
+			/>
+		</view>
+
+		<button
+			class="agree-btn"
+			bindtap="bindSubmit"
+			disabled="{{!scrolledToBottom || !checkbox || !printedName || submitting}}"
+		>
+			{{submitting ? '提交中...' : '确认同意'}}
+		</button>
+	</view>
+</view>

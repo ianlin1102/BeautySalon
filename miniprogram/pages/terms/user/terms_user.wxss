@@ -1,0 +1,121 @@
+.terms-page {
+	display: flex;
+	flex-direction: column;
+	height: 100vh;
+	background: #f5f5f5;
+}
+
+.terms-header {
+	padding: 30rpx;
+	background: #fff;
+	text-align: center;
+	border-bottom: 1rpx solid #eee;
+}
+
+.terms-title {
+	font-size: 36rpx;
+	font-weight: bold;
+	color: #333;
+	display: block;
+}
+
+.terms-version {
+	font-size: 24rpx;
+	color: #999;
+	margin-top: 10rpx;
+	display: block;
+}
+
+.terms-content {
+	flex: 1;
+	padding: 30rpx;
+	background: #fff;
+	margin: 20rpx;
+	border-radius: 10rpx;
+}
+
+.terms-section {
+	margin-bottom: 40rpx;
+}
+
+.section-title {
+	font-size: 32rpx;
+	font-weight: bold;
+	color: #333;
+	margin-bottom: 20rpx;
+}
+
+.section-content {
+	font-size: 28rpx;
+	color: #666;
+	line-height: 1.8;
+	white-space: pre-wrap;
+}
+
+.scroll-hint {
+	text-align: center;
+	padding: 40rpx;
+	color: #2499f2;
+	font-size: 26rpx;
+}
+
+.agree-section {
+	padding: 30rpx;
+	background: #fff;
+	border-top: 1rpx solid #eee;
+	opacity: 0.3;
+	pointer-events: none;
+	transition: all 0.3s;
+}
+
+.agree-section.visible {
+	opacity: 1;
+	pointer-events: auto;
+}
+
+.agree-checkbox {
+	margin-bottom: 30rpx;
+}
+
+.checkbox-label {
+	display: flex;
+	align-items: center;
+	font-size: 28rpx;
+	color: #333;
+}
+
+.checkbox-label checkbox {
+	margin-right: 10rpx;
+}
+
+.agree-name {
+	margin-bottom: 30rpx;
+}
+
+.name-label {
+	font-size: 26rpx;
+	color: #666;
+	display: block;
+	margin-bottom: 15rpx;
+}
+
+.name-input {
+	background: #f5f5f5;
+	border-radius: 10rpx;
+	padding: 25rpx;
+	font-size: 30rpx;
+}
+
+.agree-btn {
+	width: 100%;
+	background: #2499f2 !important;
+	color: #fff !important;
+	border-radius: 50rpx;
+	font-size: 32rpx;
+	line-height: 2.5;
+}
+
+.agree-btn[disabled] {
+	background: #ccc !important;
+	color: #999 !important;
+}

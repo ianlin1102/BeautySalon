@@ -9,6 +9,7 @@
 		"pages/card/records/card_records",
 		"pages/card/detail/card_detail",
 		"pages/card/disclaimer/card_disclaimer",
+		"pages/terms/user/terms_user",
 		"pages/admin/card/list/admin_card_list",
 		"pages/admin/card/add/admin_card_add",
 		"pages/admin/card/edit/admin_card_edit",
