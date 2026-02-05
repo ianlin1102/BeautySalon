@@ -118,7 +118,7 @@
 
 				<view class="menu-divider"></view>
 
-				<view class="menu-item" bindtap="url" data-url="../../terms/user/terms_user">
+				<view class="menu-item" bindtap="url" data-url="/pages/terms/user/terms_user">
 					<view class="menu-item-left">
 						<text class="icon-form menu-icon" style="color: #00f2ff;"></text>
 						<text class="menu-label">用户服务条款 (Terms)</text>
