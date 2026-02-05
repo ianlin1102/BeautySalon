@@ -1,0 +1,175 @@
+@import '../../../../style/project/base/admin.wxss';
+
+/* 确保所有子元素占满宽度 */
+.main-admin > view,
+.main-admin > button,
+.main-admin .form-box,
+.main-admin .section-list,
+.main-admin .tab-bar,
+.main-admin .action-bar,
+.main-admin .version-info {
+	width: 100%;
+	box-sizing: border-box;
+}
+
+/* Tab栏使用相对定位，不要挡住其他元素 */
+.tab-bar {
+	position: relative;
+	z-index: 1;
+}
+
+/* 确保main-admin有足够的底部空间 */
+.main-admin {
+	padding-bottom: 30rpx;
+}
+
+/* Tab 栏 */
+.tab-bar {
+	display: flex;
+	background-color: #fff;
+	border-radius: 10rpx;
+	overflow: hidden;
+	margin-bottom: 20rpx;
+	box-shadow: 0 2rpx 10rpx rgba(0,0,0,0.05);
+}
+
+.tab-item {
+	flex: 1;
+	text-align: center;
+	padding: 24rpx 0;
+	font-size: 28rpx;
+	color: #666;
+	position: relative;
+	transition: all 0.3s;
+}
+
+.tab-item.active {
+	color: var(--adminColor);
+	font-weight: bold;
+}
+
+.tab-item.active::after {
+	content: '';
+	position: absolute;
+	bottom: 0;
+	left: 50%;
+	transform: translateX(-50%);
+	width: 60rpx;
+	height: 6rpx;
+	background-color: var(--adminColor);
+	border-radius: 3rpx;
+}
+
+/* 条款列表 */
+.section-list {
+	margin-top: 20rpx;
+	width: 100%;
+}
+
+.section-item {
+	margin-bottom: 20rpx;
+	position: relative;
+	width: 100%;
+	box-sizing: border-box;
+}
+
+.section-header {
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+	padding: 20rpx 0;
+	border-bottom: 1rpx solid #eee;
+	margin-bottom: 20rpx;
+}
+
+.section-num {
+	font-size: 30rpx;
+	font-weight: bold;
+	color: var(--adminColor);
+}
+
+.section-del {
+	font-size: 26rpx;
+	color: #e54d42;
+	padding: 10rpx 20rpx;
+}
+
+/* 空状态 */
+.empty-tip {
+	text-align: center;
+	padding: 60rpx 0;
+	color: #999;
+	font-size: 28rpx;
+}
+
+/* 操作按钮 */
+.action-bar {
+	display: flex;
+	gap: 20rpx;
+	margin-top: 30rpx;
+}
+
+.btn-add {
+	flex: 1;
+	background-color: var(--adminColor) !important;
+	color: #fff !important;
+	font-size: 28rpx;
+	border-radius: 10rpx;
+	line-height: 2.5;
+}
+
+.btn-reset {
+	flex: 1;
+	background-color: #f5f5f5 !important;
+	color: #666 !important;
+	font-size: 28rpx;
+	border-radius: 10rpx;
+	line-height: 2.5;
+}
+
+/* 版本信息 */
+.version-info {
+	margin-top: 30rpx;
+	padding: 20rpx;
+	background-color: #f8f9fa;
+	border-radius: 10rpx;
+	text-align: center;
+	font-size: 28rpx;
+	color: #333;
+}
+
+.version-tip {
+	display: block;
+	margin-top: 10rpx;
+	font-size: 24rpx;
+	color: #999;
+}
+
+/* 底部占位 */
+.bottom-placeholder {
+	height: 150rpx;
+}
+
+/* 固定底部保存按钮 */
+.fixed-save-bar {
+	position: fixed;
+	bottom: 0;
+	left: 0;
+	right: 0;
+	background-color: #fff;
+	padding: 20rpx 30rpx;
+	box-shadow: 0 -4rpx 20rpx rgba(0,0,0,0.1);
+	z-index: 999;
+	padding-bottom: 20rpx;
+	padding-bottom: calc(20rpx + constant(safe-area-inset-bottom));
+	padding-bottom: calc(20rpx + env(safe-area-inset-bottom));
+}
+
+.fixed-save-bar .save-btn {
+	width: 100%;
+	background-color: var(--adminColor) !important;
+	color: #fff !important;
+	font-size: 32rpx;
+	border-radius: 10rpx;
+	line-height: 2.5;
+}

@@ -22,6 +22,13 @@ Page({
 		await this._loadTerms();
 	},
 
+	onReady: function () {
+		// 页面渲染完成后检查是否需要滚动
+		setTimeout(() => {
+			this._checkScrollNeeded();
+		}, 300);
+	},
+
 	_loadTerms: async function () {
 		try {
 			let res = await cloudHelper.callCloudData('terms/get', { type: 'user_terms' }, { title: 'bar' });
@@ -29,10 +36,36 @@ Page({
 				isLoad: true,
 				sections: res.sections || [],
 				version: res.version || 0
+			}, () => {
+				// 内容加载后再次检查
+				setTimeout(() => {
+					this._checkScrollNeeded();
+				}, 300);
 			});
 		} catch (err) {
 			pageHelper.showModal('加载条款失败');
 		}
+	},
+
+	// 检查内容是否需要滚动，如果不需要则自动视为已阅读
+	_checkScrollNeeded: function () {
+		if (this.data.scrolledToBottom) return;
+
+		const query = wx.createSelectorQuery().in(this);
+		query.select('.terms-content').boundingClientRect();
+		query.select('.terms-content').scrollOffset();
+		query.exec((res) => {
+			if (!res || !res[0]) return;
+
+			const scrollViewHeight = res[0].height;
+			const scrollHeight = res[1] ? res[1].scrollHeight : 0;
+
+			// 如果内容高度小于等于可视区域高度，说明不需要滚动
+			// 或者滚动高度接近可视高度（允许50px误差）
+			if (scrollHeight <= scrollViewHeight + 50) {
+				this.setData({ scrolledToBottom: true });
+			}
+		});
 	},
 
 	// 滚动事件
