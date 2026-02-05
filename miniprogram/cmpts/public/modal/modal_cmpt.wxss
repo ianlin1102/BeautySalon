@@ -45,6 +45,8 @@
 	width: 50%;
 	font-size: 36rpx;
 	font-weight: bold;
+	color: #666;
+	text-align: center;
 }
 
 .modal-bar .modal-bar-comfirm {
