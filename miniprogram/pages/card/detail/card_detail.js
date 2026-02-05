@@ -10,7 +10,16 @@ Page({
 	data: {
 		isLoad: false,
 		card: null,
-		agreedDisclaimer: false, // 是否同意免责声明
+		agreedCardTerms: false, // 是否同意卡项条款
+
+		// 条款相关
+		showTermsModal: false,
+		termsTitle: '',
+		termsSections: [],
+		showUserTermsModal: false,
+		userTermsSections: [],
+		userTermsVersion: 0,
+		needAgreeUserTerms: false,
 
 		// Purchase flow state
 		showPurchaseModal: false,
@@ -103,31 +112,139 @@ Page({
 	},
 
 	/**
-	 * 勾选免责声明
+	 * 勾选卡项条款
 	 */
-	bindAgreeDisclaimer: function (e) {
+	bindAgreeCardTerms: function (e) {
 		const agreed = e.detail.value.length > 0;
 		this.setData({
-			agreedDisclaimer: agreed
+			agreedCardTerms: agreed
 		});
 	},
 
 	/**
-	 * 查看免责声明
+	 * 查看卡项条款
 	 */
-	bindViewDisclaimer: function () {
-		wx.navigateTo({
-			url: '/pages/card/disclaimer/card_disclaimer'
-		});
+	bindViewCardTerms: async function () {
+		try {
+			let res = await cloudHelper.callCloudData('terms/get', { type: 'card_terms' }, { title: 'bar' });
+			this.setData({
+				showTermsModal: true,
+				termsTitle: '卡项购买条款',
+				termsSections: res.sections || []
+			});
+		} catch (err) {
+			console.error('获取条款失败:', err);
+			pageHelper.showModal('获取条款失败，请重试');
+		}
+	},
+
+	/**
+	 * 关闭条款弹窗
+	 */
+	bindCloseTermsModal: function () {
+		this.setData({ showTermsModal: false });
+	},
+
+	/**
+	 * 检查用户条款状态（严格模式 - 阻止继续）
+	 */
+	_checkUserTermsStrict: async function () {
+		try {
+			let res = await cloudHelper.callCloudData('terms/check_user_terms', {}, { title: 'none' });
+
+			if (res.needAgree || res.userAgreed !== 1) {
+				return new Promise((resolve) => {
+					wx.showModal({
+						title: '需要同意用户条款',
+						content: '您需要先同意用户服务条款才能继续操作',
+						cancelText: '我再看看',
+						confirmText: '前往同意',
+						success: (result) => {
+							if (result.confirm) {
+								wx.navigateTo({ url: '/pages/terms/user/terms_user' });
+							}
+							resolve(false);
+						}
+					});
+				});
+			}
+			return true;
+		} catch (err) {
+			console.error('检查用户条款失败:', err);
+			return true;
+		}
+	},
+
+	/**
+	 * 检查用户条款状态（旧版本 - 内嵌弹窗）
+	 */
+	_checkUserTerms: async function () {
+		try {
+			let res = await cloudHelper.callCloudData('terms/check_user_terms', {}, { title: 'none' });
+			if (res.needAgree) {
+				// 需要同意用户条款，获取条款内容
+				let termsRes = await cloudHelper.callCloudData('terms/get', { type: 'user_terms' }, { title: 'none' });
+				this.setData({
+					needAgreeUserTerms: true,
+					showUserTermsModal: true,
+					userTermsSections: termsRes.sections || [],
+					userTermsVersion: res.currentVersion
+				});
+				return false;
+			}
+			return true;
+		} catch (err) {
+			console.error('检查用户条款失败:', err);
+			return true; // 失败时默认通过
+		}
+	},
+
+	/**
+	 * 同意用户条款
+	 */
+	bindAgreeUserTerms: async function () {
+		try {
+			await cloudHelper.callCloudSumbit('terms/agree_user_terms', {
+				version: this.data.userTermsVersion
+			}, { title: '提交中' });
+
+			// 记录用户条款同意信息（用于审计）
+			this._userTermsInfo = {
+				version: this.data.userTermsVersion,
+				time: Date.now()
+			};
+
+			this.setData({
+				showUserTermsModal: false,
+				needAgreeUserTerms: false
+			});
+
+			// 同意后继续购买流程
+			this.setData({ showPurchaseModal: true });
+		} catch (err) {
+			console.error('同意条款失败:', err);
+			pageHelper.showModal('操作失败，请重试');
+		}
+	},
+
+	/**
+	 * 拒绝用户条款
+	 */
+	bindRefuseUserTerms: function () {
+		this.setData({ showUserTermsModal: false });
 	},
 
 	/**
 	 * 立即购买按钮 - 显示购买确认弹窗
 	 */
-	bindPurchaseTap: function () {
-		// 检查是否同意免责声明
-		if (!this.data.agreedDisclaimer) {
-			pageHelper.showModal('请先阅读并同意购买免责声明');
+	bindPurchaseTap: async function () {
+		// 最高优先级：检查用户条款
+		let userTermsStrictOk = await this._checkUserTermsStrict();
+		if (!userTermsStrictOk) return;
+
+		// 检查是否同意卡项条款
+		if (!this.data.agreedCardTerms) {
+			pageHelper.showModal('请先阅读并同意卡项购买条款');
 			return;
 		}
 
@@ -147,7 +264,16 @@ Page({
 		try {
 			const PurchaseBiz = require('../../../biz/purchase_biz.js');
 			let card = this.data.card;
-			let result = await PurchaseBiz.createOrder(card._id, 'zelle');
+
+			// 构建条款同意信息（用于审计追踪）
+			let termsInfo = {
+				cardTermsAgreed: this.data.agreedCardTerms || false,
+				cardTermsTime: Date.now(),
+				userTermsVersion: this._userTermsInfo ? this._userTermsInfo.version : 0,
+				userTermsTime: this._userTermsInfo ? this._userTermsInfo.time : 0,
+			};
+
+			let result = await PurchaseBiz.createOrder(card._id, 'zelle', termsInfo);
 
 			this.setData({
 				showPurchaseModal: false,

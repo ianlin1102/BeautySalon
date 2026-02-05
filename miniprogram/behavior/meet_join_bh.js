@@ -47,9 +47,17 @@ module.exports = Behavior({
 		selectedCardId: '',
 		selectedCardIndex: -1,
 
-		// 免责条款
+		// 预约条款
 		agreedTerms: false,
 		termsText: '',
+		bookingTermsSections: [],
+		showTermsModal: false,
+
+		// 用户条款
+		showUserTermsModal: false,
+		userTermsSections: [],
+		userTermsVersion: 0,
+		needAgreeUserTerms: false,
 	},
 
 	methods: {
@@ -247,19 +255,123 @@ module.exports = Behavior({
 		});
 	},
 
-	// 同意免责条款
+	// 同意预约条款
 	bindAgreeTerms: function (e) {
 		this.setData({
 			agreedTerms: e.detail.value.length > 0
 		});
 	},
 
+	// 查看预约条款详情
+	bindViewBookingTerms: async function () {
+		try {
+			let res = await cloudHelper.callCloudData('terms/get', { type: 'booking_terms' }, { title: 'bar' });
+			this.setData({
+				showTermsModal: true,
+				bookingTermsSections: res.sections || []
+			});
+		} catch (err) {
+			console.error('获取条款失败:', err);
+			pageHelper.showModal('获取条款失败，请重试');
+		}
+	},
 
+	// 关闭条款弹窗
+	bindCloseTermsModal: function () {
+		this.setData({ showTermsModal: false });
+	},
+
+	// 检查用户条款状态（严格模式 - 阻止继续）
+	_checkUserTermsStrict: async function () {
+		try {
+			let res = await cloudHelper.callCloudData('terms/check_user_terms', {}, { title: 'none' });
+
+			// 检查 needAgree 或 userAgreed 不为 1
+			if (res.needAgree || res.userAgreed !== 1) {
+				return new Promise((resolve) => {
+					wx.showModal({
+						title: '需要同意用户条款',
+						content: '您需要先同意用户服务条款才能继续操作',
+						cancelText: '我再看看',
+						confirmText: '前往同意',
+						success: (result) => {
+							if (result.confirm) {
+								wx.navigateTo({ url: '/pages/terms/user/terms_user' });
+							}
+							resolve(false);
+						}
+					});
+				});
+			}
+			return true;
+		} catch (err) {
+			console.error('检查用户条款失败:', err);
+			return true; // 失败时默认通过
+		}
+	},
+
+	// 检查用户条款状态（旧版本 - 内嵌弹窗）
+	_checkUserTerms: async function () {
+		try {
+			let res = await cloudHelper.callCloudData('terms/check_user_terms', {}, { title: 'none' });
+			if (res.needAgree) {
+				// 需要同意用户条款，获取条款内容
+				let termsRes = await cloudHelper.callCloudData('terms/get', { type: 'user_terms' }, { title: 'none' });
+				this.setData({
+					needAgreeUserTerms: true,
+					showUserTermsModal: true,
+					userTermsSections: termsRes.sections || [],
+					userTermsVersion: res.currentVersion
+				});
+				return false;
+			}
+			return true;
+		} catch (err) {
+			console.error('检查用户条款失败:', err);
+			return true; // 失败时默认通过
+		}
+	},
+
+	// 同意用户条款
+	bindAgreeUserTerms: async function () {
+		try {
+			await cloudHelper.callCloudSumbit('terms/agree_user_terms', {
+				version: this.data.userTermsVersion
+			}, { title: '提交中' });
+
+			// 记录用户条款同意信息（用于审计）
+			this._userTermsInfo = {
+				version: this.data.userTermsVersion,
+				time: Date.now()
+			};
+
+			this.setData({
+				showUserTermsModal: false,
+				needAgreeUserTerms: false
+			});
+
+			// 同意后继续提交
+			this._doSubmit();
+		} catch (err) {
+			console.error('同意条款失败:', err);
+			pageHelper.showModal('操作失败，请重试');
+		}
+	},
+
+	// 拒绝用户条款
+	bindRefuseUserTerms: function () {
+		this.setData({ showUserTermsModal: false });
+	},
 
 		bindSubmitCmpt: async function (e) {
 			let forms = e.detail;
+			this._pendingForms = forms; // 保存表单数据
 
-		// 检查是否同意免责条款
+		// 最高优先级：检查用户条款
+		let userTermsStrictOk = await this._checkUserTermsStrict();
+		if (!userTermsStrictOk) return;
+
+		// 检查是否同意预约条款
 		if (!this.data.agreedTerms) {
 			return pageHelper.showModal('请阅读并同意预约须知');
 		}
@@ -284,6 +396,18 @@ module.exports = Behavior({
 			}
 		}
 
+		// 检查用户条款状态
+		let userTermsOk = await this._checkUserTerms();
+		if (!userTermsOk) return;
+
+		// 继续提交
+		this._doSubmit();
+		},
+
+		// 实际提交逻辑
+		_doSubmit: async function () {
+			let forms = this._pendingForms;
+
 			let callback = async () => {
 				try {
 					let opts = {
@@ -293,7 +417,12 @@ module.exports = Behavior({
 						meetId: this.data.id,
 						timeMark: this.data.timeMark,
 						forms,
-					cardId: this.data.selectedCardId || '' // 传递卡项ID
+						cardId: this.data.selectedCardId || '', // 传递卡项ID
+						// 条款同意信息（用于审计追踪）
+						bookingTermsAgreed: this.data.agreedTerms || false,
+						bookingTermsTime: Date.now(),
+						userTermsVersion: this._userTermsInfo ? this._userTermsInfo.version : 0,
+						userTermsTime: this._userTermsInfo ? this._userTermsInfo.time : 0,
 					}
 					await cloudHelper.callCloudSumbit('meet/join', params, opts).then(res => {
 						let content = '预约成功！'
