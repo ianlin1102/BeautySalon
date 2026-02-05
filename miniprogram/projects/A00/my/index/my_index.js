@@ -80,6 +80,12 @@ Page({
 
 	// 加载最近一个预约
 	async loadNextAppointment() {
+		// 未登录时不加载
+		if (!PassortBiz.isLoggedIn()) {
+			this.setData({ nextAppointment: null });
+			return;
+		}
+
 		const cloudHelper = require('../../../../helper/cloud_helper.js');
 		const timeHelper = require('../../../../helper/time_helper.js');
 
@@ -122,6 +128,14 @@ Page({
 
 	// 加载统计数据
 	async loadMyStats() {
+		// 未登录时不加载
+		if (!PassortBiz.isLoggedIn()) {
+			this.setData({
+				myStats: { cardCount: 0, courseCount: 0, appointmentCount: 0 }
+			});
+			return;
+		}
+
 		const cloudHelper = require('../../../../helper/cloud_helper.js');
 		const cacheHelper = require('../../../../helper/cache_helper.js');
 		const timeHelper = require('../../../../helper/time_helper.js');
@@ -218,6 +232,27 @@ Page({
 
 	// 新增：获取积分信息方法
 	async getPointsInfo() {
+		// 未登录时使用默认值
+		if (!PassortBiz.isLoggedIn()) {
+			this.setData({
+				pointsInfo: {
+					totalPoints: 0,
+					currentLevel: {
+						name: '新手会员',
+						color: '#95a5a6',
+						gradientStart: '#bdc3c7',
+						gradientEnd: '#7f8c8d',
+						shadowColor: 'rgba(149, 165, 166, 0.4)',
+						maxPoints: 99
+					},
+					needPoints: 100,
+					progressPercent: 0,
+					recentHistory: []
+				}
+			});
+			return;
+		}
+
 		try {
 			let pointsInfo = await PassortBiz.getPointsInfo();
 			this.setData({

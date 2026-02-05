@@ -20,6 +20,15 @@ module.exports = Behavior({
 		},
 
 		_loadTodayList: async function () {
+			// 未登录时不加载
+			if (!PassortBiz.isLoggedIn()) {
+				this.setData({
+					myTodayList: null,
+					joinDisplayInfo: '请先登录'
+				});
+				return;
+			}
+
 			const CACHE_KEY = 'MY_JOIN_LIST';
 			const CACHE_TIME = 60 * 30; // 30分钟
 			const CACHE_TIMESTAMP_KEY = 'MY_JOIN_LIST_TIMESTAMP';
@@ -265,14 +274,44 @@ module.exports = Behavior({
 		// 手动登录
 		bindLogin: async function () {
 			console.log('用户点击登录...');
+			wx.showLoading({ title: '登录中...' });
+
 			let loginResult = await PassortBiz.wechatLogin();
 			if (loginResult.success) {
 				console.log('微信登录成功');
+
+				// 重新加载所有用户数据
+				try {
+					// 1. 加载用户信息
+					await this._loadUser();
+
+					// 2. 加载预约列表
+					if (this._loadTodayList) {
+						await this._loadTodayList();
+					}
+
+					// 3. 加载积分信息（页面级方法）
+					if (this.getPointsInfo) {
+						await this.getPointsInfo();
+					}
+
+					// 4. 加载统计数据（页面级方法）
+					if (this.loadMyStats) {
+						await this.loadMyStats();
+					}
+
+					// 5. 加载最近预约（页面级方法）
+					if (this.loadNextAppointment) {
+						await this.loadNextAppointment();
+					}
+				} catch (err) {
+					console.error('加载用户数据失败:', err);
+				}
+
+				wx.hideLoading();
 				pageHelper.showSuccToast('登录成功');
-				// 重新加载用户信息
-				await this._loadUser();
-				await this._loadTodayList();
 			} else {
+				wx.hideLoading();
 				console.error('微信登录失败:', loginResult.error);
 				pageHelper.showModal(loginResult.error || '登录失败，请重试');
 			}
