@@ -14,11 +14,9 @@ Page({
 	},
 
 	onLoad: async function () {
-		if (!await AdminBiz.adminLogin()) {
-			pageHelper.showModal('您无权访问此页面');
-			return;
-		}
-		this.setData({ isAdmin: true, isLoad: true });
+		if (!AdminBiz.isAdmin(this)) return;
+
+		this.setData({ isLoad: true });
 	},
 
 	// 搜索
