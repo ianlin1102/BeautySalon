@@ -8,134 +8,206 @@
 		<!-- 主内容区域 -->
 		<view class="content-area">
 
-			<!-- 用户头像与等级进度条 -->
-			<view class="user-section">
-				<!-- 头像 - 渐变边框效果 -->
-				<view class="avatar-container" bindtap="url" data-url="../edit/my_edit">
-					<view class="avatar-ring" style="background: linear-gradient(135deg, {{pointsInfo.currentLevel.gradientStart || '#bdc3c7'}}, {{pointsInfo.currentLevel.gradientEnd || '#7f8c8d'}}); box-shadow: 0 0 30rpx {{pointsInfo.currentLevel.shadowColor || 'rgba(149, 165, 166, 0.5)'}};">
-						<image class="avatar-img" mode="aspectFill" src="{{user.USER_AVATAR || '../../skin/images/tabbar/my_cur.png'}}" />
-					</view>
-				</view>
-
-				<!-- 积分条区域 -->
-				<view class="level-progress-area" bindtap="url" data-url="../points/my_points">
-					<view class="level-header">
-						<view class="level-wrapper">
-							<!-- 等级菱形徽章 -->
-							<view class="level-icon" style="background: linear-gradient(135deg, {{pointsInfo.currentLevel.gradientStart || '#bdc3c7'}}, {{pointsInfo.currentLevel.gradientEnd || '#7f8c8d'}}); color: {{pointsInfo.currentLevel.color || '#95a5a6'}};"></view>
-							<text class="level-name" style="color: {{pointsInfo.currentLevel.color || '#95a5a6'}};">
-								{{pointsInfo.currentLevel.name || '新手会员'}}
-							</text>
-						</view>
-						<text class="level-points">{{pointsInfo.totalPoints || 0}} / {{pointsInfo.currentLevel.maxPoints || 100}}</text>
-					</view>
-					<!-- 进度条 -->
-					<view class="progress-track">
-						<view class="progress-fill" style="width: {{pointsInfo.progressPercent || 0}}%; background: linear-gradient(90deg, {{pointsInfo.currentLevel.gradientStart || '#bdc3c7'}}, {{pointsInfo.currentLevel.gradientEnd || '#7f8c8d'}}); box-shadow: 0 0 20rpx {{pointsInfo.currentLevel.shadowColor || 'rgba(149, 165, 166, 0.4)'}};"></view>
-					</view>
-					<view class="progress-hint">
-						{{pointsInfo.nextLevel ? '再获得 ' + pointsInfo.needPoints + ' 分升级' : '已达最高等级'}}
-					</view>
-				</view>
-			</view>
-
-			<!-- 预约入口 -->
-			<view class="appointment-entry" bindtap="url" data-url="../join/my_join">
-				<view class="entry-header">
-					<view class="entry-title-bar">
-						<view class="title-indicator"></view>
-						<text class="entry-title">我的预约</text>
-					</view>
-					<text class="entry-hint">点击查看详情</text>
-				</view>
-
-				<view class="appointment-card">
-					<view class="appointment-content">
-						<view wx:if="{{nextAppointment}}">
-							<text class="appointment-label">最近一节</text>
-							<text class="appointment-name">{{nextAppointment.JOIN_MEET_TITLE}}</text>
-							<text class="appointment-time">{{nextAppointment.JOIN_MEET_DAY}} {{nextAppointment.JOIN_MEET_TIME_START}}</text>
-							<text wx:if="{{nextAppointment.JOIN_INSTRUCTOR_NAME}}" class="appointment-instructor">{{nextAppointment.JOIN_INSTRUCTOR_NAME}} 老师</text>
-						</view>
-						<view wx:else>
-							<text class="appointment-label">暂无预约</text>
-							<text class="appointment-name">点击预约课程</text>
-							<text class="appointment-time">{{myStats.appointmentCount || 0}} 个有效预约</text>
+			<!-- 未登录状态 -->
+			<block wx:if="{{!isLoggedIn}}">
+				<view class="login-section">
+					<view class="login-avatar-container">
+						<view class="login-avatar-ring">
+							<image class="avatar-img" mode="aspectFill" src="../../skin/images/tabbar/my_cur.png" />
 						</view>
 					</view>
-					<view class="appointment-arrow">
-						<text class="icon-right"></text>
+					<view class="login-info">
+						<text class="login-title">请先登录</text>
+						<text class="login-desc">登录后可预约课程、购买卡项</text>
 					</view>
-				</view>
-			</view>
-
-			<!-- 卡包入口 -->
-			<view class="card-wallet-entry glass-panel" bindtap="url" data-url="../../card/my_cards/my_cards">
-				<view class="wallet-left">
-					<view class="wallet-icon">
-						<text class="icon-favorfill"></text>
-					</view>
-					<view class="wallet-info">
-						<text class="wallet-title">我的卡包</text>
-						<text class="wallet-subtitle">Member Wallet</text>
-					</view>
-				</view>
-				<view class="wallet-right">
-					<text class="wallet-count">{{myStats.cardCount || 0}}</text>
-					<text class="wallet-badge">可用卡项</text>
-				</view>
-			</view>
-
-			<!-- 底部功能列表 -->
-			<view class="menu-section glass-panel">
-				<view class="menu-item" bindtap="url" data-url="../join/my_join">
-					<view class="menu-item-left">
-						<text class="icon-activityfill menu-icon" style="color: #00f2ff;"></text>
-						<text class="menu-label">上课记录 (Class History)</text>
-					</view>
-					<text class="icon-right menu-arrow"></text>
+					<button class="login-btn" bindtap="bindLogin">
+						<text class="icon-wechat margin-right-xs"></text>微信登录
+					</button>
 				</view>
 
-				<view class="menu-divider"></view>
-
-				<view class="menu-item" bindtap="url" data-url="../edit/my_edit">
-					<view class="menu-item-left">
-						<text class="icon-peoplefill menu-icon" style="color: #bd00ff;"></text>
-						<text class="menu-label">个人资料 (Profile)</text>
+				<!-- 未登录时的功能列表（部分可查看） -->
+				<view class="menu-section glass-panel" style="margin-top: 40rpx;">
+					<view class="menu-item disabled">
+						<view class="menu-item-left">
+							<text class="icon-activityfill menu-icon" style="color: rgba(255,255,255,0.3);"></text>
+							<text class="menu-label" style="color: rgba(255,255,255,0.5);">上课记录 (Class History)</text>
+						</view>
+						<text class="menu-arrow" style="color: rgba(255,255,255,0.3);">请先登录</text>
 					</view>
-					<text class="icon-right menu-arrow"></text>
+
+					<view class="menu-divider"></view>
+
+					<view class="menu-item disabled">
+						<view class="menu-item-left">
+							<text class="icon-peoplefill menu-icon" style="color: rgba(255,255,255,0.3);"></text>
+							<text class="menu-label" style="color: rgba(255,255,255,0.5);">个人资料 (Profile)</text>
+						</view>
+						<text class="menu-arrow" style="color: rgba(255,255,255,0.3);">请先登录</text>
+					</view>
+
+					<view class="menu-divider"></view>
+
+					<view class="menu-item disabled">
+						<view class="menu-item-left">
+							<text class="icon-cart menu-icon" style="color: rgba(255,255,255,0.3);"></text>
+							<text class="menu-label" style="color: rgba(255,255,255,0.5);">购买记录 (Purchase History)</text>
+						</view>
+						<text class="menu-arrow" style="color: rgba(255,255,255,0.3);">请先登录</text>
+					</view>
+
+					<view class="menu-divider"></view>
+
+					<view class="menu-item" bindtap="url" data-url="/pages/terms/user/terms_user">
+						<view class="menu-item-left">
+							<text class="icon-form menu-icon" style="color: #00f2ff;"></text>
+							<text class="menu-label">用户服务条款 (Terms)</text>
+						</view>
+						<text class="icon-right menu-arrow"></text>
+					</view>
+
+					<view class="menu-divider"></view>
+
+					<view class="menu-item" bindtap="bindSetTap">
+						<view class="menu-item-left">
+							<text class="icon-settings menu-icon" style="color: rgba(255,255,255,0.6);"></text>
+							<text class="menu-label">设置 (Settings)</text>
+						</view>
+						<text class="icon-right menu-arrow"></text>
+					</view>
+				</view>
+			</block>
+
+			<!-- 已登录状态 -->
+			<block wx:else>
+				<!-- 用户头像与等级进度条 -->
+				<view class="user-section">
+					<!-- 头像 - 渐变边框效果 -->
+					<view class="avatar-container" bindtap="url" data-url="../edit/my_edit">
+						<view class="avatar-ring" style="background: linear-gradient(135deg, {{pointsInfo.currentLevel.gradientStart || '#bdc3c7'}}, {{pointsInfo.currentLevel.gradientEnd || '#7f8c8d'}}); box-shadow: 0 0 30rpx {{pointsInfo.currentLevel.shadowColor || 'rgba(149, 165, 166, 0.5)'}};">
+							<image class="avatar-img" mode="aspectFill" src="{{user.USER_AVATAR || '../../skin/images/tabbar/my_cur.png'}}" />
+						</view>
+					</view>
+
+					<!-- 积分条区域 -->
+					<view class="level-progress-area" bindtap="url" data-url="../points/my_points">
+						<view class="level-header">
+							<view class="level-wrapper">
+								<!-- 等级菱形徽章 -->
+								<view class="level-icon" style="background: linear-gradient(135deg, {{pointsInfo.currentLevel.gradientStart || '#bdc3c7'}}, {{pointsInfo.currentLevel.gradientEnd || '#7f8c8d'}}); color: {{pointsInfo.currentLevel.color || '#95a5a6'}};"></view>
+								<text class="level-name" style="color: {{pointsInfo.currentLevel.color || '#95a5a6'}};">
+									{{pointsInfo.currentLevel.name || '新手会员'}}
+								</text>
+							</view>
+							<text class="level-points">{{pointsInfo.totalPoints || 0}} / {{pointsInfo.currentLevel.maxPoints || 100}}</text>
+						</view>
+						<!-- 进度条 -->
+						<view class="progress-track">
+							<view class="progress-fill" style="width: {{pointsInfo.progressPercent || 0}}%; background: linear-gradient(90deg, {{pointsInfo.currentLevel.gradientStart || '#bdc3c7'}}, {{pointsInfo.currentLevel.gradientEnd || '#7f8c8d'}}); box-shadow: 0 0 20rpx {{pointsInfo.currentLevel.shadowColor || 'rgba(149, 165, 166, 0.4)'}};"></view>
+						</view>
+						<view class="progress-hint">
+							{{pointsInfo.nextLevel ? '再获得 ' + pointsInfo.needPoints + ' 分升级' : '已达最高等级'}}
+						</view>
+					</view>
 				</view>
 
-				<view class="menu-divider"></view>
-
-				<view class="menu-item" bindtap="url" data-url="../purchase/my_purchase">
-					<view class="menu-item-left">
-						<text class="icon-cart menu-icon" style="color: #ff00de;"></text>
-						<text class="menu-label">购买记录 (Purchase History)</text>
+				<!-- 预约入口 -->
+				<view class="appointment-entry" bindtap="url" data-url="../join/my_join">
+					<view class="entry-header">
+						<view class="entry-title-bar">
+							<view class="title-indicator"></view>
+							<text class="entry-title">我的预约</text>
+						</view>
+						<text class="entry-hint">点击查看详情</text>
 					</view>
-					<text class="icon-right menu-arrow"></text>
+
+					<view class="appointment-card">
+						<view class="appointment-content">
+							<view wx:if="{{nextAppointment}}">
+								<text class="appointment-label">最近一节</text>
+								<text class="appointment-name">{{nextAppointment.JOIN_MEET_TITLE}}</text>
+								<text class="appointment-time">{{nextAppointment.JOIN_MEET_DAY}} {{nextAppointment.JOIN_MEET_TIME_START}}</text>
+								<text wx:if="{{nextAppointment.JOIN_INSTRUCTOR_NAME}}" class="appointment-instructor">{{nextAppointment.JOIN_INSTRUCTOR_NAME}} 老师</text>
+							</view>
+							<view wx:else>
+								<text class="appointment-label">暂无预约</text>
+								<text class="appointment-name">点击预约课程</text>
+								<text class="appointment-time">{{myStats.appointmentCount || 0}} 个有效预约</text>
+							</view>
+						</view>
+						<view class="appointment-arrow">
+							<text class="icon-right"></text>
+						</view>
+					</view>
 				</view>
 
-				<view class="menu-divider"></view>
-
-				<view class="menu-item" bindtap="url" data-url="/pages/terms/user/terms_user">
-					<view class="menu-item-left">
-						<text class="icon-form menu-icon" style="color: #00f2ff;"></text>
-						<text class="menu-label">用户服务条款 (Terms)</text>
+				<!-- 卡包入口 -->
+				<view class="card-wallet-entry glass-panel" bindtap="url" data-url="../../card/my_cards/my_cards">
+					<view class="wallet-left">
+						<view class="wallet-icon">
+							<text class="icon-favorfill"></text>
+						</view>
+						<view class="wallet-info">
+							<text class="wallet-title">我的卡包</text>
+							<text class="wallet-subtitle">Member Wallet</text>
+						</view>
 					</view>
-					<text class="icon-right menu-arrow"></text>
+					<view class="wallet-right">
+						<text class="wallet-count">{{myStats.cardCount || 0}}</text>
+						<text class="wallet-badge">可用卡项</text>
+					</view>
 				</view>
 
-				<view class="menu-divider"></view>
-
-				<view class="menu-item" bindtap="bindSetTap">
-					<view class="menu-item-left">
-						<text class="icon-settings menu-icon" style="color: rgba(255,255,255,0.6);"></text>
-						<text class="menu-label">设置 (Settings)</text>
+				<!-- 底部功能列表 -->
+				<view class="menu-section glass-panel">
+					<view class="menu-item" bindtap="url" data-url="../join/my_join">
+						<view class="menu-item-left">
+							<text class="icon-activityfill menu-icon" style="color: #00f2ff;"></text>
+							<text class="menu-label">上课记录 (Class History)</text>
+						</view>
+						<text class="icon-right menu-arrow"></text>
 					</view>
-					<text class="icon-right menu-arrow"></text>
+
+					<view class="menu-divider"></view>
+
+					<view class="menu-item" bindtap="url" data-url="../edit/my_edit">
+						<view class="menu-item-left">
+							<text class="icon-peoplefill menu-icon" style="color: #bd00ff;"></text>
+							<text class="menu-label">个人资料 (Profile)</text>
+						</view>
+						<text class="icon-right menu-arrow"></text>
+					</view>
+
+					<view class="menu-divider"></view>
+
+					<view class="menu-item" bindtap="url" data-url="../purchase/my_purchase">
+						<view class="menu-item-left">
+							<text class="icon-cart menu-icon" style="color: #ff00de;"></text>
+							<text class="menu-label">购买记录 (Purchase History)</text>
+						</view>
+						<text class="icon-right menu-arrow"></text>
+					</view>
+
+					<view class="menu-divider"></view>
+
+					<view class="menu-item" bindtap="url" data-url="/pages/terms/user/terms_user">
+						<view class="menu-item-left">
+							<text class="icon-form menu-icon" style="color: #00f2ff;"></text>
+							<text class="menu-label">用户服务条款 (Terms)</text>
+						</view>
+						<text class="icon-right menu-arrow"></text>
+					</view>
+
+					<view class="menu-divider"></view>
+
+					<view class="menu-item" bindtap="bindSetTap">
+						<view class="menu-item-left">
+							<text class="icon-settings menu-icon" style="color: rgba(255,255,255,0.6);"></text>
+							<text class="menu-label">设置 (Settings)</text>
+						</view>
+						<text class="icon-right menu-arrow"></text>
+					</view>
 				</view>
-			</view>
+			</block>
 
 		</view>
 

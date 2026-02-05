@@ -1,6 +1,7 @@
 const pageHelper = require('../../../helper/page_helper.js');
 const cloudHelper = require('../../../helper/cloud_helper.js');
 const deviceHelper = require('../../../helper/device_helper.js');
+const PassportBiz = require('../../../biz/passport_biz.js');
 
 Page({
 	data: {
@@ -90,6 +91,10 @@ Page({
 
 	// 提交同意
 	bindSubmit: async function () {
+		// 检查登录状态
+		if (!PassportBiz.isLoggedIn()) {
+			return pageHelper.showModal('请先登录后再同意条款');
+		}
 		if (!this.data.scrolledToBottom) {
 			return pageHelper.showModal('请先阅读完整条款');
 		}

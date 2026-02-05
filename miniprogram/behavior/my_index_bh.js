@@ -221,15 +221,14 @@ module.exports = Behavior({
 			try {
 				console.log('开始加载用户信息...');
 
-				// 首先尝试微信登录（自动获取 openid）
+				// 检查是否已登录，未登录则不加载用户信息
 				if (!PassortBiz.isLoggedIn()) {
-					console.log('用户未登录，尝试微信自动登录...');
-					let loginResult = await PassortBiz.wechatLogin();
-					if (loginResult.success) {
-						console.log('微信登录成功:', loginResult.isNewUser ? '新用户' : '已有用户');
-					} else {
-						console.error('微信登录失败:', loginResult.error);
-					}
+					console.log('用户未登录');
+					this.setData({
+						user: null,
+						isLoggedIn: false
+					});
+					return;
 				}
 
 				let opts = {
@@ -247,18 +246,35 @@ module.exports = Behavior({
 					user.profileComplete = !!(user.USER_NAME && user.USER_MOBILE);
 				}
 
-				// 设置用户数据，即使为空也要设置，这样页面可以正确显示注册提示
+				// 设置用户数据
 				this.setData({
-					user: user || null
+					user: user || null,
+					isLoggedIn: true
 				});
 
 				console.log('用户信息加载结果:', user ? `已登录 - ${user.USER_NAME}` : '未登录');
 			} catch (err) {
 				console.log('加载用户信息失败:', err);
-				// 出错时也要设置为null，确保页面显示注册提示
 				this.setData({
-					user: null
+					user: null,
+					isLoggedIn: false
 				});
+			}
+		},
+
+		// 手动登录
+		bindLogin: async function () {
+			console.log('用户点击登录...');
+			let loginResult = await PassortBiz.wechatLogin();
+			if (loginResult.success) {
+				console.log('微信登录成功');
+				pageHelper.showSuccToast('登录成功');
+				// 重新加载用户信息
+				await this._loadUser();
+				await this._loadTodayList();
+			} else {
+				console.error('微信登录失败:', loginResult.error);
+				pageHelper.showModal(loginResult.error || '登录失败，请重试');
 			}
 		},
 

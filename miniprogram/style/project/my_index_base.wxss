@@ -480,3 +480,78 @@
 	background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), transparent);
 	margin: 0;
 }
+
+/* ========== 未登录状态样式 ========== */
+.login-section {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	padding: 60rpx 40rpx;
+	border-radius: 40rpx;
+	background: rgba(255, 255, 255, 0.03);
+	border: 1rpx solid rgba(255, 255, 255, 0.05);
+	backdrop-filter: blur(10px);
+	-webkit-backdrop-filter: blur(10px);
+}
+
+.login-avatar-container {
+	margin-bottom: 30rpx;
+}
+
+.login-avatar-ring {
+	width: 160rpx;
+	height: 160rpx;
+	border-radius: 50%;
+	padding: 6rpx;
+	background: linear-gradient(135deg, rgba(255,255,255,0.2), rgba(255,255,255,0.1));
+	box-shadow: 0 0 30rpx rgba(255, 255, 255, 0.1);
+}
+
+.login-info {
+	text-align: center;
+	margin-bottom: 40rpx;
+}
+
+.login-title {
+	display: block;
+	font-size: 40rpx;
+	font-weight: bold;
+	color: #fff;
+	margin-bottom: 16rpx;
+}
+
+.login-desc {
+	display: block;
+	font-size: 26rpx;
+	color: rgba(255, 255, 255, 0.5);
+}
+
+.login-btn {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	width: 400rpx;
+	height: 88rpx;
+	background: linear-gradient(135deg, #07c160, #06ad56) !important;
+	color: #fff !important;
+	font-size: 32rpx;
+	font-weight: bold;
+	border-radius: 44rpx;
+	border: none;
+	box-shadow: 0 8rpx 30rpx rgba(7, 193, 96, 0.4);
+}
+
+.login-btn::after {
+	border: none;
+}
+
+.login-btn:active {
+	transform: scale(0.95);
+	opacity: 0.9;
+}
+
+/* 禁用状态的菜单项 */
+.menu-item.disabled {
+	opacity: 0.6;
+	pointer-events: none;
+}

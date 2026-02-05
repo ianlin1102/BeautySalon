@@ -3,6 +3,7 @@ const pageHelper = require('../helper/page_helper.js');
 const setting = require('../setting/setting.js');
 const MeetBiz = require('../biz/meet_biz.js');
 const cancelHelper = require('../helper/cancel_helper.js');
+const PassportBiz = require('../biz/passport_biz.js');
 
 module.exports = Behavior({
 
@@ -65,6 +66,14 @@ module.exports = Behavior({
 		 * 生命周期函数--监听页面加载
 		 */
 		onLoad: async function (options) {
+			// 检查是否已登录
+			if (!PassportBiz.isLoggedIn()) {
+				pageHelper.showModal('请先登录后再预约', () => {
+					wx.navigateBack();
+				});
+				return;
+			}
+
 			if (!pageHelper.getOptions(this, options)) return;
 			if (!pageHelper.getOptions(this, options, 'timeMark')) return;
 
