@@ -34,6 +34,15 @@ SetupModel.DB_STRUCTURE = {
 	SETUP_EDIT_TIME: 'int|true',
 	SETUP_ADD_IP: 'string|false',
 	SETUP_EDIT_IP: 'string|false',
+
+	// 条款相关字段
+	SETUP_USER_TERMS_SECTIONS: 'array|false|default=[]|comment=用户条款内容',
+	SETUP_USER_TERMS_VERSION: 'int|false|default=0|comment=用户条款版本号',
+	SETUP_USER_TERMS_UPDATE_TIME: 'int|false|comment=用户条款更新时间',
+	SETUP_CARD_TERMS_SECTIONS: 'array|false|default=[]|comment=卡项条款内容',
+	SETUP_CARD_TERMS_UPDATE_TIME: 'int|false|comment=卡项条款更新时间',
+	SETUP_BOOKING_TERMS_SECTIONS: 'array|false|default=[]|comment=预约条款内容',
+	SETUP_BOOKING_TERMS_UPDATE_TIME: 'int|false|comment=预约条款更新时间',
 };
 
 // 字段前缀
