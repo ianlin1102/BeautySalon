@@ -4,7 +4,9 @@
 	display: flex;
 	gap: 20rpx;
 	margin-bottom: 30rpx;
+	padding: 20rpx;
 	width: 100%;
+	box-sizing: border-box;
 }
 
 .search-input {

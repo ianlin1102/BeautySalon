@@ -58,4 +58,8 @@ Page({
 	url: function (e) {
 		pageHelper.url(e, this);
 	},
+
+	bindCommListCmpt: function (e) {
+		pageHelper.commListListener(this, e);
+	},
 });
