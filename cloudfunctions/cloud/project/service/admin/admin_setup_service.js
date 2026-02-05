@@ -149,7 +149,7 @@ class AdminSetupService extends BaseAdminService {
 				data.SETUP_USER_TERMS_UPDATE_TIME = now;
 
 				// 重置所有用户的同意状态
-				await UserModel.editAll({}, {
+				await UserModel.edit({}, {
 					USER_TERMS_AGREED: 0
 				}, false);  // false = 不限制 PID
 				break;
