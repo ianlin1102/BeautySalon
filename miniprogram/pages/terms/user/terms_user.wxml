@@ -44,6 +44,7 @@
 			<input
 				class="name-input"
 				placeholder="如：张三 / John Smith"
+				placeholder-class="name-input-placeholder"
 				value="{{printedName}}"
 				bindinput="bindNameInput"
 				maxlength="50"
