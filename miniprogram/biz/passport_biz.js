@@ -59,6 +59,22 @@ class PassportBiz extends BaseBiz {
 	}
 
 	/**
+	 * 登出
+	 * 清除用户登录状态和相关缓存
+	 */
+	static logout() {
+		// 清除登录 token
+		cacheHelper.remove(constants.CACHE_TOKEN);
+		// 清除用户相关缓存
+		cacheHelper.remove('USER_TOKEN');
+		cacheHelper.remove('USER_INFO');
+		cacheHelper.remove('USER_POINTS_INFO');
+		cacheHelper.remove('MY_JOIN_LIST');
+		cacheHelper.remove('MY_JOIN_LIST_TIMESTAMP');
+		console.log('用户已登出，缓存已清除');
+	}
+
+	/**
 	 * 获取当前用户 token
 	 * @returns {string|null}
 	 */

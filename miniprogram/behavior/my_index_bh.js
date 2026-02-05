@@ -293,7 +293,7 @@ module.exports = Behavior({
 		},
 
 		setTap: function (e, skin) {
-			let itemList = ['清除缓存', '后台管理'];
+			let itemList = ['清除缓存', '退出登录', '后台管理'];
 			wx.showActionSheet({
 				itemList,
 				success: async res => {
@@ -304,6 +304,26 @@ module.exports = Behavior({
 					}
 
 					if (idx == 1) {
+						// 退出登录
+						wx.showModal({
+							title: '退出登录',
+							content: '确定要退出登录吗？退出后需要重新授权登录。',
+							confirmText: '退出',
+							confirmColor: '#e54d42',
+							success: (modalRes) => {
+								if (modalRes.confirm) {
+									PassortBiz.logout();
+									pageHelper.showNoneToast('已退出登录');
+									// 刷新页面
+									setTimeout(() => {
+										this._loadUser();
+									}, 500);
+								}
+							}
+						});
+					}
+
+					if (idx == 2) {
 						pageHelper.setSkin(skin);
 						if (setting.IS_SUB) {
 							PassortBiz.adminLogin('admin', '123456', this);
