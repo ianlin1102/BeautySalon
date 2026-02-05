@@ -99,14 +99,14 @@ page {
 }
 
 .tag.blue {
-	background: rgba(0, 242, 255, 0.15);
-	color: #00f2ff;
+	background: transparent;
+	color: #00f2ff !important;
 	border: 1rpx solid rgba(0, 242, 255, 0.3);
 }
 
 .tag.green {
-	background: rgba(45, 212, 191, 0.15);
-	color: #2dd4bf;
+	background: transparent;
+	color: #2dd4bf !important;
 	border: 1rpx solid rgba(45, 212, 191, 0.3);
 }
 
@@ -555,4 +555,40 @@ page {
 	font-size: 26rpx;
 	color: rgba(255, 255, 255, 0.45);
 	line-height: 1.7;
+}
+
+/* ============================================
+   条款弹窗
+   ============================================ */
+
+.terms-modal .modal-body {
+	max-height: 60vh;
+	padding: 0;
+}
+
+.terms-scroll {
+	max-height: 60vh;
+	padding: 30rpx;
+}
+
+.terms-section {
+	margin-bottom: 30rpx;
+}
+
+.terms-section:last-child {
+	margin-bottom: 0;
+}
+
+.terms-section-title {
+	font-size: 30rpx;
+	font-weight: bold;
+	color: #00f2ff;
+	margin-bottom: 16rpx;
+}
+
+.terms-section-content {
+	font-size: 26rpx;
+	color: rgba(255, 255, 255, 0.7);
+	line-height: 1.8;
+	white-space: pre-wrap;
 }

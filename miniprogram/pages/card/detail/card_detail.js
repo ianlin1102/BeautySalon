@@ -146,6 +146,13 @@ Page({
 	},
 
 	/**
+	 * 跳转到卡项条款页面
+	 */
+	bindNavToCardTerms: function () {
+		wx.navigateTo({ url: '/pages/terms/card/terms_card' });
+	},
+
+	/**
 	 * 检查用户条款状态（严格模式 - 阻止继续）
 	 */
 	_checkUserTermsStrict: async function () {

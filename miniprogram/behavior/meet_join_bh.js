@@ -281,6 +281,11 @@ module.exports = Behavior({
 		this.setData({ showTermsModal: false });
 	},
 
+	// 跳转到预约条款页面
+	bindNavToBookingTerms: function () {
+		wx.navigateTo({ url: '/pages/terms/booking/terms_booking' });
+	},
+
 	// 检查用户条款状态（严格模式 - 阻止继续）
 	_checkUserTermsStrict: async function () {
 		try {

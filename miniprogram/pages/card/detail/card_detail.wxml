@@ -84,21 +84,21 @@
 			</view>
 		</view>
 
-		<!-- 免责声明勾选 -->
+		<!-- 卡项条款勾选 -->
 		<view class="disclaimer-section">
-			<checkbox-group bindchange="bindAgreeDisclaimer">
+			<checkbox-group bindchange="bindAgreeCardTerms">
 				<label class="disclaimer-checkbox">
-					<checkbox value="agreed" color="#00f2ff" checked="{{agreedDisclaimer}}"/>
+					<checkbox value="agreed" color="#00f2ff" checked="{{agreedCardTerms}}"/>
 					<text class="disclaimer-text">我已阅读并同意</text>
-					<text class="disclaimer-link" catchtap="bindViewDisclaimer">《购买免责声明》</text>
+					<text class="disclaimer-link" catchtap="bindNavToCardTerms">《卡项购买条款》</text>
 				</label>
 			</checkbox-group>
 		</view>
 
 		<!-- 购买按钮 -->
 		<view class="purchase-bar">
-			<button class="purchase-btn" bindtap="bindPurchaseTap" disabled="{{!agreedDisclaimer}}">
-				{{agreedDisclaimer ? '立即购买' : '请先同意免责声明'}}
+			<button class="purchase-btn" bindtap="bindPurchaseTap" disabled="{{!agreedCardTerms}}">
+				{{agreedCardTerms ? '立即购买' : '请先同意购买条款'}}
 			</button>
 		</view>
 
@@ -168,6 +168,48 @@
 				</view>
 				<view class="modal-footer">
 					<button class="modal-btn confirm" catchtap="bindCloseSuccessModal" style="width:100%;">知道了</button>
+				</view>
+			</view>
+		</view>
+
+		<!-- 条款查看弹窗 -->
+		<view class="modal-mask" wx:if="{{showTermsModal}}" catchtap="bindCloseTermsModal">
+			<view class="modal-content terms-modal" catchtap="">
+				<view class="modal-header">
+					<text class="modal-title">{{termsTitle}}</text>
+					<text class="modal-close" catchtap="bindCloseTermsModal">×</text>
+				</view>
+				<scroll-view class="modal-body terms-scroll" scroll-y>
+					<block wx:for="{{termsSections}}" wx:key="index">
+						<view class="terms-section">
+							<view class="terms-section-title">{{item.title}}</view>
+							<view class="terms-section-content">{{item.content}}</view>
+						</view>
+					</block>
+				</scroll-view>
+				<view class="modal-footer">
+					<button class="modal-btn confirm" catchtap="bindCloseTermsModal" style="width:100%;">关闭</button>
+				</view>
+			</view>
+		</view>
+
+		<!-- 用户条款更新弹窗 -->
+		<view class="modal-mask" wx:if="{{showUserTermsModal}}" catchtap="">
+			<view class="modal-content terms-modal" catchtap="">
+				<view class="modal-header">
+					<text class="modal-title">用户服务条款更新</text>
+				</view>
+				<scroll-view class="modal-body terms-scroll" scroll-y>
+					<block wx:for="{{userTermsSections}}" wx:key="index">
+						<view class="terms-section">
+							<view class="terms-section-title">{{item.title}}</view>
+							<view class="terms-section-content">{{item.content}}</view>
+						</view>
+					</block>
+				</scroll-view>
+				<view class="modal-footer">
+					<button class="modal-btn cancel" catchtap="bindRefuseUserTerms">不同意</button>
+					<button class="modal-btn confirm" catchtap="bindAgreeUserTerms">同意并继续</button>
 				</view>
 			</view>
 		</view>

@@ -77,7 +77,7 @@
 	</view>
 	<!-- 卡项选择 end -->
 
-	<!-- 免责条款 -->
+	<!-- 预约条款 -->
 	<view class="form-box card-project shadow-project margin-top">
 		<view class="form-group">
 			<view class="title text-bold"><text class="icon-warn margin-right-xs text-orange"></text>预约须知</view>
@@ -86,10 +86,12 @@
 			<view class="line-desc text-grey" style="line-height:1.8">{{termsText}}</view>
 		</view>
 		<view class="form-group">
+			<view class="text-blue text-s" style="margin-bottom:20rpx;" bindtap="bindNavToBookingTerms">查看完整预约条款 ></view>
 			<checkbox-group bindchange="bindAgreeTerms">
 				<label class="checkbox">
 					<checkbox value="agreed" color="#667eea"/>
-					<text class="margin-left-xs">我已阅读并同意以上预约须知</text>
+					<text class="margin-left-xs">我已阅读并同意</text>
+					<text class="text-blue" catchtap="bindNavToBookingTerms">《预约须知条款》</text>
 				</label>
 			</checkbox-group>
 		</view>
@@ -99,6 +101,47 @@
 
 	<button bindtap="bindCheckTap" class="btn-base btn-project" disabled="{{!agreedTerms}}" style="margin-bottom:100rpx;">{{agreedTerms ? '提交' : '请先同意预约须知'}}</button>
 
+	<!-- 预约条款弹窗 -->
+	<view class="terms-modal-mask" wx:if="{{showTermsModal}}" catchtap="bindCloseTermsModal">
+		<view class="terms-modal-content" catchtap="">
+			<view class="terms-modal-header">
+				<text class="terms-modal-title">预约须知条款</text>
+				<text class="terms-modal-close" catchtap="bindCloseTermsModal">×</text>
+			</view>
+			<scroll-view class="terms-modal-body" scroll-y>
+				<block wx:for="{{bookingTermsSections}}" wx:key="index">
+					<view class="terms-section">
+						<view class="terms-section-title">{{item.title}}</view>
+						<view class="terms-section-content">{{item.content}}</view>
+					</view>
+				</block>
+			</scroll-view>
+			<view class="terms-modal-footer">
+				<button class="terms-btn-confirm" catchtap="bindCloseTermsModal">关闭</button>
+			</view>
+		</view>
+	</view>
+
+	<!-- 用户条款更新弹窗 -->
+	<view class="terms-modal-mask" wx:if="{{showUserTermsModal}}" catchtap="">
+		<view class="terms-modal-content" catchtap="">
+			<view class="terms-modal-header">
+				<text class="terms-modal-title">用户服务条款更新</text>
+			</view>
+			<scroll-view class="terms-modal-body" scroll-y>
+				<block wx:for="{{userTermsSections}}" wx:key="index">
+					<view class="terms-section">
+						<view class="terms-section-title">{{item.title}}</view>
+						<view class="terms-section-content">{{item.content}}</view>
+					</view>
+				</block>
+			</scroll-view>
+			<view class="terms-modal-footer" style="display:flex;gap:20rpx;">
+				<button class="terms-btn-cancel" catchtap="bindRefuseUserTerms">不同意</button>
+				<button class="terms-btn-confirm" catchtap="bindAgreeUserTerms">同意并继续</button>
+			</view>
+		</view>
+	</view>
 
 	</view>
 </template>
