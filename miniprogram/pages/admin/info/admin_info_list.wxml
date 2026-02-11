@@ -2,120 +2,144 @@
 
 <block wx:if="{{isAdmin&&isLoad}}">
 
-	<cmpt-comm-list id="cmpt-comm-list" type="admin-meet-join-list" search="{{search}}" _params="{{_params}}" _menus="{{sortMenus}}" _items="{{sortItems}}" route="admin/meet_join_list" topBottom="50" placeholder="搜索姓名/手机号" sortMenusDefaultIndex="0" bind:list="bindCommListCmpt">
+	<cmpt-comm-list id="cmpt-comm-list" type="admin-meet-join-list" search="{{search}}" _params="{{_params}}" _menus="{{sortMenus}}" _items="{{sortItems}}" isTotalMenu="{{viewMode == 'detail'}}" route="admin/meet_join_list" topBottom="50" placeholder="搜索姓名/手机号" sortMenusDefaultIndex="0" bind:list="bindCommListCmpt">
 
-		<!-- List Begin -->
-		<view class="join-list">
-			<view wx:if="{{dataList && dataList.total }}" class="load text-grey">共有{{dataList.total}}条预约记录
-				<text wx:if="{{isAllFold}}" bindtap="bindUnFoldAllTap" class="margin-left-xs icon-unfold text-admin">全部展开</text>
-				<text wx:else bindtap="bindFoldAllTap" class="margin-left-xs icon-fold text-admin">全部收起</text>
+		<!-- ========== 课程卡片模式 ========== -->
+		<block wx:if="{{viewMode == 'courses'}}">
+			<view class="course-list">
+				<view wx:if="{{dataList && dataList.total}}" class="load text-grey">共有{{dataList.total}}条预约记录，{{courseCards.length}}个课程</view>
+
+				<view class="course-card" wx:for="{{courseCards}}" wx:key="meetId" bindtap="bindCourseTap" data-meet-id="{{item.meetId}}" data-title="{{item.title}}">
+					<view class="course-card-body">
+						<view class="course-card-title">{{item.title}}</view>
+						<view class="course-card-meta">
+							<text wx:if="{{item.instructorName}}" class="course-card-instructor">
+								<text class="icon-people margin-right-xxs"></text>{{item.instructorName}}
+							</text>
+							<text class="course-card-count">{{item.count}}条预约</text>
+						</view>
+					</view>
+					<text class="icon-right course-card-arrow"></text>
+				</view>
+
+				<view wx:if="{{dataList && dataList.total == 0}}" class="load text-grey margin-top">暂无预约记录</view>
 			</view>
+		</block>
 
-			<view class="item" wx:for="{{dataList.list}}" wx:key="key">
-				<view class="header">
-					<view class="left">
+		<!-- ========== 课程详情模式（按时段分组） ========== -->
+		<block wx:if="{{viewMode == 'detail'}}">
+			<view class="join-list">
+				<view wx:if="{{dataList && dataList.total}}" class="load text-grey">共有{{dataList.total}}条预约记录</view>
+
+				<view class="time-group" wx:for="{{groupedData}}" wx:key="timeMark" wx:for-item="group">
+					<view class="time-group-header">
 						<text class="icon-calendar margin-right-xxs"></text>
-						<text class="">{{item.JOIN_MEET_DAY}} ({{item.JOIN_MEET_TIME_START}}～{{item.JOIN_MEET_TIME_END}})</text>
+						<text class="time-group-label">{{group.day}} ({{group.timeStart}}～{{group.timeEnd}})</text>
+						<text class="time-group-count">{{group.items.length}}人</text>
 					</view>
-					<view class="right" bindtap="bindCopyTap" data-idx="{{index}}">
-						<text class="icon-copy margin-right-xxs"></text>复制
-					</view>
-				</view>
 
-				<view class="meet-title">
-					<text class="icon-activityfill text-admin margin-right-xxs"></text>
-					<text>{{item.JOIN_MEET_TITLE}}</text>
-				</view>
-
-				<view class="info">
-					<view class="info-item">
-						<view class="title text-admin">状态</view>
-						<view class="mao">：</view>
-						<view class="content">
-							<view wx:if="{{item.JOIN_STATUS==1}}" class="text-black">
-								<text class="icon-roundcheck margin-right-xxs"></text>预约成功
-								<text wx:if="{{item.JOIN_IS_CHECKIN==1}}" class="text-green">，已签到</text>
-								<text class="text-grey" wx:else>，未签到</text>
+					<view class="time-group-item" wx:for="{{group.items}}" wx:key="_id" wx:for-item="item" wx:for-index="itemIdx">
+						<view class="info">
+							<view class="info-item" wx:if="{{item.JOIN_USER_NAME || item.JOIN_USER_MOBILE}}">
+								<view class="title text-admin">用户</view>
+								<view class="mao">：</view>
+								<view class="content">
+									<text wx:if="{{item.JOIN_USER_NAME}}">{{item.JOIN_USER_NAME}}</text>
+									<text wx:if="{{item.JOIN_USER_NAME && item.JOIN_USER_MOBILE}}" class="margin-left-xs margin-right-xs">/</text>
+									<text wx:if="{{item.JOIN_USER_MOBILE}}" bindtap="url" data-type="phone" data-url="{{item.JOIN_USER_MOBILE}}">{{item.JOIN_USER_MOBILE}} <text class="icon-phone text-black"></text></text>
+								</view>
 							</view>
-							<view wx:elif="{{item.JOIN_STATUS==10}}" class="text-orange">用户取消</view>
-							<view wx:elif="{{item.JOIN_STATUS==99}}" class="text-red">系统取消</view>
+
+							<view class="info-item">
+								<view class="title text-admin">状态</view>
+								<view class="mao">：</view>
+								<view class="content">
+									<view wx:if="{{item.JOIN_STATUS==1}}" class="text-black">
+										<text class="icon-roundcheck margin-right-xxs"></text>预约成功
+										<text wx:if="{{item.JOIN_IS_CHECKIN==1}}" class="text-green">，已签到</text>
+										<text class="text-grey" wx:else>，未签到</text>
+									</view>
+									<view wx:elif="{{item.JOIN_STATUS==10}}" class="text-orange">用户取消</view>
+									<view wx:elif="{{item.JOIN_STATUS==99}}" class="text-red">系统取消</view>
+								</view>
+							</view>
+
+							<view class="info-item">
+								<view class="title text-admin">来源</view>
+								<view class="mao">：</view>
+								<view class="content">
+									<text wx:if="{{item.JOIN_SOURCE=='web'}}" class="text-blue">网页端</text>
+									<text wx:elif="{{item.JOIN_SOURCE=='backfill'}}" class="text-purple">补录</text>
+									<text wx:elif="{{item.JOIN_SOURCE=='miniprogram'}}" class="text-green">小程序</text>
+									<text wx:else class="text-grey">小程序</text>
+								</view>
+							</view>
+
+							<view class="info-item" wx:if="{{item.JOIN_INSTRUCTOR_NAME}}">
+								<view class="title text-admin">老师</view>
+								<view class="mao">：</view>
+								<view class="content">{{item.JOIN_INSTRUCTOR_NAME}}</view>
+							</view>
+
+							<view class="info-item" wx:if="{{item.JOIN_CARD_DEDUCT && item.JOIN_CARD_DEDUCT.cardId}}">
+								<view class="title text-admin">付费</view>
+								<view class="mao">：</view>
+								<view class="content">
+									<text>{{item.JOIN_CARD_DEDUCT.cardName || '卡项'}}</text>
+									<text class="margin-left-xs">
+										({{item.JOIN_CARD_DEDUCT.cardType=='times' ? '扣'+item.JOIN_CARD_DEDUCT.deductAmount+'次' : '扣¥'+item.JOIN_CARD_DEDUCT.deductAmount}})
+									</text>
+									<text wx:if="{{item.JOIN_CARD_DEDUCT.refunded}}" class="text-orange margin-left-xs">已退还</text>
+								</view>
+							</view>
+
+							<view class="info-item" wx:if="{{item.JOIN_STATUS==99 && item.JOIN_REASON}}">
+								<view class="title text-admin">原因</view>
+								<view class="mao">：</view>
+								<view class="content">{{item.JOIN_REASON}}</view>
+							</view>
+
+							<view class="info-item" wx:for="{{item.JOIN_FORMS}}" wx:key="key1" wx:for-item="form" wx:for-index="formindex">
+								<view class="title">{{form.title}}</view>
+								<view class="mao">：</view>
+								<view wx:if="{{form.type=='mobile'}}" class="content" bindtap="url" data-type="phone" data-url="{{form.val}}">
+									<text wx:for="{{form.valArr}}" wx:key="key2" wx:for-item="valItem" class="{{valItem===search?'text-red text-bold':''}}">{{valItem}}</text>
+									<text class="margin-left-xs icon-phone text-black text-normal"></text>
+								</view>
+								<view wx:else class="content" bindtap="url" data-type="copy" data-url="{{form.title+'：'+form.val}}">
+									<text wx:for="{{form.valArr}}" wx:key="key2" wx:for-item="valItem" class="{{valItem===search?'text-red text-bold':''}}">{{valItem}}</text>
+								</view>
+							</view>
+
+							<!-- 操作按钮 -->
+							<view class="oprt">
+								<block wx:if="{{item.JOIN_STATUS==1}}">
+									<view wx:if="{{item.JOIN_IS_CHECKIN==0}}" bindtap="bindCheckinTap" data-idx="{{item._dataIdx}}" data-flag="1" class="btn bg-purple margin-right-s light">签到</view>
+									<view wx:else bindtap="bindCheckinTap" data-idx="{{item._dataIdx}}" data-flag="0" class="btn bg-grey light margin-right-s">取消签到</view>
+								</block>
+								<block wx:if="{{item.JOIN_STATUS==1}}">
+									<view bindtap="bindCancelTap" data-idx="{{item._dataIdx}}" class="btn bg-grey light margin-right-s">取消预约</view>
+								</block>
+								<block wx:if="{{item.JOIN_STATUS==10 || item.JOIN_STATUS==99}}">
+									<view bindtap="bindStatusTap" data-idx="{{item._dataIdx}}" data-status="1" class="btn bg-olive light margin-right-s">恢复预约</view>
+								</block>
+								<view bindtap="bindDetailTap" data-idx="{{item._dataIdx}}" class="btn bg-admin light margin-right-s">详情</view>
+								<view bindtap="bindDelTap" data-idx="{{item._dataIdx}}" class="btn bg-orange light margin-right-s">删除</view>
+							</view>
 						</view>
 					</view>
 
-					<view class="info-item">
-						<view class="title text-admin">来源</view>
-						<view class="mao">：</view>
-						<view class="content">
-							<text wx:if="{{item.JOIN_SOURCE=='web'}}" class="text-blue">网页端</text>
-							<text wx:elif="{{item.JOIN_SOURCE=='miniprogram'}}" class="text-green">小程序</text>
-							<text wx:else class="text-grey">小程序</text>
+					<!-- 补录按钮 -->
+					<view class="backfill-btn-wrap">
+						<view class="btn bg-purple light" bindtap="bindBackfillTap" data-group-idx="{{index}}">
+							<text class="icon-add margin-right-xxs"></text>补录
 						</view>
-					</view>
-
-					<view class="info-item" wx:if="{{item.JOIN_USER_NAME || item.JOIN_USER_MOBILE}}">
-						<view class="title text-admin">用户</view>
-						<view class="mao">：</view>
-						<view class="content">
-							<text wx:if="{{item.JOIN_USER_NAME}}">{{item.JOIN_USER_NAME}}</text>
-							<text wx:if="{{item.JOIN_USER_NAME && item.JOIN_USER_MOBILE}}" class="margin-left-xs margin-right-xs">/</text>
-							<text wx:if="{{item.JOIN_USER_MOBILE}}" bindtap="url" data-type="phone" data-url="{{item.JOIN_USER_MOBILE}}">{{item.JOIN_USER_MOBILE}} <text class="icon-phone text-black"></text></text>
-						</view>
-					</view>
-
-					<view class="info-item" wx:if="{{item.JOIN_STATUS==99 && item.JOIN_REASON}}">
-						<view class="title text-admin">取消原因</view>
-						<view class="mao">：</view>
-						<view class="content">{{item.JOIN_REASON}}</view>
-					</view>
-
-					<view class="info-item" wx:for="{{item.JOIN_FORMS}}" wx:key="key1" wx:for-item="form" wx:for-index="formindex" wx:if="{{formindex<3||!item.fold}}">
-						<view class="title">{{form.title}}</view>
-						<view class="mao">：</view>
-						<view wx:if="{{form.type=='mobile'}}" class="content" bindtap="url" data-type="phone" data-url="{{form.val}}">
-							<text wx:for="{{form.valArr}}" wx:key="key2" wx:for-item="valItem" class="{{valItem===search?'text-red text-bold':''}}">{{valItem}}</text>
-							<text class="margin-left-xs icon-phone text-black text-normal"></text>
-						</view>
-						<view wx:else class="content" bindtap="url" data-type="copy" data-url="{{form.title+'：'+form.val}}">
-							<text wx:for="{{form.valArr}}" wx:key="key2" wx:for-item="valItem" class="{{valItem===search?'text-red text-bold':''}}">{{valItem}}</text>
-						</view>
-					</view>
-
-					<view bindtap="bindUnFoldTap" data-idx="{{index}}" wx:if="{{item.fold && item.JOIN_FORMS.length>3}}" class="fold">
-						<text class="icon-unfold margin-right-xs"></text>更多资料...
-					</view>
-
-					<view bindtap="bindFoldTap" data-idx="{{index}}" wx:if="{{!item.fold && item.JOIN_FORMS.length>3}}" class="fold">
-						<text class="icon-fold margin-right-xs"></text>收起
-					</view>
-
-					<view class="info-item add-time">
-						<view class="title text-grey">提交时间</view>
-						<view class="mao text-grey">：</view>
-						<view class="content text-grey">{{item.JOIN_EDIT_TIME}}</view>
-					</view>
-
-					<view class="oprt">
-						<block wx:if="{{item.JOIN_STATUS==1}}">
-							<view wx:if="{{item.JOIN_IS_CHECKIN==0}}" bindtap="bindCheckinTap" data-idx="{{index}}" data-flag="1" class="btn bg-purple margin-right-s light">签到</view>
-							<view wx:else bindtap="bindCheckinTap" data-idx="{{index}}" data-flag="0" class="btn bg-grey light margin-right-s">取消签到</view>
-						</block>
-
-						<block wx:if="{{item.JOIN_STATUS==1}}">
-							<view bindtap="bindCancelTap" data-idx="{{index}}" class="btn bg-grey light margin-right-s">取消预约</view>
-						</block>
-
-						<block wx:if="{{item.JOIN_STATUS==10 || item.JOIN_STATUS==99}}">
-							<view bindtap="bindStatusTap" data-idx="{{index}}" data-status="1" class="btn bg-olive light margin-right-s">恢复预约</view>
-						</block>
-
-						<view bindtap="bindDelTap" data-idx="{{index}}" class="btn bg-orange light margin-right-s">删除</view>
 					</view>
 				</view>
 
-				<view class="no">{{index+1}}</view>
+				<view wx:if="{{dataList && dataList.total == 0}}" class="load text-grey margin-top">该课程暂无预约记录</view>
 			</view>
-		</view>
-		<!-- List END -->
+		</block>
 
 		<!--load begin-->
 		<import src="../../../tpls/public/list_load_tpl.wxml" />
@@ -123,5 +147,93 @@
 		<!--load end-->
 
 	</cmpt-comm-list>
+
+	<!-- 补录弹窗遮罩 -->
+	<view class="modal-mask" wx:if="{{showBackfillModal}}" bindtap="bindCloseBackfill"></view>
+	<!-- 补录弹窗 -->
+	<view class="backfill-modal" wx:if="{{showBackfillModal}}">
+		<view class="backfill-header">
+			<text class="backfill-title">补录预约</text>
+			<text class="icon-close backfill-close" bindtap="bindCloseBackfill"></text>
+		</view>
+
+		<view class="backfill-info">
+			<text>{{backfillGroup.meetTitle}}</text>
+			<text class="margin-left-xs text-grey">{{backfillGroup.day}} {{backfillGroup.timeStart}}～{{backfillGroup.timeEnd}}</text>
+		</view>
+
+		<!-- Step 1: 搜索用户 -->
+		<view wx:if="{{backfillStep == 1}}">
+			<view class="backfill-section-title">搜索用户</view>
+			<view class="backfill-search-bar">
+				<text class="icon-search backfill-search-icon"></text>
+				<input class="backfill-search-input" placeholder="姓名/手机号/邮箱/账号" value="{{backfillSearch}}" bindinput="bindBackfillSearchInput" bindconfirm="bindBackfillSearchConfirm" />
+				<view class="backfill-search-btn" bindtap="bindBackfillSearchConfirm">搜索</view>
+			</view>
+			<view class="backfill-search-hint">支持模糊搜索，输入部分姓名或手机号即可</view>
+
+			<view wx:if="{{backfillSearching}}" class="margin-top load loading text-grey"></view>
+
+			<view wx:if="{{backfillUserResult}}" class="backfill-user-result margin-top-sm">
+				<view class="backfill-user-card">
+					<view class="backfill-user-avatar">
+						<text class="icon-people"></text>
+					</view>
+					<view class="backfill-user-info">
+						<view class="backfill-user-name">{{backfillUserResult.user.USER_NAME || '未设置姓名'}}</view>
+						<view class="backfill-user-detail">
+							<text wx:if="{{backfillUserResult.user.USER_MOBILE}}">{{backfillUserResult.user.USER_MOBILE}}</text>
+							<text wx:if="{{backfillUserResult.user.USER_GOOGLE_EMAIL}}" class="margin-left-xs">{{backfillUserResult.user.USER_GOOGLE_EMAIL}}</text>
+						</view>
+						<view class="backfill-user-meta">
+							<text wx:if="{{backfillUserResult.user.USER_MINI_OPENID}}" class="source-tag source-wechat">微信</text>
+							<text wx:elif="{{backfillUserResult.user.USER_GOOGLE_ID}}" class="source-tag source-google">Google</text>
+							<text wx:elif="{{backfillUserResult.user.USER_ACCOUNT}}" class="source-tag source-web">Web</text>
+							<text wx:if="{{backfillUserResult.totalTimes > 0}}" class="margin-left-xs text-grey" style="font-size:22rpx;">剩余{{backfillUserResult.totalTimes}}次</text>
+							<text wx:if="{{backfillUserResult.totalBalance > 0}}" class="margin-left-xs text-grey" style="font-size:22rpx;">余额¥{{backfillUserResult.totalBalance}}</text>
+						</view>
+					</view>
+					<text class="text-admin icon-roundcheck" style="font-size:36rpx;"></text>
+				</view>
+			</view>
+
+			<view wx:if="{{backfillSearchError}}" class="backfill-error">
+				<text class="icon-warn margin-right-xxs"></text>{{backfillSearchError}}
+			</view>
+		</view>
+
+		<!-- Step 2: 选择卡项 -->
+		<view wx:if="{{backfillStep == 2}}">
+			<view class="backfill-section-title">
+				已选用户：{{backfillSelectedUser.user.USER_NAME || '未知'}}
+			</view>
+			<view class="backfill-section-title margin-top-sm">选择扣费卡项</view>
+
+			<radio-group bindchange="bindBackfillCardChange">
+				<view class="backfill-card-item" wx:for="{{backfillCards}}" wx:key="_id">
+					<label>
+						<radio value="{{item._id}}" checked="{{backfillSelectedCardId == item._id}}" />
+						<text>{{item.USER_CARD_CARD_NAME}}</text>
+						<text class="margin-left-xs text-grey" wx:if="{{item.USER_CARD_TYPE == 1}}">(剩余{{item.USER_CARD_REMAIN_TIMES}}次)</text>
+						<text class="margin-left-xs text-grey" wx:if="{{item.USER_CARD_TYPE == 2}}">(余额¥{{item.USER_CARD_REMAIN_AMOUNT}})</text>
+					</label>
+				</view>
+				<view class="backfill-card-item">
+					<label>
+						<radio value="" checked="{{backfillSelectedCardId == ''}}" />
+						<text>不扣卡（免费补录）</text>
+					</label>
+				</view>
+			</radio-group>
+		</view>
+
+		<!-- Footer -->
+		<view class="backfill-footer">
+			<view wx:if="{{backfillStep == 1}}" class="btn bg-grey light" bindtap="bindCloseBackfill">取消</view>
+			<view wx:if="{{backfillStep == 1}}" class="btn bg-admin light {{backfillUserResult ? '' : 'btn-disabled'}}" bindtap="bindBackfillNext">下一步</view>
+			<view wx:if="{{backfillStep == 2}}" class="btn bg-grey light" bindtap="bindBackfillBack">上一步</view>
+			<view wx:if="{{backfillStep == 2}}" class="btn bg-purple light" bindtap="bindBackfillSubmit">确认补录</view>
+		</view>
+	</view>
 
 </block>

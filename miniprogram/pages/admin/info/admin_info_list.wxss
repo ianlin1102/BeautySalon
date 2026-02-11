@@ -1,107 +1,374 @@
-.join-list {
-	padding: 20rpx;
-}
-
-.join-list .item {
-	background: #fff;
-	border-radius: 16rpx;
-	margin-bottom: 20rpx;
-	position: relative;
-	overflow: hidden;
-}
-
-.join-list .item .header {
-	background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-	color: #fff;
-	padding: 20rpx 30rpx;
-	display: flex;
-	justify-content: space-between;
-	align-items: center;
-	font-size: 26rpx;
-}
-
-.join-list .item .header .left {
-	display: flex;
-	align-items: center;
-}
-
-.join-list .item .header .right {
-	opacity: 0.8;
-}
-
-.join-list .item .meet-title {
-	padding: 20rpx 30rpx;
-	background: #f8f9fa;
-	font-size: 28rpx;
-	color: #333;
-	border-bottom: 1rpx solid #eee;
-}
-
-.join-list .item .info {
-	padding: 20rpx 30rpx;
-}
-
-.join-list .item .info-item {
-	display: flex;
-	padding: 10rpx 0;
-	font-size: 26rpx;
-	line-height: 1.6;
-}
-
-.join-list .item .info-item .title {
-	min-width: 120rpx;
-	color: #666;
-}
-
-.join-list .item .info-item .mao {
-	color: #999;
-	margin: 0 8rpx;
-}
-
-.join-list .item .info-item .content {
-	flex: 1;
-	color: #333;
-	word-break: break-all;
-}
-
-.join-list .item .info-item.add-time {
-	border-top: 1rpx dashed #eee;
-	margin-top: 10rpx;
-	padding-top: 16rpx;
-}
-
-.join-list .item .fold {
-	color: #667eea;
-	font-size: 24rpx;
-	padding: 10rpx 0;
-}
-
-.join-list .item .oprt {
-	display: flex;
-	flex-wrap: wrap;
-	padding-top: 20rpx;
-	border-top: 1rpx solid #eee;
-	margin-top: 10rpx;
-}
-
-.join-list .item .oprt .btn {
-	padding: 12rpx 24rpx;
-	border-radius: 8rpx;
-	font-size: 24rpx;
-	margin-bottom: 10rpx;
-}
-
-.join-list .item .no {
-	position: absolute;
-	right: 20rpx;
-	bottom: 20rpx;
-	font-size: 48rpx;
-	font-weight: bold;
-	color: #f0f0f0;
-}
+@import '../../../style/project/base/admin.wxss';
 
 .load {
 	text-align: center;
 	padding: 20rpx;
 	font-size: 26rpx;
+}
+
+/* ========== 课程卡片模式 ========== */
+.course-list {
+	padding: 20rpx;
+}
+
+.course-card {
+	display: flex;
+	align-items: center;
+	background: #fff;
+	border-radius: 16rpx;
+	padding: 28rpx 24rpx;
+	margin-bottom: 16rpx;
+	box-shadow: 0 2rpx 12rpx rgba(0, 0, 0, 0.04);
+}
+
+.course-card:active {
+	background: #f8f8f8;
+}
+
+.course-card-body {
+	flex: 1;
+	min-width: 0;
+}
+
+.course-card-title {
+	font-size: 32rpx;
+	font-weight: bold;
+	color: #333;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+}
+
+.course-card-meta {
+	display: flex;
+	align-items: center;
+	margin-top: 10rpx;
+	font-size: 24rpx;
+	color: #999;
+}
+
+.course-card-instructor {
+	margin-right: 20rpx;
+	color: #666;
+}
+
+.course-card-count {
+	background: rgba(108, 92, 231, 0.1);
+	color: #6c5ce7;
+	padding: 4rpx 14rpx;
+	border-radius: 20rpx;
+	font-size: 22rpx;
+}
+
+.course-card-arrow {
+	color: #ccc;
+	font-size: 28rpx;
+	margin-left: 16rpx;
+	flex-shrink: 0;
+}
+
+/* ========== 课程详情模式（时段分组） ========== */
+.join-list {
+	padding: 20rpx;
+}
+
+.time-group {
+	margin-bottom: 24rpx;
+	background: #fff;
+	border-radius: 16rpx;
+	overflow: hidden;
+}
+
+.time-group-header {
+	display: flex;
+	align-items: center;
+	padding: 20rpx 24rpx;
+	background: rgba(108, 92, 231, 0.1);
+	border-bottom: 1rpx solid #eee;
+	font-size: 28rpx;
+	font-weight: bold;
+	color: #333;
+}
+
+.time-group-label {
+	flex: 1;
+}
+
+.time-group-count {
+	font-size: 24rpx;
+	color: #999;
+	font-weight: normal;
+}
+
+.time-group-item {
+	border-bottom: 1rpx solid #f5f5f5;
+}
+
+.time-group-item .info {
+	padding: 16rpx 24rpx;
+}
+
+.time-group-item .info-item {
+	display: flex;
+	padding: 8rpx 0;
+	font-size: 26rpx;
+	line-height: 1.6;
+}
+
+.time-group-item .info-item .title {
+	min-width: 80rpx;
+	color: #666;
+}
+
+.time-group-item .info-item .mao {
+	color: #999;
+	margin: 0 8rpx;
+}
+
+.time-group-item .info-item .content {
+	flex: 1;
+	color: #333;
+	word-break: break-all;
+}
+
+/* 操作按钮 */
+.time-group-item .oprt {
+	display: flex;
+	flex-wrap: wrap;
+	padding-top: 16rpx;
+	border-top: 1rpx solid #f0f0f0;
+	margin-top: 8rpx;
+}
+
+.time-group-item .oprt .btn {
+	padding: 10rpx 20rpx;
+	border-radius: 8rpx;
+	font-size: 22rpx;
+	margin-bottom: 8rpx;
+}
+
+/* 补录按钮 */
+.backfill-btn-wrap {
+	padding: 16rpx 24rpx;
+	display: flex;
+	justify-content: center;
+	border-top: 1rpx solid #f0f0f0;
+}
+
+/* ========== 补录弹窗 ========== */
+.modal-mask {
+	position: fixed;
+	top: 0;
+	left: 0;
+	right: 0;
+	bottom: 0;
+	background: rgba(0,0,0,0.5);
+	z-index: 999;
+}
+
+.backfill-modal {
+	position: fixed;
+	left: 5%;
+	right: 5%;
+	top: 15%;
+	max-height: 70%;
+	background: #fff;
+	border-radius: 24rpx;
+	padding: 32rpx;
+	z-index: 1000;
+	overflow-y: auto;
+}
+
+.backfill-header {
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+	margin-bottom: 24rpx;
+}
+
+.backfill-title {
+	font-size: 34rpx;
+	font-weight: bold;
+	color: #333;
+}
+
+.backfill-close {
+	font-size: 36rpx;
+	padding: 8rpx;
+	color: #999;
+}
+
+.backfill-info {
+	font-size: 26rpx;
+	padding: 16rpx;
+	background: rgba(108, 92, 231, 0.08);
+	border-radius: 8rpx;
+	margin-bottom: 24rpx;
+	color: #333;
+}
+
+.backfill-section-title {
+	font-size: 28rpx;
+	font-weight: bold;
+	margin-bottom: 12rpx;
+	color: #333;
+}
+
+/* 搜索栏 */
+.backfill-search-bar {
+	display: flex;
+	align-items: center;
+	background: #f8f9fa;
+	border: 1rpx solid #e0e0e0;
+	border-radius: 12rpx;
+	padding: 0;
+	height: 72rpx;
+}
+
+.backfill-search-icon {
+	font-size: 28rpx;
+	color: #999;
+	padding: 0 16rpx;
+	flex-shrink: 0;
+}
+
+.backfill-search-input {
+	flex: 1;
+	font-size: 26rpx;
+	color: #333;
+	height: 72rpx;
+	line-height: 72rpx;
+}
+
+.backfill-search-btn {
+	padding: 14rpx 28rpx;
+	margin-left: 16rpx;
+	background: var(--adminColor);
+	color: #fff;
+	border-radius: 8rpx;
+	font-size: 26rpx;
+	white-space: nowrap;
+	flex-shrink: 0;
+}
+
+.backfill-search-hint {
+	font-size: 22rpx;
+	color: #aaa;
+	margin-top: 8rpx;
+	padding-left: 4rpx;
+}
+
+.backfill-error {
+	margin-top: 16rpx;
+	font-size: 26rpx;
+	color: #e74c3c;
+	display: flex;
+	align-items: center;
+}
+
+/* 搜索结果 - 用户卡片 */
+.backfill-user-result {
+	padding: 0;
+	background: #fff;
+	border-radius: 12rpx;
+	border: 1rpx solid rgba(108, 92, 231, 0.3);
+	overflow: hidden;
+}
+
+.backfill-user-card {
+	display: flex;
+	align-items: center;
+	padding: 20rpx 24rpx;
+}
+
+.backfill-user-avatar {
+	width: 72rpx;
+	height: 72rpx;
+	border-radius: 50%;
+	background: rgba(108, 92, 231, 0.1);
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	font-size: 36rpx;
+	color: var(--adminColor);
+	margin-right: 20rpx;
+	flex-shrink: 0;
+}
+
+.backfill-user-info {
+	flex: 1;
+	min-width: 0;
+}
+
+.backfill-user-name {
+	font-size: 30rpx;
+	font-weight: bold;
+	color: #333;
+}
+
+.backfill-user-detail {
+	font-size: 24rpx;
+	color: #666;
+	margin-top: 4rpx;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+}
+
+.backfill-user-meta {
+	display: flex;
+	align-items: center;
+	margin-top: 6rpx;
+}
+
+/* 来源标签 */
+.source-tag {
+	display: inline-block;
+	font-size: 20rpx;
+	padding: 2rpx 10rpx;
+	border-radius: 6rpx;
+	font-weight: normal;
+}
+
+.source-wechat {
+	background-color: rgba(34, 197, 94, 0.15);
+	color: #22c55e;
+}
+
+.source-google {
+	background-color: rgba(66, 133, 244, 0.15);
+	color: #4285f4;
+}
+
+.source-web {
+	background-color: rgba(168, 85, 247, 0.15);
+	color: #a855f7;
+}
+
+.backfill-card-item {
+	padding: 16rpx 0;
+	font-size: 28rpx;
+	border-bottom: 1rpx solid #f0f0f0;
+}
+
+.backfill-footer {
+	display: flex;
+	gap: 16rpx;
+	margin-top: 32rpx;
+	justify-content: flex-end;
+}
+
+.backfill-footer .btn {
+	padding: 16rpx 32rpx;
+	border-radius: 8rpx;
+	font-size: 28rpx;
+}
+
+.btn-disabled {
+	opacity: 0.4;
+	pointer-events: none;
+}
+
+.text-purple {
+	color: #6c5ce7;
 }

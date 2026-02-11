@@ -70,6 +70,11 @@ JoinModel.DB_STRUCTURE = {
 	JOIN_USER_NAME: 'string|false|comment=用户姓名(冗余)',
 	JOIN_USER_MOBILE: 'string|false|comment=用户手机号(冗余)',
 
+	JOIN_BOOKING_TERMS_AGREED: 'bool|false|default=false|comment=是否同意预约条款',
+	JOIN_BOOKING_TERMS_TIME: 'int|false|default=0|comment=同意预约条款时间戳',
+	JOIN_USER_TERMS_VERSION: 'int|false|default=0|comment=用户条款版本',
+	JOIN_USER_TERMS_TIME: 'int|false|default=0|comment=用户条款同意时间戳',
+
 	JOIN_ADD_TIME: 'int|true',
 	JOIN_EDIT_TIME: 'int|true',
 	JOIN_ADD_IP: 'string|false',

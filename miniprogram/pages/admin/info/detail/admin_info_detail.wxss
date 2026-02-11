@@ -1,0 +1,192 @@
+@import '../../../../style/project/base/admin.wxss';
+
+.container {
+	padding: 20rpx;
+	padding-bottom: 200rpx;
+	background-color: #f5f5f5;
+	min-height: 100vh;
+}
+
+/* Loading */
+.loading {
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	height: 400rpx;
+	color: #999;
+}
+
+/* 状态头部 */
+.status-header {
+	padding: 40rpx 30rpx;
+	border-radius: 16rpx;
+	margin-bottom: 20rpx;
+	text-align: center;
+}
+
+.status-icon {
+	font-size: 80rpx;
+	color: #fff;
+}
+
+.status-text {
+	font-size: 36rpx;
+	font-weight: bold;
+	color: #fff;
+	margin-top: 12rpx;
+}
+
+.status-sub {
+	font-size: 26rpx;
+	color: rgba(255, 255, 255, 0.85);
+	margin-top: 8rpx;
+}
+
+/* 状态色 - 预约成功未签到 */
+.status-1-0 {
+	background: linear-gradient(135deg, #4caf50, #66bb6a);
+}
+
+/* 状态色 - 已签到 */
+.status-1-1 {
+	background: var(--adminColor);
+}
+
+/* 状态色 - 用户取消 */
+.status-10-0, .status-10-1 {
+	background: linear-gradient(135deg, #ff9800, #ffb74d);
+}
+
+/* 状态色 - 系统取消 */
+.status-99-0, .status-99-1 {
+	background: linear-gradient(135deg, #f44336, #ef5350);
+}
+
+/* 卡片 */
+.card {
+	background: #fff;
+	border-radius: 16rpx;
+	padding: 30rpx;
+	margin-bottom: 20rpx;
+}
+
+.card-title {
+	font-size: 30rpx;
+	font-weight: bold;
+	color: #333;
+	margin-bottom: 20rpx;
+	padding-bottom: 16rpx;
+	border-bottom: 1rpx solid #f0f0f0;
+}
+
+.card-body {
+	padding: 0;
+}
+
+/* 信息行 */
+.info-row {
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+	padding: 16rpx 0;
+	border-bottom: 1rpx dashed #f8f8f8;
+}
+
+.info-row:last-child {
+	border-bottom: none;
+}
+
+.info-label {
+	color: #999;
+	font-size: 28rpx;
+	flex-shrink: 0;
+	margin-right: 20rpx;
+}
+
+.info-value {
+	color: #333;
+	font-size: 28rpx;
+	text-align: right;
+	max-width: 450rpx;
+	word-break: break-all;
+}
+
+.phone-row {
+	display: flex;
+	align-items: center;
+	color: var(--adminColor);
+}
+
+.text-sm {
+	font-size: 24rpx;
+}
+
+.text-bold {
+	font-weight: bold;
+}
+
+/* 退还信息 */
+.refund-divider {
+	height: 1rpx;
+	background: #f0f0f0;
+	margin: 16rpx 0;
+}
+
+.refund-tag {
+	display: inline-block;
+	background: #fff7e6;
+	color: #fa8c16;
+	font-size: 24rpx;
+	padding: 4rpx 16rpx;
+	border-radius: 8rpx;
+	margin-bottom: 12rpx;
+}
+
+/* 操作按钮区 */
+.action-bar {
+	position: fixed;
+	bottom: 0;
+	left: 0;
+	right: 0;
+	display: flex;
+	padding: 20rpx 30rpx;
+	padding-bottom: calc(20rpx + env(safe-area-inset-bottom));
+	background: #fff;
+	box-shadow: 0 -2rpx 10rpx rgba(0, 0, 0, 0.05);
+	z-index: 100;
+}
+
+.action-btn {
+	flex: 1;
+	height: 80rpx;
+	line-height: 80rpx;
+	text-align: center;
+	border-radius: 40rpx;
+	font-size: 28rpx;
+	margin: 0 8rpx;
+}
+
+.btn-checkin {
+	background: var(--adminColor);
+	color: #fff;
+}
+
+.btn-uncheckin {
+	background: #f5f5f5;
+	color: #666;
+}
+
+.btn-cancel {
+	background: #f5f5f5;
+	color: #666;
+}
+
+.btn-restore {
+	background: #e8f5e9;
+	color: #4caf50;
+}
+
+.btn-del {
+	background: #fff3e0;
+	color: #ff9800;
+}

@@ -1,3 +1,5 @@
+@import '../../../../style/project/base/admin.wxss';
+
 .container {
 	padding: 20rpx;
 	background-color: #f5f5f5;
@@ -109,6 +111,6 @@
 }
 
 .submit-btn {
-	background: linear-gradient(135deg, #667eea, #764ba2);
+	background: var(--adminColor);
 	color: #fff;
 }

@@ -1,7 +1,7 @@
 const pageHelper = require('../helper/page_helper.js');
 const cloudHelper = require('../helper/cloud_helper.js');
 const timeHelper = require('../helper/time_helper.js');
-const qrcodeLib = require('../lib/tools/qrcode_lib.js');
+// const qrcodeLib = require('../lib/tools/qrcode_lib.js'); // 签到核销已禁用
 const MeetBiz = require('../biz/meet_biz.js');
 const cancelHelper = require('../helper/cancel_helper.js');
 
@@ -53,12 +53,6 @@ module.exports = Behavior({
 					return;
 				}
 
-				let qrImageData = qrcodeLib.drawImg('meet=' + join.JOIN_CODE, {
-					typeNumber: 1,
-					errorCorrectLevel: 'L',
-					size: 100
-				});
-
 				// 检查是否允许取消
 				let canCancel = true;
 				let cancelReason = '';
@@ -74,7 +68,6 @@ module.exports = Behavior({
 				this.setData({
 					isLoad: true,
 					join,
-					qrImageData,
 					canCancel,
 					cancelReason
 				});

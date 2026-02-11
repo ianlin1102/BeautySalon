@@ -1,5 +1,5 @@
 page {
-	--adminColor: #2499f2;
+	--adminColor: #7C3AED;
 	--adminRedColor: #FF6666;
 }
 

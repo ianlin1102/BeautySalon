@@ -5,10 +5,18 @@ Page({
 	data: {
 		isLoad: false,
 		sections: [],
+		language: 'en',
 	},
 
 	onLoad: async function () {
 		await this._loadTerms();
+	},
+
+	// 切换语言
+	bindLanguageToggle: function () {
+		this.setData({
+			language: this.data.language === 'zh' ? 'en' : 'zh'
+		});
 	},
 
 	_loadTerms: async function () {

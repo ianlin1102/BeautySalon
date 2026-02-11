@@ -3,7 +3,7 @@
 	background: #f5f5f5;
 }
 
-.terms-header {
+.terms-page-header {
 	padding: 30rpx;
 	background: #fff;
 	text-align: center;
@@ -39,6 +39,51 @@
 	font-size: 28rpx;
 	color: #666;
 	line-height: 1.8;
+	white-space: pre-wrap;
+}
+
+/* 语言切换 */
+.lang-toggle {
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	padding: 16rpx 0;
+	background: #fff;
+}
+
+.lang-btn {
+	font-size: 26rpx;
+	color: #999;
+	padding: 8rpx 20rpx;
+}
+
+.lang-btn.active {
+	color: #06b6d4;
+	font-weight: bold;
+}
+
+.lang-divider {
+	color: #ddd;
+	margin: 0 8rpx;
+}
+
+/* 条款头部区块 */
+.terms-header-block {
+	margin-bottom: 30rpx;
+}
+
+.terms-main-title {
+	font-size: 34rpx;
+	font-weight: bold;
+	color: #06b6d4;
+	text-align: center;
+	margin-bottom: 20rpx;
+}
+
+.terms-intro {
+	font-size: 28rpx;
+	color: #666;
+	line-height: 1.6;
 	white-space: pre-wrap;
 }
 

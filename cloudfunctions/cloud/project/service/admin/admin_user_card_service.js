@@ -11,6 +11,15 @@ const CardItemModel = require('../../model/card_item_model.js');
 
 class AdminUserCardService extends BaseAdminService {
 
+	/**
+	 * 获取用户的有效 ID（用于查询卡项）
+	 * 优先级：USER_MINI_OPENID > USER_ID > USER_GOOGLE_ID > _id
+	 * 注意：空字符串要跳过
+	 */
+	_getEffectiveUserId(user) {
+		return user.USER_MINI_OPENID || user.USER_ID || user.USER_GOOGLE_ID || user._id;
+	}
+
 	/** 通过手机号搜索用户 */
 	async searchUserByPhone(phone, countryCode = '') {
 		// 构建搜索条件：尝试多种格式匹配
@@ -33,8 +42,8 @@ class AdminUserCardService extends BaseAdminService {
 
 		if (!user) return null;
 
-		// 使用用户标识：优先 USER_MINI_OPENID（微信），其次 USER_ID（Web），最后 _id
-		let userOpenId = user.USER_MINI_OPENID || user.USER_ID || user._id;
+		// 使用用户标识（与卡项 USER_CARD_USER_ID 匹配）
+		let userOpenId = this._getEffectiveUserId(user);
 
 		// 获取用户卡项汇总
 		let totalBalance = await UserCardModel.getUserTotalBalance(userOpenId);
@@ -316,24 +325,22 @@ class AdminUserCardService extends BaseAdminService {
 		// 1. 优先匹配卡项唯一ID（UC开头，忽略大小写）
 		if (keyword.toUpperCase().startsWith('UC')) {
 			let result = await this.searchByUniqueId(keyword.toUpperCase());
-			if (result) {
-				// 获取完整用户信息
-				let userOpenId = result.user?.USER_MINI_OPENID;
-				if (userOpenId) {
-					let totalBalance = await UserCardModel.getUserTotalBalance(userOpenId);
-					let totalTimes = await UserCardModel.getUserTotalTimes(userOpenId);
-					let cards = await UserCardModel.getUserCards(userOpenId, { page: 1, size: 100 });
-					return {
-						user: result.user,
-						userId: userOpenId,
-						totalBalance,
-						totalAmount: totalBalance,
-						totalTimes,
-						cards,
-						matchedBy: 'cardUniqueId',
-						matchedCard: result.userCard
-					};
-				}
+			if (result && result.user) {
+				// 获取完整用户信息（支持所有用户类型）
+				let userOpenId = this._getEffectiveUserId(result.user);
+				let totalBalance = await UserCardModel.getUserTotalBalance(userOpenId);
+				let totalTimes = await UserCardModel.getUserTotalTimes(userOpenId);
+				let cards = await UserCardModel.getUserCards(userOpenId, { page: 1, size: 100 });
+				return {
+					user: result.user,
+					userId: userOpenId,
+					totalBalance,
+					totalAmount: totalBalance,
+					totalTimes,
+					cards,
+					matchedBy: 'cardUniqueId',
+					matchedCard: result.userCard
+				};
 			}
 		}
 
@@ -345,7 +352,7 @@ class AdminUserCardService extends BaseAdminService {
 		if (!userById) userById = await UserModel.getOne({ _id: keyword }, idFields);
 
 		if (userById) {
-			let userOpenId = userById.USER_MINI_OPENID || userById._id;
+			let userOpenId = this._getEffectiveUserId(userById);
 			let totalBalance = await UserCardModel.getUserTotalBalance(userOpenId);
 			let totalTimes = await UserCardModel.getUserTotalTimes(userOpenId);
 			let cards = await UserCardModel.getUserCards(userOpenId, { page: 1, size: 100 });
@@ -367,7 +374,7 @@ class AdminUserCardService extends BaseAdminService {
 				'USER_ID,USER_NAME,USER_MOBILE,USER_MINI_OPENID,USER_GOOGLE_ID,USER_GOOGLE_EMAIL,USER_ACCOUNT,USER_SOURCE,USER_WORK,USER_CITY,USER_TRADE,USER_ADD_TIME,USER_LOGIN_TIME'
 			);
 			if (userByEmail) {
-				let userOpenId = userByEmail.USER_MINI_OPENID || userByEmail._id;
+				let userOpenId = this._getEffectiveUserId(userByEmail);
 				let totalBalance = await UserCardModel.getUserTotalBalance(userOpenId);
 				let totalTimes = await UserCardModel.getUserTotalTimes(userOpenId);
 				let cards = await UserCardModel.getUserCards(userOpenId, { page: 1, size: 100 });
@@ -383,12 +390,63 @@ class AdminUserCardService extends BaseAdminService {
 			}
 		}
 
-		// 4. 最后尝试按手机号搜索
+		// 4. 尝试按账号或姓名精确搜索
+		const nameFields = 'USER_ID,USER_NAME,USER_MOBILE,USER_MINI_OPENID,USER_GOOGLE_ID,USER_GOOGLE_EMAIL,USER_ACCOUNT,USER_SOURCE,USER_WORK,USER_CITY,USER_TRADE,USER_ADD_TIME,USER_LOGIN_TIME';
+		let userByAccount = await UserModel.getOne({ USER_ACCOUNT: keyword }, nameFields, {}, false);
+		if (!userByAccount) {
+			userByAccount = await UserModel.getOne({ USER_NAME: keyword }, nameFields, {}, false);
+		}
+		if (userByAccount) {
+			let userOpenId = this._getEffectiveUserId(userByAccount);
+			let totalBalance = await UserCardModel.getUserTotalBalance(userOpenId);
+			let totalTimes = await UserCardModel.getUserTotalTimes(userOpenId);
+			let cards = await UserCardModel.getUserCards(userOpenId, { page: 1, size: 100 });
+			return {
+				user: userByAccount,
+				userId: userOpenId,
+				totalBalance,
+				totalAmount: totalBalance,
+				totalTimes,
+				cards,
+				matchedBy: 'account'
+			};
+		}
+
+		// 5. 尝试按手机号精确搜索
 		let phoneResult = await this.searchUserByPhone(keyword, '');
 		if (phoneResult) {
 			phoneResult.matchedBy = 'phone';
+			return phoneResult;
 		}
-		return phoneResult;
+
+		// 6. 模糊搜索（姓名、手机号、账号、邮箱，与用户管理列表一样的逻辑）
+		let userByLike = await UserModel.getOne({ USER_NAME: ['like', keyword] }, nameFields, {}, false);
+		if (!userByLike) {
+			userByLike = await UserModel.getOne({ USER_MOBILE: ['like', keyword] }, nameFields, {}, false);
+		}
+		if (!userByLike) {
+			userByLike = await UserModel.getOne({ USER_ACCOUNT: ['like', keyword] }, nameFields, {}, false);
+		}
+		if (!userByLike) {
+			userByLike = await UserModel.getOne({ USER_GOOGLE_EMAIL: ['like', keyword] }, nameFields, {}, false);
+		}
+		if (userByLike) {
+			let userOpenId = this._getEffectiveUserId(userByLike);
+			let totalBalance = await UserCardModel.getUserTotalBalance(userOpenId);
+			let totalTimes = await UserCardModel.getUserTotalTimes(userOpenId);
+			let cards = await UserCardModel.getUserCards(userOpenId, { page: 1, size: 100 });
+			return {
+				user: userByLike,
+				userId: userOpenId,
+				totalBalance,
+				totalAmount: totalBalance,
+				totalTimes,
+				cards,
+				matchedBy: 'fuzzy'
+			};
+		}
+
+		return null;
 	}
 }
 

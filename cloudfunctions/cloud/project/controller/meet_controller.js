@@ -326,6 +326,19 @@ class MeetController extends BaseController {
 		return await service.cancelMyJoin(this._userId, input.joinId);
 	}
 
+	/** 获取用户卡项列表 */
+	async getMyCardList() {
+		const UserCardModel = require('../model/user_card_model.js');
+
+		let result = await UserCardModel.getUserCards(this._userId, {
+			status: UserCardModel.STATUS.IN_USE,
+			page: 1,
+			size: 50
+		});
+
+		return result;
+	}
+
 	/** 清理已取消和已过期的预约 */
 	async clearMyJoin() {
 		let service = new MeetService();
@@ -415,16 +428,46 @@ class MeetController extends BaseController {
 			forms: 'array|default=[]',  // 允许为空数组
 			cardId: 'string', // 卡项ID（可选）
 			source: 'string|default=miniprogram', // 预约来源：miniprogram/web
+			// 条款同意标记（用于审计追踪）
+			bookingTermsAgreed: 'bool|default=false',    // 是否同意预约条款
+			bookingTermsTime: 'int',                     // 同意预约条款的时间戳
+			userTermsVersion: 'int',                     // 用户条款版本
+			userTermsTime: 'int',                        // 用户条款同意时间戳
 		};
 
 		// 取得数据
 		let input = this.validateData(rules);
 
+		// 构建条款同意信息
+		let termsInfo = {
+			bookingTermsAgreed: input.bookingTermsAgreed || false,
+			bookingTermsTime: input.bookingTermsTime || 0,
+			userTermsVersion: input.userTermsVersion || 0,
+			userTermsTime: input.userTermsTime || 0,
+		};
+
 		let service = new MeetService();
-		let admin = null;
-		return await service.join(this._userId, input.meetId, input.timeMark, input.forms, input.cardId, input.source);
+		return await service.join(this._userId, input.meetId, input.timeMark, input.forms, input.cardId, input.source, termsInfo);
 	}
 
+
+	/** 获取时段预约名单 */
+	async getSlotBookings() {
+		// 检查登录状态
+		if (!this._token) {
+			this.AppError('请先登录');
+		}
+
+		// 数据校验
+		let rules = {
+			meetId: 'must|id',
+			timeMark: 'must|string',
+		};
+		let input = this.validateData(rules);
+
+		let service = new MeetService();
+		return await service.getSlotBookings(input.meetId, input.timeMark);
+	}
 
 	// 计算可约天数
 	_getLeaveDay(days) {

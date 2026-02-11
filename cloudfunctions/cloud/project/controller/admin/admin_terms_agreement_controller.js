@@ -3,10 +3,10 @@
  * Date: 2026-02-03
  */
 
-const BaseController = require('../base_controller.js');
+const BaseAdminController = require('./base_admin_controller.js');
 const AdminTermsAgreementService = require('../../service/admin/admin_terms_agreement_service.js');
 
-class AdminTermsAgreementController extends BaseController {
+class AdminTermsAgreementController extends BaseAdminController {
 
 	/** 获取同意记录列表 */
 	async getList() {

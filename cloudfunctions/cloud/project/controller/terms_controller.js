@@ -74,6 +74,21 @@ class TermsController extends BaseController {
 			clientIP
 		);
 	}
+	/** 获取协议记录（用于打印PDF） */
+	async getAgreementForPrint() {
+		let rules = {
+			id: 'must|id',
+		};
+
+		let input = this.validateData(rules);
+
+		let service = new TermsService();
+		let result = await service.getAgreementForPrint(input.id);
+
+		if (!result) this.AppError('协议记录不存在');
+
+		return result;
+	}
 }
 
 module.exports = TermsController;

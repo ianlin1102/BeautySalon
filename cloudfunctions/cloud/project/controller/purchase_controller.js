@@ -32,6 +32,11 @@ class PurchaseController extends BaseController {
 		let rules = {
 			cardId: 'must|string',
 			paymentMethod: 'must|string',
+			// 条款同意标记（用于审计追踪）
+			cardTermsAgreed: 'bool|default=false',       // 是否同意卡项条款
+			cardTermsTime: 'int',                        // 同意卡项条款的时间戳
+			userTermsVersion: 'int',                     // 用户条款版本
+			userTermsTime: 'int',                        // 用户条款同意时间戳
 		};
 
 		let input = this.validateData(rules);
@@ -72,6 +77,11 @@ class PurchaseController extends BaseController {
 			PURCHASE_PROOF_URL: '',
 			PURCHASE_CREATE_TIME: Date.now(),
 			PURCHASE_UPDATE_TIME: Date.now(),
+			// 条款同意记录（用于审计追踪）
+			ORDER_CARD_TERMS_AGREED: input.cardTermsAgreed || false,
+			ORDER_CARD_TERMS_TIME: input.cardTermsTime || 0,
+			ORDER_USER_TERMS_VERSION: input.userTermsVersion || 0,
+			ORDER_USER_TERMS_TIME: input.userTermsTime || 0,
 		};
 
 		await db.collection('ax_purchase_history').add({

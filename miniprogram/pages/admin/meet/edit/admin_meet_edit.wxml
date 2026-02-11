@@ -27,12 +27,6 @@
 			</picker>
 		</view>
 		<view wx:if="{{formInstructorIdFocus}}" class="hint-desc error">{{formInstructorIdFocus}}</view>
-			<view id="formStyleSet" class="form-group arrow" bindtap="url" data-url="../cover/admin_meet_cover">
-				<view class="title must">封面设置<text class="text-grey text-normal margin-left-xs">(必填)</text></view>
-				<view wx:if="{{formStyleSet.pic}}" class="form-text"></view>
-				<view wx:else class="form-text text-orange">封面图片未设置</view>
-			</view>
-			<view wx:if="{{formStyleSetFocus}}" class="hint-desc error">{{formStyleSetFocus}}</view>
 
 			<view class="form-group arrow" bindtap="url" data-url="../content/admin_meet_content">
 				<view class="title must">详细介绍<text class="text-grey text-normal margin-left-xs">(必填)</text></view>
@@ -72,7 +66,7 @@
 			<!-- 消费设置 -->
 			<view class="form-group">
 				<view class="title">需要卡项消费</view>
-				<switch bindchange="bindCostEnabledChange" checked="{{formCostSet.isEnabled}}" color="#667eea"/>
+				<switch bindchange="bindCostEnabledChange" checked="{{formCostSet.isEnabled}}" color="#7C3AED"/>
 			</view>
 
 			<view wx:if="{{formCostSet.isEnabled}}">
@@ -100,7 +94,7 @@
 
 				<view wx:if="{{formCostSet.costType === 'both'}}" class="form-group">
 					<view class="title">允许系统自动选卡</view>
-					<switch bindchange="bindAutoSelectChange" checked="{{formCostSet.allowAutoSelect}}" color="#667eea"/>
+					<switch bindchange="bindAutoSelectChange" checked="{{formCostSet.allowAutoSelect}}" color="#7C3AED"/>
 				</view>
 
 				<view class="form-group">
@@ -111,7 +105,7 @@
 			<!-- 取消限制设置 -->
 			<view class="form-group margin-top">
 				<view class="title">取消时间限制<text class="text-grey text-normal margin-left-xs">(用户)</text></view>
-				<switch bindchange="bindCancelLimitChange" checked="{{formCancelSet.isLimit}}" color="#667eea"/>
+				<switch bindchange="bindCancelLimitChange" checked="{{formCancelSet.isLimit}}" color="#7C3AED"/>
 			</view>
 
 			<view wx:if="{{formCancelSet.isLimit}}" class="form-group" bindtap="bindShowCancelPicker">

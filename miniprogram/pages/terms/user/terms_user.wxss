@@ -1,131 +1,146 @@
-.terms-page {
+@import "../../../style/project/neon_theme.wxss";
+@import "../../../projects/A00/skin/skin.wxss";
+
+page {
+	background-color: #050511;
+}
+
+.content-area {
+	position: relative;
+	z-index: 1;
+	padding-top: 30rpx;
+	min-height: 100vh;
 	display: flex;
 	flex-direction: column;
-	height: 100vh;
-	background: #f5f5f5;
 }
 
-.terms-header {
-	padding: 30rpx;
-	background: #fff;
-	text-align: center;
-	border-bottom: 1rpx solid #eee;
+.terms-content-scroll {
+	height: 55vh;
+	width: 100%;
 }
 
-.terms-title {
-	font-size: 36rpx;
-	font-weight: bold;
-	color: #333;
-	display: block;
-}
-
-.terms-version {
-	font-size: 24rpx;
-	color: #999;
-	margin-top: 10rpx;
-	display: block;
-}
-
-.terms-content {
-	flex: 1;
-	padding: 30rpx;
-	background: #fff;
-	margin: 20rpx;
-	border-radius: 10rpx;
-}
-
-.terms-section {
-	margin-bottom: 40rpx;
-}
-
-.section-title {
-	font-size: 32rpx;
-	font-weight: bold;
-	color: #333;
-	margin-bottom: 20rpx;
-}
-
-.section-content {
-	font-size: 28rpx;
-	color: #666;
+.content-line {
 	line-height: 1.8;
 	white-space: pre-wrap;
 }
 
-.scroll-hint {
-	text-align: center;
-	padding: 40rpx;
-	color: #2499f2;
-	font-size: 26rpx;
-}
-
-.agree-section {
-	padding: 30rpx;
-	background: #fff;
-	border-top: 1rpx solid #eee;
+.disabled-area {
 	opacity: 0.3;
 	pointer-events: none;
-	transition: all 0.3s;
 }
 
-.agree-section.visible {
-	opacity: 1;
-	pointer-events: auto;
+.glass-panel .title {
+	font-size: 34rpx;
+	font-weight: bold;
+	text-align: center;
+	padding: 30rpx 0;
 }
 
-.agree-checkbox {
+.scroll-hint {
+	text-align: center;
+	padding: 30rpx;
+	color: #00f2ff;
+	font-size: 26rpx;
+	text-shadow: 0 0 10rpx rgba(0, 242, 255, 0.5);
+}
+
+/* 语言切换 */
+.lang-toggle {
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	padding: 16rpx 0;
+	margin-bottom: 20rpx;
+}
+
+.lang-btn {
+	font-size: 26rpx;
+	color: rgba(255,255,255,0.4);
+	padding: 8rpx 20rpx;
+}
+
+.lang-btn.active {
+	color: #06b6d4;
+	font-weight: bold;
+}
+
+.lang-divider {
+	color: rgba(255,255,255,0.2);
+	margin: 0 8rpx;
+}
+
+/* 条款头部 */
+.terms-header {
 	margin-bottom: 30rpx;
 }
 
-.checkbox-label {
+.terms-main-title {
+	font-size: 34rpx;
+	font-weight: bold;
+	color: #06b6d4;
+	text-align: center;
+	margin-bottom: 20rpx;
+}
+
+.terms-intro {
+	font-size: 28rpx;
+	color: rgba(255,255,255,0.7);
+	line-height: 1.6;
+	white-space: pre-wrap;
+}
+
+/* 霓虹表单样式 */
+.neon-form-group {
+	padding: 20rpx 10rpx;
 	display: flex;
 	align-items: center;
-	font-size: 28rpx;
-	color: #333;
+	justify-content: space-between;
+	border-bottom: 1rpx solid rgba(255, 255, 255, 0.05);
 }
 
-.checkbox-label checkbox {
-	margin-right: 10rpx;
-}
-
-.agree-name {
-	margin-bottom: 30rpx;
-}
-
-.name-label {
-	font-size: 26rpx;
-	color: #666;
-	display: block;
-	margin-bottom: 15rpx;
-}
-
-.name-input {
-	background: #f5f5f5;
-	border-radius: 10rpx;
-	padding: 25rpx 20rpx;
+.neon-form-group .title {
 	font-size: 30rpx;
-	width: 100%;
-	box-sizing: border-box;
-	height: 90rpx;
-	line-height: 40rpx;
+	padding: 0;
+	text-align: left;
 }
 
-/* Placeholder 样式 */
-.name-input-placeholder {
-	font-size: 28rpx;
-	color: #999;
+.neon-form-group .title.must::before {
+	color: #ff00de;
+	content: "*";
+	margin-right: 5rpx;
 }
 
-.agree-btn {
-	width: 100%;
-	background: #2499f2 !important;
-	color: #fff !important;
-	border-radius: 50rpx;
-	font-size: 32rpx;
-	line-height: 2.5;
+.neon-input {
+	flex: 1;
+	text-align: right;
+	color: #fff;
+	font-size: 30rpx;
 }
 
-.agree-btn[disabled] {
-	background: #ccc !important;
-	color: #999 !important;
+.phc {
+	color: rgba(255, 255, 255, 0.2);
+}
+
+.neon-checkbox {
+	transform: scale(0.9);
+}
+
+/* 覆盖 neon-button 禁用状态 */
+.neon-button[disabled] {
+	background: rgba(255, 255, 255, 0.1) !important;
+	color: rgba(255, 255, 255, 0.3) !important;
+	box-shadow: none !important;
+}
+
+/* 已同意状态保持绿色但增加发光 */
+.text-green {
+	color: #00ff88 !important;
+	text-shadow: 0 0 15rpx rgba(0, 255, 136, 0.4);
+}
+
+.bg-green {
+	background-color: #00ff88 !important;
+	color: #050511 !important;
+	font-weight: bold;
+	box-shadow: 0 0 20rpx rgba(0, 255, 136, 0.3);
 }

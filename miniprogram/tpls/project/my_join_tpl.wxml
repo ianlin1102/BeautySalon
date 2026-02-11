@@ -12,7 +12,7 @@
 				<view class="item card-project shadow-project {{item.isTimeout ? 'is-timeout' : ''}} {{item.JOIN_STATUS==10 || item.JOIN_STATUS==99 ? 'is-cancelled' : ''}}" wx:for="{{dataList.list}}" wx:key="index">
 					<!-- 状态标签 -->
 					<view wx:if="{{item.isTimeout}}" class="status">已结束</view>
-					<view bindtap="url" data-url="../join_detail/my_join_detail?id={{item._id}}" wx:elif="{{item.JOIN_STATUS==1}}" class="qr"><text class="icon-qrcode"></text></view>
+					<!-- QR核销已禁用 -->
 
 					<!-- 课程标题 -->
 					<view class="title content-cut-two" bindtap="url" data-url="../join_detail/my_join_detail?id={{item._id}}">{{item.JOIN_MEET_TITLE}}</view>
@@ -33,7 +33,7 @@
 					<view class="data" bindtap="url" data-url="../join_detail/my_join_detail?id={{item._id}}">
 						<text wx:if="{{item.JOIN_STATUS==1}}" class="text-green">
 							<text class="icon-newshot margin-right-xxs"></text>预约成功
-							<text wx:if="{{item.JOIN_IS_CHECKIN==1}}" class="checkin-badge">已签到</text>
+							<!-- 签到标签已禁用 -->
 						</text>
 
 						<text wx:elif="{{item.JOIN_STATUS==10}}" class="text-grey">

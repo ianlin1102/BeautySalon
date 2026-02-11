@@ -1,7 +1,7 @@
 {
 	"usingComponents": {},
 	"enablePullDownRefresh": true,
-	"navigationBarBackgroundColor": "#2499f2",
+	"navigationBarBackgroundColor": "#7C3AED",
 	"navigationBarTextStyle": "white",
 	"navigationBarTitleText": "卡项购买截图"
 }

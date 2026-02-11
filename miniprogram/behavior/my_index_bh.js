@@ -280,36 +280,39 @@ module.exports = Behavior({
 			if (loginResult.success) {
 				console.log('微信登录成功');
 
-				// 重新加载所有用户数据
+				// 直接使用登录返回的用户数据设置状态，避免再次请求云函数失败
+				this.setData({
+					user: loginResult.user || {},
+					isLoggedIn: true
+				});
+
+				wx.hideLoading();
+				pageHelper.showSuccToast('登录成功');
+
+				// 异步加载其他数据（不阻塞登录状态更新）
 				try {
-					// 1. 加载用户信息
-					await this._loadUser();
-
-					// 2. 加载预约列表
+					// 1. 加载预约列表
 					if (this._loadTodayList) {
-						await this._loadTodayList();
+						this._loadTodayList();
 					}
 
-					// 3. 加载积分信息（页面级方法）
+					// 2. 加载积分信息（页面级方法）
 					if (this.getPointsInfo) {
-						await this.getPointsInfo();
+						this.getPointsInfo();
 					}
 
-					// 4. 加载统计数据（页面级方法）
+					// 3. 加载统计数据（页面级方法）
 					if (this.loadMyStats) {
-						await this.loadMyStats();
+						this.loadMyStats();
 					}
 
-					// 5. 加载最近预约（页面级方法）
+					// 4. 加载最近预约（页面级方法）
 					if (this.loadNextAppointment) {
-						await this.loadNextAppointment();
+						this.loadNextAppointment();
 					}
 				} catch (err) {
 					console.error('加载用户数据失败:', err);
 				}
-
-				wx.hideLoading();
-				pageHelper.showSuccToast('登录成功');
 			} else {
 				wx.hideLoading();
 				console.error('微信登录失败:', loginResult.error);

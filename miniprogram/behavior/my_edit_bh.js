@@ -34,6 +34,7 @@ module.exports = Behavior({
 			if (!user) {
 				this.setData({
 					isLoad: true,
+					formAvatar: '',
 					formName: '',
 					formMobile: '',
 					formCity: '',
@@ -61,6 +62,7 @@ module.exports = Behavior({
 
 			this.setData({
 				isLoad: true,
+				formAvatar: user.USER_AVATAR || '',
 				formName: user.USER_NAME,
 				formMobile: mobile,
 				formTrade: user.USER_TRADE,
@@ -181,6 +183,29 @@ module.exports = Behavior({
 		},
 
 
+		bindChooseAvatar: async function (e) {
+			let avatarUrl = e.detail.avatarUrl;
+			if (!avatarUrl) return;
+
+			try {
+				let res = await wx.compressImage({
+					src: avatarUrl,
+					quality: 30
+				});
+				this.setData({ formAvatar: res.tempFilePath });
+			} catch (err) {
+				// 压缩失败就用原图（微信头像本身已经不大）
+				this.setData({ formAvatar: avatarUrl });
+			}
+		},
+
+		bindNicknameChange: function (e) {
+			let nickname = e.detail.value;
+			if (nickname) {
+				this.setData({ formName: nickname });
+			}
+		},
+
 		bindSubmitTap: async function (e) {
 			try {
 				let data = this.data;
@@ -210,6 +235,16 @@ module.exports = Behavior({
 
 				// 添加国家代码到提交数据
 				data.countryCode = countryCode;
+
+				// 上传头像（如果是临时文件路径）
+				let avatar = this.data.formAvatar || '';
+				if (avatar && !avatar.startsWith('cloud://') && !avatar.startsWith('https://')) {
+					let uploadedUrl = await cloudHelper.transTempPicOne(avatar, 'avatar/', '', false);
+					if (uploadedUrl) {
+						avatar = uploadedUrl;
+					}
+				}
+				data.avatar = avatar;
 
 				let opts = {
 					title: '提交中'

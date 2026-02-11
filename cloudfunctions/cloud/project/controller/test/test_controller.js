@@ -6,6 +6,8 @@
 const BaseController = require('../base_controller.js');
 const config = require('../../../config/config.js');
 const UserModel = require('../../model/user_model.js');
+const MeetModel = require('../../model/meet_model.js');
+const UserCardModel = require('../../model/user_card_model.js');
 const timeUtil = require('../../../framework/utils/time_util.js');
 
 class TestController extends BaseController {
@@ -273,6 +275,130 @@ class TestController extends BaseController {
 				_pid: updatedUser._pid
 			},
 			userData: updatedUser
+		};
+	}
+
+	/**
+	 * 检查所有 meet 的 MEET_COST_SET 状态
+	 */
+	async checkMeetCost() {
+		let meets = await MeetModel.getAll({}, 'MEET_TITLE,MEET_COST_SET,MEET_STATUS', {}, true);
+
+		return {
+			total: meets.length,
+			meets: meets.map(m => ({
+				_id: m._id,
+				title: m.MEET_TITLE,
+				status: m.MEET_STATUS,
+				costSet: m.MEET_COST_SET || '(未设置)'
+			}))
+		};
+	}
+
+	/**
+	 * 更新所有 meet 的 MEET_COST_SET，启用付费预约
+	 */
+	async updateMeetCost() {
+		const costType = this._request.costType || 'both';
+		const timesCost = this._request.timesCost || 1;
+		const balanceCost = this._request.balanceCost || 50;
+
+		let meets = await MeetModel.getAll({}, '_id,MEET_TITLE,MEET_COST_SET', {}, true);
+
+		let updated = [];
+		for (let meet of meets) {
+			let newCostSet = {
+				isEnabled: true,
+				costType: costType,
+				timesCost: timesCost,
+				balanceCost: balanceCost,
+				allowAutoSelect: true
+			};
+
+			await MeetModel.edit(meet._id, { MEET_COST_SET: newCostSet });
+			updated.push({
+				_id: meet._id,
+				title: meet.MEET_TITLE,
+				before: meet.MEET_COST_SET || '(空)',
+				after: newCostSet
+			});
+		}
+
+		return {
+			success: true,
+			message: `已更新 ${updated.length} 个课程的 MEET_COST_SET`,
+			updated
+		};
+	}
+
+	/**
+	 * 测试搜索用户（与 admin/user_search 相同逻辑，无需 admin 权限）
+	 */
+	async testSearchUser() {
+		const AdminUserCardService = require('../../service/admin/admin_user_card_service.js');
+		const keyword = this._request.keyword;
+		if (!keyword) return { success: false, message: '请提供 keyword 参数' };
+
+		let service = new AdminUserCardService();
+		let result = await service.searchUser(keyword.trim());
+
+		if (!result) return { success: false, message: '未找到匹配的用户' };
+
+		return {
+			matchedBy: result.matchedBy,
+			userId: result.userId,
+			userName: result.user?.USER_NAME,
+			userAccount: result.user?.USER_ACCOUNT,
+			totalBalance: result.totalBalance,
+			totalTimes: result.totalTimes,
+			cardsCount: result.cards?.list?.length || 0,
+			cards: (result.cards?.list || []).map(c => ({
+				name: c.USER_CARD_CARD_NAME,
+				type: c.USER_CARD_TYPE,
+				status: c.USER_CARD_STATUS,
+				remainTimes: c.USER_CARD_REMAIN_TIMES,
+				remainAmount: c.USER_CARD_REMAIN_AMOUNT
+			}))
+		};
+	}
+
+	/**
+	 * 检查用户的卡项（诊断用）
+	 */
+	async checkUserCards() {
+		const userId = this._request.userId;
+		if (!userId) {
+			return { success: false, message: '请提供 userId 参数' };
+		}
+
+		// 查所有卡项（不限 _pid）
+		let allCards = await UserCardModel.getAll(
+			{ USER_CARD_USER_ID: userId },
+			'*', {}, false
+		);
+
+		// 查 _pid 过滤的卡项
+		let pidCards = await UserCardModel.getAll(
+			{ USER_CARD_USER_ID: userId },
+			'*', {}, true
+		);
+
+		return {
+			userId,
+			allCardsCount: allCards.length,
+			pidCardsCount: pidCards.length,
+			allCards: allCards.map(c => ({
+				_id: c._id,
+				_pid: c._pid,
+				name: c.USER_CARD_CARD_NAME,
+				type: c.USER_CARD_TYPE,
+				status: c.USER_CARD_STATUS,
+				remainTimes: c.USER_CARD_REMAIN_TIMES,
+				remainAmount: c.USER_CARD_REMAIN_AMOUNT,
+				userId: c.USER_CARD_USER_ID,
+				expireTime: c.USER_CARD_EXPIRE_TIME,
+				addTime: c.USER_CARD_ADD_TIME
+			}))
 		};
 	}
 

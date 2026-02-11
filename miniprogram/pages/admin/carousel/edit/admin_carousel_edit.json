@@ -3,7 +3,7 @@
 		"cmpt-img-upload": "/cmpts/public/img/img_upload_cmpt"
 	},
 	"navigationBarTitleText": "编辑轮播图",
-	"navigationBarBackgroundColor": "#2499f2",
+	"navigationBarBackgroundColor": "#7C3AED",
 	"navigationBarTextStyle": "white",
 	"enablePullDownRefresh": false
 }

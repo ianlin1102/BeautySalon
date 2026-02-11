@@ -15,6 +15,9 @@ const cloudBase = require('../../../framework/cloud/cloud_base.js');
 const MeetModel = require('../../model/meet_model.js');
 const JoinModel = require('../../model/join_model.js');
 const DayModel = require('../../model/day_model.js');
+const UserModel = require('../../model/user_model.js');
+const UserCardModel = require('../../model/user_card_model.js');
+const CardRecordModel = require('../../model/card_record_model.js');
 const config = require('../../../config/config.js');
 
 class AdminMeetService extends BaseAdminService {
@@ -363,6 +366,30 @@ class AdminMeetService extends BaseAdminService {
 		await this._editDays(id, nowDay, daysSet);
 	}
 
+	/** 清理三个月前的预约记录（懒删除） */
+	async cleanupOldJoins() {
+		const now = new Date();
+		now.setMonth(now.getMonth() - 3);
+		const year = now.getFullYear();
+		const month = String(now.getMonth() + 1).padStart(2, '0');
+		const day = String(now.getDate()).padStart(2, '0');
+		const cutoffDate = `${year}-${month}-${day}`;
+
+		// 云数据库 where.remove 每次最多删20条，循环删除
+		let totalRemoved = 0;
+		let removed;
+		do {
+			removed = await JoinModel.del({
+				JOIN_MEET_DAY: ['<', cutoffDate]
+			});
+			totalRemoved += removed;
+		} while (removed > 0);
+
+		if (totalRemoved > 0) {
+			console.log(`[cleanupOldJoins] 清理了 ${totalRemoved} 条三个月前的预约记录 (cutoff: ${cutoffDate})`);
+		}
+	}
+
 	/**预约名单分页列表 */
 	async getJoinList({
 		search, // 搜索条件
@@ -381,10 +408,13 @@ class AdminMeetService extends BaseAdminService {
 		oldTotal
 	}) {
 
+		// 懒删除：清理三个月前的记录
+		await this.cleanupOldJoins();
+
 		orderBy = orderBy || {
 			'JOIN_EDIT_TIME': 'desc'
 		};
-		let fields = 'JOIN_IS_CHECKIN,JOIN_CODE,JOIN_ID,JOIN_REASON,JOIN_USER_ID,JOIN_MEET_ID,JOIN_MEET_TITLE,JOIN_MEET_DAY,JOIN_MEET_TIME_START,JOIN_MEET_TIME_END,JOIN_MEET_TIME_MARK,JOIN_FORMS,JOIN_STATUS,JOIN_EDIT_TIME,JOIN_CHECKIN_TIME,JOIN_USER_NAME,JOIN_USER_MOBILE,JOIN_SOURCE';
+		let fields = 'JOIN_IS_CHECKIN,JOIN_CODE,JOIN_ID,JOIN_REASON,JOIN_USER_ID,JOIN_MEET_ID,JOIN_MEET_TITLE,JOIN_MEET_DAY,JOIN_MEET_TIME_START,JOIN_MEET_TIME_END,JOIN_MEET_TIME_MARK,JOIN_FORMS,JOIN_STATUS,JOIN_EDIT_TIME,JOIN_CHECKIN_TIME,JOIN_USER_NAME,JOIN_USER_MOBILE,JOIN_SOURCE,JOIN_CARD_DEDUCT,JOIN_INSTRUCTOR_NAME';
 
 		let where = {};
 		if (meetId) where.JOIN_MEET_ID = meetId;
@@ -430,28 +460,36 @@ class AdminMeetService extends BaseAdminService {
 			}
 		}
 
-		// 兼容旧的 sortType 逻辑 (如果前端还在用)
-		if (!util.isDefined(search) && sortType && util.isDefined(sortVal)) {
-			// 搜索菜单
+		// sortType 逻辑：前端筛选菜单通过 sortType/sortVal 传参
+		if (sortType && util.isDefined(sortVal)) {
 			switch (sortType) {
 				case 'status':
-					// 按类型
-					if (!util.isDefined(status)) { // 防止覆盖 explicit status
+					if (!util.isDefined(status)) {
 						let s = Number(sortVal);
-						if (s == 1099) //取消的2种
+						if (s == 1099)
 							where.JOIN_STATUS = ['in', [10, 99]]
 						else
 							where.JOIN_STATUS = s;
 					}
 					break;
+				case 'isCheckin':
 				case 'checkin':
-					// 签到
-					if (!util.isDefined(isCheckin)) { // 防止覆盖 explicit isCheckin
+					if (!util.isDefined(isCheckin)) {
 						where.JOIN_STATUS = JoinModel.STATUS.SUCC;
 						if (sortVal == 1) {
 							where.JOIN_IS_CHECKIN = 1;
 						} else {
 							where.JOIN_IS_CHECKIN = 0;
+						}
+					}
+					break;
+				case 'expired':
+					if (!util.isDefined(expired)) {
+						let today = timeUtil.time('Y-M-D');
+						if (Number(sortVal) == 1) {
+							where.JOIN_MEET_DAY = ['<', today];
+						} else if (Number(sortVal) == 0) {
+							where.JOIN_MEET_DAY = ['>=', today];
 						}
 					}
 					break;
@@ -575,6 +613,13 @@ class AdminMeetService extends BaseAdminService {
 		}
 	}
 
+	/** 获取预约详情（全量字段） */
+	async getJoinDetail(joinId) {
+		let join = await JoinModel.getOne({ _id: joinId });
+		if (!join) return null;
+		return join;
+	}
+
 	/**修改项目状态 */
 	async statusMeet(id, status) {
 		await MeetModel.edit(id, {
@@ -587,6 +632,156 @@ class AdminMeetService extends BaseAdminService {
 		await MeetModel.edit(id, {
 			MEET_ORDER: sort
 		});
+	}
+
+	/** 补录预约（管理员为用户补录过去的预约并扣卡） */
+	async backfillJoin(meetId, timeMark, userId, cardId, adminId, adminName) {
+		// 1. 获取课程信息
+		let meet = await MeetModel.getOne({ _id: meetId });
+		if (!meet) this.AppError('课程不存在');
+
+		// 2. 解析时段信息
+		let meetService = new MeetService();
+		let day = meetService.getDayByTimeMark(timeMark);
+
+		// 加载 MEET_DAYS_SET（从 DayModel）以获取时段详情
+		try {
+			meet.MEET_DAYS_SET = await meetService.getDaysSet(meetId, day, day);
+		} catch (e) {
+			meet.MEET_DAYS_SET = [];
+		}
+		let daySet = meetService.getDaySetByTimeMark(meet, timeMark);
+		let timeSet = daySet ? meetService.getTimeSetByTimeMark(meet, timeMark) : null;
+
+		// 如果时段信息获取不到（历史数据可能已不在 DayModel），用 timeMark 解析的日期
+		let timeStart = timeSet ? timeSet.start : '00:00';
+		let timeEnd = timeSet ? timeSet.end : '00:00';
+
+		// 3. 获取用户信息
+		let user = await UserModel.getOne({ _id: userId });
+		if (!user) {
+			// 尝试用 USER_MINI_OPENID 查找
+			user = await UserModel.getOne({ USER_MINI_OPENID: userId });
+		}
+		if (!user) this.AppError('用户不存在');
+
+		let effectiveUserId = user.USER_MINI_OPENID || user.USER_ID || user._id;
+
+		// 4. 构建预约记录
+		let data = {
+			JOIN_USER_ID: effectiveUserId,
+			JOIN_MEET_ID: meetId,
+			JOIN_MEET_TITLE: meet.MEET_TITLE || '',
+			JOIN_MEET_DAY: day,
+			JOIN_MEET_TIME_START: timeStart,
+			JOIN_MEET_TIME_END: timeEnd,
+			JOIN_MEET_TIME_MARK: timeMark,
+
+			JOIN_INSTRUCTOR_ID: meet.MEET_INSTRUCTOR_ID || '',
+			JOIN_INSTRUCTOR_NAME: meet.MEET_INSTRUCTOR_NAME || '',
+
+			JOIN_START_TIME: timeUtil.time2Timestamp(day + ' ' + timeStart + ':00'),
+
+			JOIN_FORMS: [],
+			JOIN_SOURCE: 'backfill',
+
+			JOIN_USER_NAME: user.USER_NAME || '',
+			JOIN_USER_MOBILE: user.USER_MOBILE || '',
+
+			JOIN_STATUS: JoinModel.STATUS.SUCC,
+			JOIN_CODE: dataUtil.genRandomIntString(15),
+
+			JOIN_EDIT_ADMIN_ID: adminId,
+			JOIN_EDIT_ADMIN_NAME: adminName,
+			JOIN_EDIT_ADMIN_TIME: timeUtil.time(),
+		};
+
+		// 5. 卡项扣费处理（如果指定了 cardId）
+		if (cardId) {
+			let userCard = await UserCardModel.getOne({
+				_id: cardId,
+				USER_CARD_USER_ID: effectiveUserId,
+				USER_CARD_STATUS: UserCardModel.STATUS.IN_USE
+			});
+
+			if (!userCard) this.AppError('卡项不存在或已失效');
+
+			if (UserCardModel.isExpired(userCard.USER_CARD_EXPIRE_TIME)) {
+				this.AppError('该卡项已过期');
+			}
+
+			let costSet = meet.MEET_COST_SET || {};
+			let deductAmount = 0;
+			let deductType = '';
+			let cardData = {};
+
+			if (userCard.USER_CARD_TYPE === UserCardModel.TYPE.TIMES) {
+				deductAmount = (costSet.timesCost) ? costSet.timesCost : 1;
+				deductType = 'times';
+				let remainTimes = userCard.USER_CARD_REMAIN_TIMES || 0;
+				if (remainTimes < deductAmount) this.AppError('卡项次数不足');
+				cardData.USER_CARD_REMAIN_TIMES = remainTimes - deductAmount;
+				cardData.USER_CARD_USED_TIMES = (userCard.USER_CARD_USED_TIMES || 0) + deductAmount;
+				if (cardData.USER_CARD_REMAIN_TIMES <= 0) {
+					cardData.USER_CARD_STATUS = UserCardModel.STATUS.USED_UP;
+				}
+			} else if (userCard.USER_CARD_TYPE === UserCardModel.TYPE.BALANCE) {
+				deductAmount = (costSet.balanceCost) ? costSet.balanceCost : 0;
+				deductType = 'amount';
+				let remainAmount = userCard.USER_CARD_REMAIN_AMOUNT || 0;
+				if (deductAmount > 0 && remainAmount < deductAmount) this.AppError('卡项余额不足');
+				cardData.USER_CARD_REMAIN_AMOUNT = remainAmount - deductAmount;
+				cardData.USER_CARD_USED_AMOUNT = (userCard.USER_CARD_USED_AMOUNT || 0) + deductAmount;
+				if (cardData.USER_CARD_REMAIN_AMOUNT <= 0) {
+					cardData.USER_CARD_STATUS = UserCardModel.STATUS.USED_UP;
+				}
+			}
+
+			// 扣卡
+			await UserCardModel.edit(cardId, cardData);
+
+			// 消费记录
+			let beforeTimes = userCard.USER_CARD_REMAIN_TIMES || 0;
+			let beforeAmount = userCard.USER_CARD_REMAIN_AMOUNT || 0;
+			let afterTimes = cardData.USER_CARD_REMAIN_TIMES !== undefined ? cardData.USER_CARD_REMAIN_TIMES : beforeTimes;
+			let afterAmount = cardData.USER_CARD_REMAIN_AMOUNT !== undefined ? cardData.USER_CARD_REMAIN_AMOUNT : beforeAmount;
+
+			await CardRecordModel.insert({
+				RECORD_USER_CARD_ID: cardId,
+				RECORD_USER_ID: effectiveUserId,
+				RECORD_TYPE: CardRecordModel.TYPE.CONSUME,
+				RECORD_CHANGE_TIMES: deductType === 'times' ? -deductAmount : 0,
+				RECORD_CHANGE_AMOUNT: deductType === 'amount' ? -deductAmount : 0,
+				RECORD_BEFORE_TIMES: beforeTimes,
+				RECORD_AFTER_TIMES: afterTimes,
+				RECORD_BEFORE_AMOUNT: beforeAmount,
+				RECORD_AFTER_AMOUNT: afterAmount,
+				RECORD_REASON: '补录消费 - ' + meet.MEET_TITLE,
+				RECORD_RELATED_ID: ''
+			});
+
+			data.JOIN_CARD_DEDUCT = {
+				cardId: cardId,
+				cardType: deductType,
+				cardName: userCard.USER_CARD_CARD_NAME,
+				deductAmount: deductAmount,
+				deductTime: timeUtil.time(),
+				refunded: false,
+				refundTime: 0,
+				refundReason: '',
+				refundBy: ''
+			};
+		}
+
+		// 6. 插入预约记录
+		let joinId = await JoinModel.insert(data);
+
+		// 7. 更新时段统计（如果时段还在 MEET_DAYS_SET 中）
+		if (timeSet) {
+			await meetService.statJoinCnt(meetId, timeMark);
+		}
+
+		return { joinId };
 	}
 }
 

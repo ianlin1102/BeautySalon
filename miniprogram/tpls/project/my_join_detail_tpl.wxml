@@ -15,7 +15,7 @@
 						<text class="icon-remind margin-right-xs text-s"></text><text class="text-cut">{{join.JOIN_MEET_DAY}} {{join.JOIN_MEET_TIME_START}}～{{join.JOIN_MEET_TIME_END}}</text>
 					</view>
 					<view class="data">
-						<text wx:if="{{join.JOIN_STATUS==1}}" class="text-green"><text class="icon-newshot margin-right-xxs"></text>预约成功{{join.JOIN_IS_CHECKIN==1?'，已签到':''}}</text>
+						<text wx:if="{{join.JOIN_STATUS==1}}" class="text-green"><text class="icon-newshot margin-right-xxs"></text>预约成功</text>
 
 						<button wx:if="{{(join.JOIN_STATUS==1||join.JOIN_STATUS==0) && join.JOIN_IS_CHECKIN==0 && canCancel}}" bindtap="bindCancelTap" class="btn mid bg-grey light  margin-left-s"><text class="icon-close"></text>取消预约</button>
 
@@ -35,19 +35,6 @@
 
 				</view>
 
-			</view>
-
-			<view class="info-list-box" wx:if="{{join.JOIN_STATUS==1}}">
-				<view class="item card-project shadow-project">
-					<view class="info">
-						<view class="center"><text class="text-bold margin-right-s">预约码</text> (向工作人员出示进行核销)</view>
-					</view>
-					<view class="info">
-						<view class="center">
-							<image show-menu-by-longpress="{{true}}" src="{{qrImageData}}" class="loading" />
-						</view>
-					</view>
-				</view>
 			</view>
 
 			<view class="info-list-box margin-bottom-xxl">

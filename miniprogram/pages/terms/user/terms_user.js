@@ -8,6 +8,7 @@ Page({
 		isLoad: false,
 		sections: [],
 		version: 0,
+		language: 'en',
 
 		// 滚动相关
 		scrolledToBottom: false,
@@ -17,10 +18,40 @@ Page({
 		checkbox: false,
 		printedName: '',
 		submitting: false,
+
+		// 是否已同意
+		hasAgreed: false,
 	},
 
 	onLoad: async function () {
+		// 检查登录状态，未登录则返回
+		if (!PassportBiz.isLoggedIn()) {
+			pageHelper.showModal('请先登录后再查看用户条款');
+			setTimeout(() => {
+				wx.navigateBack();
+			}, 1500);
+			return;
+		}
+
+		// 检查用户是否已同意条款
+		await this._checkUserTermsStatus();
 		await this._loadTerms();
+	},
+
+	// 检查用户条款同意状态
+	_checkUserTermsStatus: async function () {
+		try {
+			let res = await cloudHelper.callCloudData('terms/check_user_terms', {}, { title: 'bar' });
+			if (res && !res.needAgree) {
+				// 用户已同意当前版本条款
+				this.setData({
+					hasAgreed: true,
+					scrolledToBottom: true // 已同意则不需要强制滚动
+				});
+			}
+		} catch (err) {
+			console.log('检查条款状态失败:', err);
+		}
 	},
 
 	onReady: function () {
@@ -66,6 +97,13 @@ Page({
 			if (scrollHeight <= scrollViewHeight + 50) {
 				this.setData({ scrolledToBottom: true });
 			}
+		});
+	},
+
+	// 切换语言
+	bindLanguageToggle: function () {
+		this.setData({
+			language: this.data.language === 'zh' ? 'en' : 'zh'
 		});
 	},
 

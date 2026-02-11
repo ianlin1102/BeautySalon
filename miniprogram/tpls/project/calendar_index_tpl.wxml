@@ -85,7 +85,7 @@
 			<text wx:elif="{{list.length==0}}" class="no-project icon-emoji text-l text-grey"> 本日没有可预约的项目哦~</text>
 
 			<!-- 新的卡片样式 - 左中右三个区域 + 侧边指示条 -->
-			<view class="meet-card-horizontal category-{{item.typeId}} {{dateHelper.isClassStarted(item.day, item.timeStart) ? 'card-started' : ''}}" wx:for="{{list}}" wx:key="_id" bindtap="{{dateHelper.isClassStarted(item.day, item.timeStart) ? '' : 'url'}}" data-url="../../meet/detail/meet_detail?id={{item.meetId}}&day={{item.day}}&timeStart={{item.timeStart}}&timeEnd={{item.timeEnd}}">
+			<view class="meet-card-horizontal category-{{item.typeId}} {{dateHelper.isClassStarted(item.day, item.timeStart) ? 'card-started' : ''}}" wx:for="{{list}}" wx:key="_id" bindtap="bindCardTap" data-url="../../meet/detail/meet_detail?id={{item.meetId}}&day={{item.day}}&timeStart={{item.timeStart}}&timeEnd={{item.timeEnd}}" data-day="{{item.day}}" data-timestart="{{item.timeStart}}">
 
 				<!-- 左侧区域：日期 + 头像 -->
 				<view class="card-left-section">

@@ -1,0 +1,171 @@
+<!-- Loading -->
+<view class="loading" wx:if="{{!isLoad}}">
+	<text>加载中...</text>
+</view>
+
+<view class="container" wx:if="{{isLoad && detail}}">
+
+	<!-- 状态头部 -->
+	<view class="status-header status-{{detail.JOIN_STATUS}}-{{detail.JOIN_IS_CHECKIN}}">
+		<view class="status-icon">
+			<text wx:if="{{detail.JOIN_STATUS==1 && detail.JOIN_IS_CHECKIN==1}}" class="icon-roundcheckfill"></text>
+			<text wx:elif="{{detail.JOIN_STATUS==1}}" class="icon-roundcheck"></text>
+			<text wx:elif="{{detail.JOIN_STATUS==10}}" class="icon-close"></text>
+			<text wx:elif="{{detail.JOIN_STATUS==99}}" class="icon-warnfill"></text>
+		</view>
+		<view class="status-text">
+			<text wx:if="{{detail.JOIN_STATUS==1 && detail.JOIN_IS_CHECKIN==1}}">已签到</text>
+			<text wx:elif="{{detail.JOIN_STATUS==1}}">预约成功</text>
+			<text wx:elif="{{detail.JOIN_STATUS==10}}">用户取消</text>
+			<text wx:elif="{{detail.JOIN_STATUS==99}}">系统取消</text>
+		</view>
+		<view class="status-sub" wx:if="{{detail.JOIN_STATUS==99 && detail.JOIN_REASON}}">
+			原因：{{detail.JOIN_REASON}}
+		</view>
+	</view>
+
+	<!-- 课程信息卡片 -->
+	<view class="card">
+		<view class="card-title">课程信息</view>
+		<view class="card-body">
+			<view class="info-row">
+				<text class="info-label">课程</text>
+				<text class="info-value">{{detail.JOIN_MEET_TITLE}}</text>
+			</view>
+			<view class="info-row" wx:if="{{detail.JOIN_INSTRUCTOR_NAME}}">
+				<text class="info-label">老师</text>
+				<text class="info-value">{{detail.JOIN_INSTRUCTOR_NAME}}</text>
+			</view>
+			<view class="info-row">
+				<text class="info-label">日期</text>
+				<text class="info-value">{{detail.JOIN_MEET_DAY}}</text>
+			</view>
+			<view class="info-row">
+				<text class="info-label">时间</text>
+				<text class="info-value">{{detail.JOIN_MEET_TIME_START}} ~ {{detail.JOIN_MEET_TIME_END}}</text>
+			</view>
+			<view class="info-row" wx:if="{{detail.JOIN_SOURCE}}">
+				<text class="info-label">来源</text>
+				<view class="info-value">
+					<text wx:if="{{detail.JOIN_SOURCE=='web'}}" class="text-blue">网页端</text>
+					<text wx:elif="{{detail.JOIN_SOURCE=='miniprogram'}}" class="text-green">小程序</text>
+					<text wx:else class="text-grey">小程序</text>
+				</view>
+			</view>
+		</view>
+	</view>
+
+	<!-- 用户信息卡片 -->
+	<view class="card">
+		<view class="card-title">用户信息</view>
+		<view class="card-body">
+			<view class="info-row" wx:if="{{detail.JOIN_USER_NAME}}">
+				<text class="info-label">姓名</text>
+				<text class="info-value">{{detail.JOIN_USER_NAME}}</text>
+			</view>
+			<view class="info-row" wx:if="{{detail.JOIN_USER_MOBILE}}">
+				<text class="info-label">手机</text>
+				<view class="info-value phone-row" bindtap="bindPhoneTap" data-phone="{{detail.JOIN_USER_MOBILE}}">
+					<text>{{detail.JOIN_USER_MOBILE}}</text>
+					<text class="icon-phone margin-left-xs"></text>
+				</view>
+			</view>
+			<view class="info-row" wx:if="{{detail.JOIN_USER_ID}}">
+				<text class="info-label">用户ID</text>
+				<text class="info-value text-grey text-sm">{{detail.JOIN_USER_ID}}</text>
+			</view>
+		</view>
+	</view>
+
+	<!-- 付费信息卡片 -->
+	<view class="card" wx:if="{{detail.JOIN_CARD_DEDUCT && detail.JOIN_CARD_DEDUCT.cardId}}">
+		<view class="card-title">付费信息</view>
+		<view class="card-body">
+			<view class="info-row">
+				<text class="info-label">卡项名称</text>
+				<text class="info-value">{{detail.JOIN_CARD_DEDUCT.cardName || '卡项'}}</text>
+			</view>
+			<view class="info-row">
+				<text class="info-label">卡类型</text>
+				<text class="info-value">{{detail.JOIN_CARD_DEDUCT.cardType=='times' ? '次数卡' : '余额卡'}}</text>
+			</view>
+			<view class="info-row">
+				<text class="info-label">扣除数量</text>
+				<text class="info-value text-admin text-bold">
+					{{detail.JOIN_CARD_DEDUCT.cardType=='times' ? detail.JOIN_CARD_DEDUCT.deductAmount+'次' : '¥'+detail.JOIN_CARD_DEDUCT.deductAmount}}
+				</text>
+			</view>
+			<view class="info-row" wx:if="{{detail.JOIN_CARD_DEDUCT.deductTime}}">
+				<text class="info-label">扣费时间</text>
+				<text class="info-value">{{detail.JOIN_CARD_DEDUCT.deductTime}}</text>
+			</view>
+
+			<!-- 退还信息 -->
+			<block wx:if="{{detail.JOIN_CARD_DEDUCT.refunded}}">
+				<view class="refund-divider"></view>
+				<view class="refund-tag">已退还</view>
+				<view class="info-row" wx:if="{{detail.JOIN_CARD_DEDUCT.refundTime}}">
+					<text class="info-label">退还时间</text>
+					<text class="info-value">{{detail.JOIN_CARD_DEDUCT.refundTime}}</text>
+				</view>
+				<view class="info-row" wx:if="{{detail.JOIN_CARD_DEDUCT.refundReason}}">
+					<text class="info-label">退还原因</text>
+					<text class="info-value">{{detail.JOIN_CARD_DEDUCT.refundReason}}</text>
+				</view>
+				<view class="info-row" wx:if="{{detail.JOIN_CARD_DEDUCT.refundBy}}">
+					<text class="info-label">操作人</text>
+					<text class="info-value">{{detail.JOIN_CARD_DEDUCT.refundBy}}</text>
+				</view>
+			</block>
+		</view>
+	</view>
+
+	<!-- 表单信息卡片 -->
+	<view class="card" wx:if="{{detail.JOIN_FORMS && detail.JOIN_FORMS.length > 0}}">
+		<view class="card-title">表单信息</view>
+		<view class="card-body">
+			<view class="info-row" wx:for="{{detail.JOIN_FORMS}}" wx:key="mark">
+				<text class="info-label">{{item.title}}</text>
+				<text class="info-value">{{item.val}}</text>
+			</view>
+		</view>
+	</view>
+
+	<!-- 时间信息卡片 -->
+	<view class="card">
+		<view class="card-title">时间信息</view>
+		<view class="card-body">
+			<view class="info-row" wx:if="{{detail.JOIN_ADD_TIME}}">
+				<text class="info-label">提交时间</text>
+				<text class="info-value">{{detail.JOIN_ADD_TIME}}</text>
+			</view>
+			<view class="info-row" wx:if="{{detail.JOIN_EDIT_TIME}}">
+				<text class="info-label">最后修改</text>
+				<text class="info-value">{{detail.JOIN_EDIT_TIME}}</text>
+			</view>
+			<view class="info-row" wx:if="{{detail.JOIN_CHECKIN_TIME}}">
+				<text class="info-label">签到时间</text>
+				<text class="info-value">{{detail.JOIN_CHECKIN_TIME}}</text>
+			</view>
+		</view>
+	</view>
+
+	<!-- 操作按钮区 -->
+	<view class="action-bar">
+		<block wx:if="{{detail.JOIN_STATUS==1}}">
+			<view wx:if="{{detail.JOIN_IS_CHECKIN==0}}" bindtap="bindCheckinTap" data-flag="1" class="action-btn btn-checkin">签到</view>
+			<view wx:else bindtap="bindCheckinTap" data-flag="0" class="action-btn btn-uncheckin">取消签到</view>
+		</block>
+
+		<block wx:if="{{detail.JOIN_STATUS==1}}">
+			<view bindtap="bindCancelTap" class="action-btn btn-cancel">取消预约</view>
+		</block>
+
+		<block wx:if="{{detail.JOIN_STATUS==10 || detail.JOIN_STATUS==99}}">
+			<view bindtap="bindStatusTap" data-status="1" class="action-btn btn-restore">恢复预约</view>
+		</block>
+
+		<view bindtap="bindDelTap" class="action-btn btn-del">删除</view>
+	</view>
+
+</view>

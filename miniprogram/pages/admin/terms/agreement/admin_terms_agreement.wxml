@@ -1,7 +1,7 @@
 <block wx:if="{{isAdmin}}">
 	<!-- 搜索栏 -->
 	<view class="search-bar">
-		<input class="search-input" placeholder="搜索姓名或用户标识" value="{{search}}" bindinput="bindSearchInput" />
+		<input class="search-input" placeholder="搜索姓名、用户ID或记录ID" value="{{search}}" bindinput="bindSearchInput" />
 		<button class="search-btn" bindtap="bindSearchTap">搜索</button>
 	</view>
 
@@ -28,24 +28,69 @@
 					<!-- 展开详情 -->
 					<view class="item-detail" wx:if="{{expandedId === item._id && detailData}}">
 						<view class="detail-row">
+							<text class="detail-label">用户ID：</text>
+							<text class="detail-value detail-mono">{{detailData._userId}}</text>
+						</view>
+						<view class="detail-row">
+							<text class="detail-label">标识类型：</text>
+							<text class="detail-value">{{detailData._uniqueType}}</text>
+						</view>
+						<view class="detail-row">
+							<text class="detail-label">标识ID：</text>
+							<text class="detail-value detail-mono">{{detailData._uniqueId}}</text>
+						</view>
+						<view class="detail-row">
+							<text class="detail-label">版本号：</text>
+							<text class="detail-value">V{{detailData.AGREE_VERSION}}</text>
+						</view>
+						<view class="detail-row">
+							<text class="detail-label">勾选确认：</text>
+							<text class="detail-value">{{detailData._checkbox}}</text>
+						</view>
+						<view class="detail-section-title">网络与设备</view>
+						<view class="detail-row">
 							<text class="detail-label">IP地址：</text>
-							<text class="detail-value">{{detailData.AGREE_IP || '未知'}}</text>
+							<text class="detail-value detail-mono">{{detailData._ip}}</text>
 						</view>
 						<view class="detail-row">
-							<text class="detail-label">平台：</text>
-							<text class="detail-value">{{detailData.AGREE_DEVICE_INFO.platform || '未知'}}</text>
+							<text class="detail-label">来源平台：</text>
+							<text class="detail-value">{{detailData._platform}}</text>
 						</view>
 						<view class="detail-row">
-							<text class="detail-label">系统：</text>
-							<text class="detail-value">{{detailData.AGREE_DEVICE_INFO.system || '未知'}}</text>
+							<text class="detail-label">操作系统：</text>
+							<text class="detail-value">{{detailData._system}}</text>
 						</view>
 						<view class="detail-row">
 							<text class="detail-label">设备：</text>
-							<text class="detail-value">{{detailData.AGREE_DEVICE_INFO.brand}} {{detailData.AGREE_DEVICE_INFO.model}}</text>
+							<text class="detail-value">{{detailData._device}}</text>
 						</view>
+						<view class="detail-row" wx:if="{{detailData._screen}}">
+							<text class="detail-label">屏幕：</text>
+							<text class="detail-value">{{detailData._screen}}</text>
+						</view>
+						<view class="detail-row" wx:if="{{detailData._language}}">
+							<text class="detail-label">语言：</text>
+							<text class="detail-value">{{detailData._language}}</text>
+						</view>
+						<view class="detail-row" wx:if="{{detailData._network}}">
+							<text class="detail-label">网络：</text>
+							<text class="detail-value">{{detailData._network}}</text>
+						</view>
+						<view class="detail-row detail-ua" wx:if="{{detailData._userAgent}}">
+							<text class="detail-label">UA：</text>
+							<text class="detail-value detail-mono detail-wrap">{{detailData._userAgent}}</text>
+						</view>
+						<view class="detail-section-title">时间</view>
 						<view class="detail-row">
 							<text class="detail-label">同意时间：</text>
-							<text class="detail-value">{{detailData.AGREE_TIME}}</text>
+							<text class="detail-value">{{detailData._timeFormatted}}</text>
+						</view>
+						<view class="detail-row">
+							<text class="detail-label">记录ID：</text>
+							<text class="detail-value detail-mono">{{detailData._id}}</text>
+						</view>
+						<view class="export-bar">
+							<view class="export-btn" catchtap="bindExportPdf" data-id="{{detailData._id}}">Export PDF</view>
 						</view>
 					</view>
 				</view>

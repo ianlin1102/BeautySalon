@@ -3,6 +3,7 @@ const pageHelper = require('../helper/page_helper.js');
 const AdminMeetBiz = require('../biz/admin_meet_biz.js');
 const MeetBiz = require('../biz/meet_biz.js');
 const setting = require('../setting/setting.js');
+const PassportBiz = require('../biz/passport_biz.js');
 
 module.exports = Behavior({
 
@@ -19,6 +20,12 @@ module.exports = Behavior({
 
 		showMind: true,
 		showTime: false,
+
+		// 预约名单弹窗
+		showBookedModal: false,
+		bookedNames: [],
+		currentSlotTime: '',
+		loadingNames: false,
 	},
 	methods: {
 		/**
@@ -136,12 +143,20 @@ module.exports = Behavior({
 				}
 
 				// 重新设置数据以触发页面更新
-				this.setData({
+				let updateData = {
 					isLoad: true,
 					meet,
 					userJoins: currentMeetJoins,
 					canNullTime: setting.MEET_CAN_NULL_TIME
-				});
+				};
+
+				// 从日历卡片进入时，自动切换到时间段标签
+				if (this.data.selectedDay && this.data.selectedTimeStart) {
+					updateData.showMind = false;
+					updateData.showTime = true;
+				}
+
+				this.setData(updateData);
 				
 			} catch (e) {
 				console.error('加载用户预约状态失败:', e);
@@ -208,10 +223,9 @@ module.exports = Behavior({
 		bindJoinTap: async function (e) {
 			let dayIdx = pageHelper.dataset(e, 'dayidx');
 			let timeIdx = pageHelper.dataset(e, 'timeidx');
-
 			let time = this.data.meet.MEET_DAYS_SET[dayIdx].times[timeIdx];
 
-
+			// 如果有错误状态，显示错误
 			if (time.error) {
 				if (time.error.includes('预约'))
 					return pageHelper.showModal('该时段' + time.error + '，换一个时段试试吧！');
@@ -219,29 +233,103 @@ module.exports = Behavior({
 					return pageHelper.showModal('该时段预约' + time.error + '，换一个时段试试吧！');
 			}
 
+			// 保存当前选择的时段信息，供后续使用
+			this._currentDayIdx = dayIdx;
+			this._currentTimeIdx = timeIdx;
+
+			// 如果已登录，先显示预约名单弹窗
+			if (PassportBiz.isLoggedIn()) {
+				await this.bindShowBookedNames(e);
+				return;
+			}
+
+			// 未登录，提示登录
+			return pageHelper.showModal('请先登录后再预约');
+		},
+
+		// 显示预约名单
+		bindShowBookedNames: async function (e) {
+			let dayIdx = pageHelper.dataset(e, 'dayidx');
+			let timeIdx = pageHelper.dataset(e, 'timeidx');
+			let time = this.data.meet.MEET_DAYS_SET[dayIdx].times[timeIdx];
+
+			// 显示加载中
+			this.setData({
+				showBookedModal: true,
+				currentSlotTime: time.start + ' - ' + time.end,
+				loadingNames: true,
+				bookedNames: []
+			});
+
+			try {
+				let res = await cloudHelper.callCloudData('meet/get_slot_bookings', {
+					meetId: this.data.id,
+					timeMark: time.mark
+				}, { title: 'bar' });
+
+				this.setData({
+					bookedNames: (res && res.names) ? res.names : [],
+					loadingNames: false
+				});
+			} catch (err) {
+				console.error('获取预约名单失败:', err);
+				this.setData({
+					bookedNames: [],
+					loadingNames: false
+				});
+				pageHelper.showModal('加载失败，请重试');
+			}
+		},
+
+		// 关闭预约名单弹窗
+		bindCloseBookedModal: function () {
+			this.setData({ showBookedModal: false });
+		},
+
+		// 确认预约（从弹窗点击"我要预约"）
+		bindConfirmBooking: async function () {
+			this.setData({ showBookedModal: false });
+
+			// 检查用户条款
+			try {
+				let termsRes = await cloudHelper.callCloudData('terms/check_user_terms', {}, { title: 'bar' });
+				if (termsRes && termsRes.needAgree) {
+					return wx.showModal({
+						title: '需要同意用户条款',
+						content: '您需要先同意用户服务条款才能预约',
+						cancelText: '取消',
+						confirmText: '前往同意',
+						success: (result) => {
+							if (result.confirm) {
+								wx.navigateTo({ url: '/pages/terms/user/terms_user' });
+							}
+						}
+					});
+				}
+			} catch (err) {
+				console.error('检查用户条款失败:', err);
+			}
+
+			let dayIdx = this._currentDayIdx;
+			let timeIdx = this._currentTimeIdx;
+			let time = this.data.meet.MEET_DAYS_SET[dayIdx].times[timeIdx];
 			let meetId = this.data.id;
 			let timeMark = time.mark;
 
 			let callback = async () => {
 				try {
-					let opts = {
-						title: '请稍候',
-					}
-					let params = {
-						meetId,
-						timeMark
-					}
+					let opts = { title: '请稍候' };
+					let params = { meetId, timeMark };
 					await cloudHelper.callCloudSumbit('meet/before_join', params, opts).then(res => {
 						wx.navigateTo({
 							url: `../join/meet_join?id=${meetId}&timeMark=${timeMark}`,
-						})
+						});
 					});
 				} catch (ex) {
 					console.log(ex);
 				}
-			}
+			};
 			MeetBiz.subscribeMessageMeet(callback);
-
 		},
 
 		url: function (e) {

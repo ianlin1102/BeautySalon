@@ -18,26 +18,53 @@
 		</view>
 	</view>
 
-	<!-- 条款列表 -->
+	<!-- Header 区域（第一项，isHeader=true） -->
+	<view wx:if="{{sections.length > 0 && sections[0].isHeader}}" class="section-item form-box shadow header-card">
+		<view class="section-header">
+			<text class="section-num header-badge">标题 / Header</text>
+		</view>
+
+		<view class="field-group">
+			<text class="field-label lang-zh">标题（中文）</text>
+			<input class="field-input" value="{{sections[0].header_zh}}" bindinput="bindHeaderZhInput" placeholder="中文标题" maxlength="100" />
+		</view>
+		<view class="field-group">
+			<text class="field-label lang-en">Title (EN)</text>
+			<input class="field-input" value="{{sections[0].header_en}}" bindinput="bindHeaderEnInput" placeholder="English Title" maxlength="100" />
+		</view>
+		<view class="field-group">
+			<text class="field-label lang-zh">引言（中文）</text>
+			<textarea class="field-textarea" value="{{sections[0].intro_zh}}" bindinput="bindIntroZhInput" placeholder="中文引言" auto-height maxlength="2000" />
+		</view>
+		<view class="field-group">
+			<text class="field-label lang-en">Introduction (EN)</text>
+			<textarea class="field-textarea" value="{{sections[0].intro_en}}" bindinput="bindIntroEnInput" placeholder="English Introduction" auto-height maxlength="2000" />
+		</view>
+	</view>
+
+	<!-- 条款列表（跳过 isHeader） -->
 	<view class="section-list">
-		<view class="section-item form-box shadow" wx:for="{{sections}}" wx:key="index">
+		<view class="section-item form-box shadow" wx:for="{{sections}}" wx:key="index" wx:if="{{!item.isHeader}}">
 			<view class="section-header">
-				<text class="section-num">条款 {{index + 1}}</text>
+				<text class="section-num">条款 {{index}}</text>
 				<text class="section-del" bindtap="bindDelSection" data-idx="{{index}}">删除</text>
 			</view>
 
-			<view class="form-group">
-				<view class="title">标题：</view>
+			<view class="field-group">
+				<text class="field-label lang-zh">中文标题</text>
+				<input class="field-input" value="{{item.title_zh || item.title || ''}}" data-idx="{{index}}" bindinput="bindTitleZhInput" placeholder="中文标题" maxlength="50" />
 			</view>
-			<view class="form-group">
-				<input placeholder="如：一、购买须知" placeholder-class="phc" value="{{item.title}}" data-idx="{{index}}" bindinput="bindTitleInput" maxlength="50" />
+			<view class="field-group">
+				<text class="field-label lang-en">EN Title</text>
+				<input class="field-input" value="{{item.title_en || ''}}" data-idx="{{index}}" bindinput="bindTitleEnInput" placeholder="English Title" maxlength="50" />
 			</view>
-
-			<view class="form-group">
-				<view class="title">内容：</view>
+			<view class="field-group">
+				<text class="field-label lang-zh">中文内容</text>
+				<textarea class="field-textarea" value="{{item.content_zh || item.content || ''}}" data-idx="{{index}}" bindinput="bindContentZhInput" placeholder="中文内容" auto-height maxlength="5000" />
 			</view>
-			<view class="form-group">
-				<textarea placeholder="请输入条款内容，每条用换行分隔" placeholder-class="phc" value="{{item.content}}" data-idx="{{index}}" bindinput="bindContentInput" maxlength="2000" auto-height style="min-height: 150rpx;"></textarea>
+			<view class="field-group">
+				<text class="field-label lang-en">EN Content</text>
+				<textarea class="field-textarea" value="{{item.content_en || ''}}" data-idx="{{index}}" bindinput="bindContentEnInput" placeholder="English Content" auto-height maxlength="5000" />
 			</view>
 		</view>
 	</view>

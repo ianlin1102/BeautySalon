@@ -43,6 +43,9 @@ SetupModel.DB_STRUCTURE = {
 	SETUP_CARD_TERMS_UPDATE_TIME: 'int|false|comment=卡项条款更新时间',
 	SETUP_BOOKING_TERMS_SECTIONS: 'array|false|default=[]|comment=预约条款内容',
 	SETUP_BOOKING_TERMS_UPDATE_TIME: 'int|false|comment=预约条款更新时间',
+
+	// Logo
+	SETUP_COMPANY_LOGO: 'string|false|default=|comment=公司Logo云存储URL',
 };
 
 // 字段前缀

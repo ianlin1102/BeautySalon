@@ -2,7 +2,7 @@
 	"usingComponents": {
 	 
 	},
-	"navigationBarBackgroundColor": "#2499f2",
+	"navigationBarBackgroundColor": "#7C3AED",
 	"navigationBarTextStyle": "white", 
 	"enablePullDownRefresh": true,  
 	"navigationBarTitleText": "用户自助签到码"

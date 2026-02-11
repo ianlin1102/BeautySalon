@@ -145,6 +145,30 @@ class AdminMeetController extends BaseAdminController {
 		return await service.statusJoin(this._admin, input.joinId, input.status, input.reason);
 	}
 
+	/** 预约详情 */
+	async getJoinDetail() {
+		await this.isAdmin();
+
+		let rules = {
+			joinId: 'must|id'
+		};
+
+		let input = this.validateData(rules);
+
+		let service = new AdminMeetService();
+		let detail = await service.getJoinDetail(input.joinId);
+
+		if (detail) {
+			detail.JOIN_EDIT_TIME = timeUtil.timestamp2Time(detail.JOIN_EDIT_TIME);
+			if (detail.JOIN_CHECKIN_TIME)
+				detail.JOIN_CHECKIN_TIME = timeUtil.timestamp2Time(detail.JOIN_CHECKIN_TIME);
+			if (detail.JOIN_ADD_TIME)
+				detail.JOIN_ADD_TIME = timeUtil.timestamp2Time(detail.JOIN_ADD_TIME);
+		}
+
+		return detail;
+	}
+
 	/** 报名删除 */
 	async delJoin() {
 		await this.isAdmin();
@@ -438,6 +462,35 @@ class AdminMeetController extends BaseAdminController {
 
 		let service = new AdminMeetService();
 		return await service.cancelJoinByTimeMark(this._admin, input.meetId, input.timeMark, input.reason);
+	}
+
+	/** 补录预约 */
+	async backfillJoin() {
+		await this.isAdmin();
+
+		let rules = {
+			meetId: 'must|id|name=课程ID',
+			timeMark: 'must|string|name=时段标识',
+			userId: 'must|string|name=用户ID',
+			cardId: 'string|name=卡项ID',
+		};
+
+		let input = this.validateData(rules);
+
+		let service = new AdminMeetService();
+		let result = await service.backfillJoin(
+			input.meetId,
+			input.timeMark,
+			input.userId,
+			input.cardId || '',
+			this._adminId,
+			this._admin.ADMIN_NAME
+		);
+
+		// 清缓存
+		cacheUtil.clear();
+
+		return result;
 	}
 
 	/** 创建模板 */

@@ -216,8 +216,6 @@ class Logger {
    */
   forceError(message, data = null) {
     // 输出 3 次确保在任何日志级别都能看到
-    console.error('❌❌❌ ' + message + ' ❌❌❌');
-    console.error('详细信息:', this.formatData(data));
     console.log('❌❌❌ ' + message + ' ❌❌❌');
     console.log('详细信息:', this.formatData(data));
 
@@ -239,8 +237,6 @@ class Logger {
   forceInfo(message, data = null) {
     console.log('🔔🔔🔔 ' + message + ' 🔔🔔🔔');
     console.log('详细信息:', this.formatData(data));
-    console.error('🔔🔔🔔 ' + message + ' 🔔🔔🔔');
-    console.error('详细信息:', this.formatData(data));
 
     if (this.cloudLogger) {
       this.cloudLogger.info({

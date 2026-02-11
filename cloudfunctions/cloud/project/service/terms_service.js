@@ -184,6 +184,45 @@ class TermsService extends BaseService {
 	}
 
 	/**
+	 * 获取协议记录详情（用于打印PDF）
+	 * @param {string} id - 协议记录ID
+	 */
+	async getAgreementForPrint(id) {
+		let agreement = await TermsAgreementModel.getOne(id);
+		if (!agreement) return null;
+
+		// 获取用户手机号
+		let userWhere = {};
+		if (agreement.AGREE_UNIQUE_TYPE === 'wechat') {
+			userWhere.USER_MINI_OPENID = agreement.AGREE_UNIQUE_ID;
+		} else if (agreement.AGREE_UNIQUE_TYPE === 'google') {
+			userWhere.USER_GOOGLE_EMAIL = agreement.AGREE_UNIQUE_ID;
+		} else {
+			userWhere.USER_ACCOUNT = agreement.AGREE_UNIQUE_ID;
+		}
+		let user = await UserModel.getOne(userWhere, 'USER_MOBILE');
+
+		// 获取当前条款内容和Logo
+		let setup = await SetupModel.getOne({}, 'SETUP_USER_TERMS_SECTIONS,SETUP_COMPANY_LOGO');
+
+		return {
+			agreement: {
+				AGREE_PRINTED_NAME: agreement.AGREE_PRINTED_NAME,
+				AGREE_TIME: agreement.AGREE_TIME,
+				AGREE_VERSION: agreement.AGREE_VERSION,
+				AGREE_UNIQUE_TYPE: agreement.AGREE_UNIQUE_TYPE
+			},
+			user: {
+				USER_MOBILE: user ? (user.USER_MOBILE || '') : ''
+			},
+			terms: {
+				sections: setup ? (setup.SETUP_USER_TERMS_SECTIONS || []) : []
+			},
+			logo: setup ? (setup.SETUP_COMPANY_LOGO || '') : ''
+		};
+	}
+
+	/**
 	 * 获取当前用户条款版本（供其他模块调用）
 	 */
 	async getCurrentUserTermsVersion() {

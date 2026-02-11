@@ -113,6 +113,7 @@ function requiresAuth(route) {
     'meet/before_join',   // 预约前检测（用户认证通过 token）
     'meet/join',          // 提交预约（用户认证通过 token）
     'meet/detail_for_join', // 预约详情
+    'meet/get_slot_bookings', // 获取时段预约名单
     // my 用户中心相关（用户认证通过 token）
     'my/my_join_list',    // 我的预约列表
     'my/my_join_detail',  // 我的预约详情
@@ -130,6 +131,11 @@ function requiresAuth(route) {
     'test/update_user',       // 更新测试用户
     'test/create_user',       // 创建测试用户
     'test/fix_user',          // 修复用户数据
+    'test/generate_days',     // 生成预约日期
+    'test/check_meet_cost',   // 检查课程费用设置
+    'test/update_meet_cost',  // 更新课程费用设置
+    'test/check_user_cards',  // 检查用户卡项
+    'test/search_user',       // 测试搜索用户
     // 购买/充值相关（用户购买流程需要）
     'purchase/test',
     'purchase/create',
@@ -137,7 +143,12 @@ function requiresAuth(route) {
     'purchase/upload_proof_mini',
     'purchase/detail',
     'purchase/my_orders',
-    'purchase/cancel'
+    'purchase/cancel',
+    // 条款相关（用户端）
+    'terms/get',              // 获取条款内容（公开）
+    'terms/check_user_terms', // 检查用户条款状态
+    'terms/agree_user_terms', // 同意用户条款
+    'terms/get_agreement_for_print' // 获取协议记录（PDF打印）
   ]
 
   return !publicRoutes.includes(route)

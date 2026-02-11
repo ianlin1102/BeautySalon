@@ -50,6 +50,7 @@
 		"pages/admin/index/home/admin_home",
 		"pages/admin/index/login/admin_login",
 		"pages/admin/info/admin_info_list",
+		"pages/admin/info/detail/admin_info_detail",
 		"pages/admin/content/admin_content",
 		"pages/admin/meet/content/admin_meet_content",
 		"pages/admin/meet/cover/admin_meet_cover",

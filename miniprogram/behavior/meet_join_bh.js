@@ -88,26 +88,27 @@ module.exports = Behavior({
 			let timeMark = this.data.timeMark;
 			if (!timeMark) return;
 
-			let params = {
-				meetId: id,
-				timeMark
-			};
-			let opt = {
-				title: 'bar'
-			};
-			let meet = await cloudHelper.callCloudData('meet/detail_for_join', params, opt);
-			if (!meet) {
-				this.setData({
-					isLoad: null
-				})
-				return;
-			}
+			try {
+				let params = {
+					meetId: id,
+					timeMark
+				};
+				let opt = {
+					title: 'bar'
+				};
+				let meet = await cloudHelper.callCloudData('meet/detail_for_join', params, opt);
+				if (!meet) {
+					this.setData({
+						isLoad: null
+					})
+					return;
+				}
 
-			// 生成取消规则描述
-			let cancelRuleDesc = '';
-			if (meet.MEET_CANCEL_SET) {
-				cancelRuleDesc = cancelHelper.getCancelRuleDesc(meet.MEET_CANCEL_SET);
-			}
+				// 生成取消规则描述
+				let cancelRuleDesc = '';
+				if (meet.MEET_CANCEL_SET) {
+					cancelRuleDesc = cancelHelper.getCancelRuleDesc(meet.MEET_CANCEL_SET);
+				}
 
 
 		// 检查是否需要卡项
@@ -203,6 +204,11 @@ module.exports = Behavior({
 		});
 		console.log('setData 完成, 当前 termsText:', this.data.termsText);
 
+			} catch (err) {
+				console.error('_loadDetail 错误:', err);
+				this.setData({ isLoad: null });
+				pageHelper.showModal('加载失败，请重试');
+			}
 	},
 
 		/**

@@ -12,9 +12,7 @@ exports.main = async (event, context) => {
 	try {
 		// 简单的 console 日志
 		console.log('🚀🚀🚀 云函数请求开始 🚀🚀🚀');
-		console.error('🚀🚀🚀 云函数请求开始 🚀🚀🚀');  // 用 error 确保显示
 		console.log(`请求类型: ${requestType}, requestId: ${requestId}`);
-		console.error(`请求类型: ${requestType}, requestId: ${requestId}`);
 		console.log('event.route:', event.route);
 		console.log('event.path:', event.path);
 		console.log('event.httpMethod:', event.httpMethod);
@@ -23,7 +21,6 @@ exports.main = async (event, context) => {
 		const result = await application.app(event, context);
 
 		console.log('✅ 业务逻辑执行完成');
-		console.error('✅ 业务逻辑执行完成');
 		console.log('result.code:', result?.code);
 		console.log('result.msg:', result?.msg);
 
@@ -44,21 +41,18 @@ exports.main = async (event, context) => {
 			};
 
 			console.log('🌐 HTTP 响应, statusCode:', response.statusCode);
-			console.error('🌐 HTTP 响应, statusCode:', response.statusCode);
+
 
 			return response;
 		}
 
 		// 小程序调用直接返回结果
 		console.log('📱 小程序响应');
-		console.error('📱 小程序响应');
+
 		return result;
 
 	} catch (error) {
 		// 强制错误日志（确保在任何情况下都能看到）
-		console.error('❌❌❌ 云函数执行异常 ❌❌❌');
-		console.error('错误名称:', error.name);
-		console.error('错误消息:', error.message);
 		console.error('错误堆栈:', error.stack);
 		console.log('❌❌❌ 云函数执行异常 ❌❌❌');
 		console.log('错误名称:', error.name);

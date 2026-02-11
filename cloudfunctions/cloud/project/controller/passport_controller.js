@@ -59,6 +59,7 @@ class PassportController extends BaseController {
 			city: 'string|max:100|name=所在城市',
 			work: 'string|max:100|name=所在单位',
 			trade: 'string|max:100|name=行业领域',
+			avatar: 'string|max:500|name=头像',
 		};
 
 		// 取得数据

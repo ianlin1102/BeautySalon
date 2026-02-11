@@ -550,6 +550,28 @@ module.exports = Behavior({
 		bindMonthChangeCmpt: function (e) {
 		},
 
+		// 点击课程卡片
+		bindCardTap: function (e) {
+			let day = e.currentTarget.dataset.day;
+			let timeStart = e.currentTarget.dataset.timestart;
+
+			// 检查课程是否已开始
+			if (day && timeStart) {
+				let now = new Date();
+				let parts = day.split('-');
+				let timeParts = timeStart.split(':');
+				let classTime = new Date(
+					parseInt(parts[0]), parseInt(parts[1]) - 1, parseInt(parts[2]),
+					parseInt(timeParts[0]), parseInt(timeParts[1]) || 0
+				);
+				if (now >= classTime) {
+					return; // 课程已开始，不跳转
+				}
+			}
+
+			pageHelper.url(e, this);
+		},
+
 		url: async function (e) {
 			pageHelper.url(e, this);
 		},

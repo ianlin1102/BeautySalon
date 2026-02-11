@@ -2,7 +2,7 @@
 	"usingComponents": { 
 		"cmpt-editor": "../../../cmpts/public/editor/editor_cmpt"
 	},
-	"navigationBarBackgroundColor": "#2499f2",
+	"navigationBarBackgroundColor": "#7C3AED",
 	"navigationBarTextStyle": "white", 
 	"navigationBarTitleText": "详细内容"
 }

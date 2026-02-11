@@ -13,12 +13,22 @@ class PurchaseBiz extends BaseBiz {
 	 * 创建购买订单
 	 * @param {string} cardId - 卡项ID
 	 * @param {string} paymentMethod - 支付方式
+	 * @param {Object} termsInfo - 条款同意信息（用于审计追踪）
+	 * @param {boolean} termsInfo.cardTermsAgreed - 是否同意卡项条款
+	 * @param {number} termsInfo.cardTermsTime - 同意卡项条款的时间戳
+	 * @param {number} termsInfo.userTermsVersion - 用户条款版本
+	 * @param {number} termsInfo.userTermsTime - 用户条款同意时间戳
 	 * @returns {Object} { purchaseId, message }
 	 */
-	static async createOrder(cardId, paymentMethod = 'zelle') {
+	static async createOrder(cardId, paymentMethod = 'zelle', termsInfo = {}) {
 		let params = {
 			cardId,
 			paymentMethod,
+			// 条款同意信息（用于审计追踪）
+			cardTermsAgreed: termsInfo.cardTermsAgreed || false,
+			cardTermsTime: termsInfo.cardTermsTime || 0,
+			userTermsVersion: termsInfo.userTermsVersion || 0,
+			userTermsTime: termsInfo.userTermsTime || 0,
 		};
 		let opts = { title: '创建订单中..' };
 		let result = await cloudHelper.callCloudSumbit('purchase/create', params, opts);

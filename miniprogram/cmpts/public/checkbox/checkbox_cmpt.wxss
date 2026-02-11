@@ -19,8 +19,8 @@
 	font-size: 28rpx;
 }
 
-.checkbox-group .item label{
-	width: 100%; 
+.checkbox-group .item .checkbox-label {
+	width: 100%;
 	display: flex;
 	flex-direction: row;
 	justify-content: flex-start;
@@ -37,7 +37,7 @@
 }
 
 
-.checkbox-group .item checkbox {
+.checkbox-group .item .checkbox-input {
 	margin-right: 20rpx;
-	padding-left: 10rpx; 
+	padding-left: 10rpx;
 } 

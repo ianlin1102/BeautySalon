@@ -274,10 +274,6 @@ Page({
 
 		if (data.formTypeId.length <= 0) return pageHelper.formHint(this, 'formTypeId', '请选择「分类」');
 
-		if (data.formStyleSet.pic.length <= 0) {
-			pageHelper.anchor('formStyleSet', this);
-			return pageHelper.formHint(this, 'formStyleSet', '封面图片未设置');
-		}
 		if (data.formDaysSet.length <= 0) {
 			pageHelper.anchor('formDaysSet', this);
 			return pageHelper.formHint(this, 'formDaysSet', '请配置「可预约时段」');
@@ -385,10 +381,6 @@ Page({
 
 		if (data.formTypeId.length <= 0) return pageHelper.formHint(this, 'formTypeId', '请选择「分类」');
 
-		if (data.formStyleSet.pic.length <= 0) {
-			pageHelper.anchor('formStyleSet', this);
-			return pageHelper.formHint(this, 'formStyleSet', '封面图片未设置');
-		}
 		if (data.formDaysSet.length <= 0) {
 			pageHelper.anchor('formDaysSet', this);
 			return pageHelper.formHint(this, 'formDaysSet', '请配置「可预约时段」');

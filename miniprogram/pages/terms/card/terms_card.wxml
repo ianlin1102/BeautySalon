@@ -1,15 +1,29 @@
 <view wx:if="{{!isLoad}}" class="load loading text-l"></view>
 
 <view class="terms-page" wx:if="{{isLoad}}">
-	<view class="terms-header">
+	<view class="terms-page-header">
 		<text class="terms-title">卡项购买条款</text>
 	</view>
 
+	<!-- Language Toggle -->
+	<view class="lang-toggle" bindtap="bindLanguageToggle">
+		<text class="lang-btn {{language === 'zh' ? 'active' : ''}}">中文</text>
+		<text class="lang-divider">|</text>
+		<text class="lang-btn {{language === 'en' ? 'active' : ''}}">EN</text>
+	</view>
+
 	<scroll-view class="terms-content" scroll-y>
+		<!-- Header section -->
+		<view wx:if="{{sections.length > 0 && sections[0].isHeader}}" class="terms-header-block">
+			<view class="terms-main-title">{{language === 'zh' ? (sections[0].header_zh || sections[0].header_en) : (sections[0].header_en || sections[0].header_zh)}}</view>
+			<view class="terms-intro">{{language === 'zh' ? (sections[0].intro_zh || sections[0].intro_en) : (sections[0].intro_en || sections[0].intro_zh)}}</view>
+		</view>
+
+		<!-- Regular sections -->
 		<block wx:for="{{sections}}" wx:key="index">
-			<view class="terms-section">
-				<view class="section-title">{{item.title}}</view>
-				<view class="section-content">{{item.content}}</view>
+			<view class="terms-section" wx:if="{{!item.isHeader}}">
+				<view class="section-title">{{language === 'zh' ? (item.title_zh || item.title) : (item.title_en || item.title_zh || item.title)}}</view>
+				<view class="section-content">{{language === 'zh' ? (item.content_zh || item.content) : (item.content_en || item.content_zh || item.content)}}</view>
 			</view>
 		</block>
 

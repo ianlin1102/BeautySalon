@@ -15,9 +15,8 @@ const SetupModel = require('../../model/setup_model.js');
 const MeetModel = require('../../model/meet_model.js');
 const JoinModel = require('../../model/join_model.js');
 const DayModel = require('../../model/day_model.js');
-const JobService = require('../../service/job_service.js');
 
-class TestController {
+class TestController extends BaseController {
 
 	async testJoin() {
 		let meetService = new MeetService();
@@ -163,43 +162,100 @@ class TestController {
 		await service.delMeet(id);
 	}
 
+	/**
+	 * 生成预约日期和时段
+	 * 参数通过 request 传入:
+	 * - meetId: 预约项目ID (必填)
+	 * - startDate: 开始日期 (默认: 2026-02-08)
+	 * - daysCount: 生成天数 (默认: 30天)
+	 */
 	async setMeetDaysAndTimes() {
-		let days = [];
-		for (let i = 2; i <= 2; i++) {
-			for (let j = 1; j <= 31; j++) {
-				let day = '2022-' + String(i < 10 ? '0' + i : i) + '-' + String(j < 10 ? '0' + j : j);
-				console.log(day)
-				let node = {}
-				node.DAY_MEET_ID = 'bf4a0bf261d98dd003e9938f52a28b34';
-				node.DAY_ID = '2022233432432434';
-				node.day = day;
-				node.dayDesc = day + '描述';
+		let meetId = this._request.meetId;
+		let startDate = this._request.startDate || '2026-02-08';
+		let daysCount = this._request.daysCount || 30;
 
-				let timesCnt = fakerLib.getIntBetween(1, 10);
-				let times = [];
-				for (let k = 0; k < timesCnt; k++) {
-					let timeNode = {};
-					timeNode.mark = 'T' + day.replace(/-/g, '') + 'AAA' + fakerLib.getStr(10);
-					timeNode.start = '0' + k + ':00';
-					timeNode.end = fakerLib.getIntBetween(10, 23) + ':' + fakerLib.getIntBetween(10, 59);
-					timeNode.isLimit = false;
-					timeNode.limit = 50;
-					timeNode.status = 1;
-					timeNode.stat = {
-						 
-						succCnt: fakerLib.getIntBetween(10, 100), 
-						cancelCnt: fakerLib.getIntBetween(10, 100),
-						adminCancelCnt: fakerLib.getIntBetween(10, 100),
-					};
-					times.push(timeNode);
-				}
-				node.times = times;
-				days.push(node);
-			}
+		if (!meetId) {
+			console.error('meetId 必填');
+			return { success: false, error: 'meetId 必填' };
 		}
 
-		console.log(days);
-		await DayModel.insertBatch(days);
+		// 先删除该预约项目的旧日期数据
+		await DayModel.del({ DAY_MEET_ID: meetId }, false);
+
+		let days = [];
+		let startParts = startDate.split('-');
+		let startYear = parseInt(startParts[0]);
+		let startMonth = parseInt(startParts[1]);
+		let startDay = parseInt(startParts[2]);
+
+		let currentDate = new Date(startYear, startMonth - 1, startDay);
+
+		for (let i = 0; i < daysCount; i++) {
+			let year = currentDate.getFullYear();
+			let month = String(currentDate.getMonth() + 1).padStart(2, '0');
+			let day = String(currentDate.getDate()).padStart(2, '0');
+			let dayStr = `${year}-${month}-${day}`;
+
+			console.log('生成日期:', dayStr);
+
+			let node = {
+				_pid: 'A00',
+				DAY_MEET_ID: meetId,
+				day: dayStr,
+				dayDesc: '',
+				times: [
+					{
+						mark: 'T' + dayStr.replace(/-/g, '') + 'U0900' + fakerLib.getStr(4),
+						start: '09:00',
+						end: '10:00',
+						isLimit: true,
+						limit: 10,
+						status: 1,
+						stat: { succCnt: 0, cancelCnt: 0, adminCancelCnt: 0 }
+					},
+					{
+						mark: 'T' + dayStr.replace(/-/g, '') + 'U1000' + fakerLib.getStr(4),
+						start: '10:00',
+						end: '11:00',
+						isLimit: true,
+						limit: 10,
+						status: 1,
+						stat: { succCnt: 0, cancelCnt: 0, adminCancelCnt: 0 }
+					},
+					{
+						mark: 'T' + dayStr.replace(/-/g, '') + 'U1400' + fakerLib.getStr(4),
+						start: '14:00',
+						end: '15:00',
+						isLimit: true,
+						limit: 10,
+						status: 1,
+						stat: { succCnt: 0, cancelCnt: 0, adminCancelCnt: 0 }
+					},
+					{
+						mark: 'T' + dayStr.replace(/-/g, '') + 'U1500' + fakerLib.getStr(4),
+						start: '15:00',
+						end: '16:00',
+						isLimit: true,
+						limit: 10,
+						status: 1,
+						stat: { succCnt: 0, cancelCnt: 0, adminCancelCnt: 0 }
+					}
+				]
+			};
+			days.push(node);
+
+			// 移到下一天
+			currentDate.setDate(currentDate.getDate() + 1);
+		}
+
+		console.log('生成天数:', days.length);
+		await DayModel.insertBatch(days, false);
+
+		// 更新 meet 的 MEET_DAYS 字段
+		let meetDays = days.map(d => d.day);
+		await MeetModel.edit(meetId, { MEET_DAYS: meetDays }, false);
+
+		return { success: true, daysCreated: days.length };
 	}
 
 	async makeMeetData(setData, day, daysSet) {

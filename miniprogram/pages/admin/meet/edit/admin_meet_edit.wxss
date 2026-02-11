@@ -110,7 +110,7 @@ cmpt-picker-multi {
 }
 
 .cancel-confirm {
-	color: #667eea;
+	color: var(--adminColor);
 	font-size: 30rpx;
 	font-weight: bold;
 }

@@ -89,7 +89,7 @@
 			<view class="text-blue text-s" style="margin-bottom:20rpx;" bindtap="bindNavToBookingTerms">查看完整预约条款 ></view>
 			<checkbox-group bindchange="bindAgreeTerms">
 				<label class="checkbox">
-					<checkbox value="agreed" color="#667eea"/>
+					<checkbox value="false" color="#667eea"/>
 					<text class="margin-left-xs">我已阅读并同意</text>
 					<text class="text-blue" catchtap="bindNavToBookingTerms">《预约须知条款》</text>
 				</label>

@@ -74,6 +74,33 @@ class AdminSetupController extends BaseAdminController {
 		let service = new AdminSetupService();
 		await service.saveDisclaimer(input);
 	}
+
+	/** 获取条款内容 (管理员) */
+	async getTerms() {
+		await this.isAdmin();
+
+		let rules = {
+			type: 'must|string|in:card_terms,booking_terms,user_terms|name=条款类型',
+		};
+
+		let input = this.validateData(rules);
+		let service = new AdminSetupService();
+		return await service.getTerms(input.type);
+	}
+
+	/** 保存条款内容 */
+	async saveTerms() {
+		await this.isAdmin();
+
+		let rules = {
+			type: 'must|string|in:card_terms,booking_terms,user_terms|name=条款类型',
+			sections: 'array|name=条款内容',
+		};
+
+		let input = this.validateData(rules);
+		let service = new AdminSetupService();
+		return await service.saveTerms(input.type, input.sections);
+	}
 }
 
 module.exports = AdminSetupController;

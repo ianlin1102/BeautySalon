@@ -1,3 +1,5 @@
+@import '../../../../style/project/base/admin.wxss';
+
 .container {
 	padding: 20rpx;
 	background-color: #f5f5f5;
@@ -22,7 +24,7 @@
 .user-avatar {
 	width: 100rpx;
 	height: 100rpx;
-	background: linear-gradient(135deg, #667eea, #764ba2);
+	background: var(--adminColor);
 	border-radius: 50%;
 	display: flex;
 	align-items: center;
@@ -110,7 +112,7 @@
 
 .copy-icon {
 	font-size: 32rpx;
-	color: #667eea;
+	color: var(--adminColor);
 	padding-left: 16rpx;
 }
 
@@ -137,7 +139,7 @@
 }
 
 .balance-badge {
-	background: linear-gradient(135deg, #667eea, #764ba2);
+	background: var(--adminColor);
 }
 
 .times-badge {
@@ -189,7 +191,7 @@
 
 .action-icon {
 	font-size: 48rpx;
-	color: #667eea;
+	color: var(--adminColor);
 	margin-bottom: 12rpx;
 }
 
@@ -250,7 +252,7 @@
 .card-value {
 	font-size: 32rpx;
 	font-weight: bold;
-	color: #667eea;
+	color: var(--adminColor);
 }
 
 .card-status {
@@ -396,6 +398,6 @@
 }
 
 .confirm-btn {
-	background: linear-gradient(135deg, #667eea, #764ba2);
+	background: var(--adminColor);
 	color: #fff;
 }

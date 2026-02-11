@@ -1,3 +1,5 @@
+@import '../../../../style/project/base/admin.wxss';
+
 .container {
 	padding: 20rpx;
 	background: #f5f5f5;
@@ -41,7 +43,7 @@
 	height: 80rpx;
 	line-height: 80rpx;
 	padding: 0 40rpx;
-	background: linear-gradient(135deg, #667eea, #764ba2);
+	background: var(--adminColor);
 	color: #fff;
 	font-size: 28rpx;
 	border-radius: 40rpx;
@@ -101,7 +103,7 @@
 .summary-value {
 	font-size: 40rpx;
 	font-weight: bold;
-	color: #667eea;
+	color: var(--adminColor);
 }
 
 .summary-label {
@@ -113,7 +115,7 @@
 
 .view-detail {
 	text-align: right;
-	color: #667eea;
+	color: var(--adminColor);
 	font-size: 26rpx;
 }
 
@@ -130,7 +132,7 @@
 }
 
 .action-btn.primary {
-	background: linear-gradient(135deg, #667eea, #764ba2);
+	background: var(--adminColor);
 	color: #fff;
 }
 
@@ -178,7 +180,7 @@
 .card-value {
 	font-size: 32rpx;
 	font-weight: bold;
-	color: #667eea;
+	color: var(--adminColor);
 }
 
 /* 状态 */

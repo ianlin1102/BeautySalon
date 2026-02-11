@@ -12,6 +12,7 @@ module.exports = {
 	'terms/get': 'terms_controller@getTerms',                    // 获取条款内容
 	'terms/check_user_terms': 'terms_controller@checkUserTerms', // 检查用户条款状态
 	'terms/agree_user_terms': 'terms_controller@agreeUserTerms', // 同意用户条款
+	'terms/get_agreement_for_print': 'terms_controller@getAgreementForPrint', // 获取协议记录（PDF打印）
 
 	'passport/phone': 'passport_controller@getPhone',
 	'passport/my_detail': 'passport_controller@getMyDetail',
@@ -36,6 +37,7 @@ module.exports = {
 	'meet/detail_for_join': 'meet_controller@detailForJoin',
 	'meet/before_join': 'meet_controller@beforeJoin',
 	'meet/join': 'meet_controller@join',
+	'meet/get_slot_bookings': 'meet_controller@getSlotBookings',
 
 	'my/my_join_list': 'meet_controller@getMyJoinList',
 	'my/my_join_cancel': 'meet_controller@cancelMyJoin',
@@ -43,6 +45,8 @@ module.exports = {
 	'my/my_join_detail': 'meet_controller@getMyJoinDetail',
 	'my/my_join_someday': 'meet_controller@getMyJoinSomeday',
 	'my/my_join_checkin': 'meet_controller@userSelfCheckin',
+
+	'my/my_card_list': 'meet_controller@getMyCardList',        // 我的卡项列表
 
 	// 用户资料管理（Web端使用）
 	'my/detail': 'passport_controller@getMyDetail',           // 获取用户详情
@@ -70,9 +74,14 @@ module.exports = {
 
 	'test/test': 'test/test_controller@test',
 	'test/meet_test_join': 'test/test_meet_controller@testJoin',
+	'test/generate_days': 'test/test_meet_controller@setMeetDaysAndTimes',  // 生成预约日期
 	'test/create_user': 'test/test_controller@createTestUser',  // 创建测试用户（临时）
 	'test/update_user': 'test/test_controller@updateTestUser',  // 更新测试用户（修复字段）
 	'test/fix_user': 'test/test_controller@fixUserData',        // 修复用户数据（删除错误记录）
+	'test/check_meet_cost': 'test/test_controller@checkMeetCost',    // 检查课程费用设置
+	'test/update_meet_cost': 'test/test_controller@updateMeetCost',  // 更新课程费用设置
+	'test/check_user_cards': 'test/test_controller@checkUserCards',  // 检查用户卡项
+	'test/search_user': 'test/test_controller@testSearchUser',       // 测试搜索用户
 
 	//***########### ADMIN ################## */  
 	'admin/login': 'admin/admin_home_controller@adminLogin',
@@ -103,6 +112,7 @@ module.exports = {
 	'admin/meet_join_list': 'admin/admin_meet_controller@getJoinList',
 	'admin/join_status': 'admin/admin_meet_controller@statusJoin',
 	'admin/join_del': 'admin/admin_meet_controller@delJoin',
+	'admin/join_detail': 'admin/admin_meet_controller@getJoinDetail',
 	'admin/meet_insert': 'admin/admin_meet_controller@insertMeet',
 	'admin/meet_detail': 'admin/admin_meet_controller@getMeetDetail',
 	'admin/meet_edit': 'admin/admin_meet_controller@editMeet',
@@ -114,6 +124,7 @@ module.exports = {
 	'admin/meet_cancel_time_join': 'admin/admin_meet_controller@cancelJoinByTimeMark',
 	'admin/join_scan': 'admin/admin_meet_controller@scanJoin',
 	'admin/join_checkin': 'admin/admin_meet_controller@checkinJoin',
+	'admin/join_backfill': 'admin/admin_meet_controller@backfillJoin',
 	'admin/self_checkin_qr': 'admin/admin_meet_controller@genSelfCheckinQr',
 	'admin/meet_day_list': 'admin/admin_meet_controller@getDayList',
 

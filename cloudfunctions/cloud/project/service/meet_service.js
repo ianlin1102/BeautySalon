@@ -13,6 +13,7 @@ const LogUtil = require('../../framework/utils/log_util.js');
 const timeUtil = require('../../framework/utils/time_util.js');
 const dataUtil = require('../../framework/utils/data_util.js');
 const config = require('../../config/config.js');
+const cacheUtil = require('../../framework/utils/cache_util.js');
 const PassportService = require('../service/passport_service.js');
 const cloudBase = require('../../framework/cloud/cloud_base.js');
 const UserModel = require('../model/user_model.js');
@@ -120,7 +121,7 @@ class MeetService extends BaseService {
 
 		let stat = { //统计数据
 			succCnt: ret['JOIN_STATUS_1'] || 0, //1=预约成功,
-			cancelCnt: ret['JOIN_STATUS_10'] || 0, //10=已取消, 
+			cancelCnt: ret['JOIN_STATUS_10'] || 0, //10=已取消,
 			adminCancelCnt: ret['JOIN_STATUS_99'] || 0, //99=后台取消
 		};
 
@@ -138,12 +139,55 @@ class MeetService extends BaseService {
 					['times.' + j + '.stat']: stat
 				}
 				await DayModel.edit(whereDay, data);
-				return;
+				break;
 			}
 		}
 
+		// 清除日历缓存，使预约人数实时更新
+		cacheUtil.remove('cache_calendar_index', true);
+		cacheUtil.remove('cache_calendar_week_index', true);
+
 	}
 
+
+	/** 获取时段预约名单 */
+	async getSlotBookings(meetId, timeMark) {
+		// 查询该时段的成功预约
+		let where = {
+			JOIN_MEET_ID: meetId,
+			JOIN_MEET_TIME_MARK: timeMark,
+			JOIN_STATUS: JoinModel.STATUS.SUCC
+		};
+
+		let joins = await JoinModel.getAll(where, 'JOIN_FORMS,JOIN_USER_NAME', {}, 100);
+
+		// 提取姓名
+		let names = [];
+		for (let join of joins) {
+			let name = '';
+
+			// 优先从表单中查找姓名字段
+			if (join.JOIN_FORMS && Array.isArray(join.JOIN_FORMS)) {
+				let nameField = join.JOIN_FORMS.find(f =>
+					f.title && (f.title.includes('姓名') || f.title.includes('名字') || f.title === 'Name')
+				);
+				if (nameField && nameField.val) {
+					name = nameField.val;
+				}
+			}
+
+			// 回退到 JOIN_USER_NAME
+			if (!name && join.JOIN_USER_NAME) {
+				name = join.JOIN_USER_NAME;
+			}
+
+			if (name) {
+				names.push(name);
+			}
+		}
+
+		return { names };
+	}
 
 	// 预约前检测
 	async beforeJoin(userId, meetId, timeMark) {
@@ -151,7 +195,7 @@ class MeetService extends BaseService {
 	}
 
 	// 预约逻辑
-	async join(userId, meetId, timeMark, forms, cardId, source = 'miniprogram') {
+	async join(userId, meetId, timeMark, forms, cardId, source = 'miniprogram', termsInfo = {}) {
 		// 预约时段是否存在
 		let meetWhere = {
 			_id: meetId
@@ -175,7 +219,11 @@ class MeetService extends BaseService {
 		await this.checkMeetRules(userId, meetId, timeMark);
 
 		// 检查用户资料完整性（姓名和手机号必须填写）
-		let userInfo = await UserModel.getOne({ USER_ID: userId }, 'USER_NAME,USER_MOBILE');
+		// 先按 USER_MINI_OPENID 查询（微信用户），再按 USER_ID 查询（Web用户）
+		let userInfo = await UserModel.getOne({ USER_MINI_OPENID: userId }, 'USER_NAME,USER_MOBILE');
+		if (!userInfo) {
+			userInfo = await UserModel.getOne({ USER_ID: userId }, 'USER_NAME,USER_MOBILE');
+		}
 		if (!userInfo) {
 			this.AppError('用户不存在，请先登录');
 		}
@@ -209,11 +257,10 @@ class MeetService extends BaseService {
 		// 保存预约来源
 		data.JOIN_SOURCE = source;
 
-		// 获取用户信息并冗余保存
-		let user = await UserModel.getOne({ USER_ID: userId }, 'USER_NAME,USER_MOBILE');
-		if (user) {
-			data.JOIN_USER_NAME = user.USER_NAME || '';
-			data.JOIN_USER_MOBILE = user.USER_MOBILE || '';
+		// 获取用户信息并冗余保存（使用前面已查询的 userInfo）
+		if (userInfo) {
+			data.JOIN_USER_NAME = userInfo.USER_NAME || '';
+			data.JOIN_USER_MOBILE = userInfo.USER_MOBILE || '';
 		}
 
 		// 卡项扣费处理
@@ -341,6 +388,14 @@ class MeetService extends BaseService {
 
 		data.JOIN_STATUS = JoinModel.STATUS.SUCC;
 		data.JOIN_CODE = dataUtil.genRandomIntString(15);
+
+		// 记录条款同意信息（用于审计追踪）
+		if (termsInfo) {
+			data.JOIN_BOOKING_TERMS_AGREED = termsInfo.bookingTermsAgreed || false;
+			data.JOIN_BOOKING_TERMS_TIME = termsInfo.bookingTermsTime || 0;
+			data.JOIN_USER_TERMS_VERSION = termsInfo.userTermsVersion || 0;
+			data.JOIN_USER_TERMS_TIME = termsInfo.userTermsTime || 0;
+		}
 
 		// 入库
 		let joinId = await JoinModel.insert(data);
@@ -629,7 +684,7 @@ class MeetService extends BaseService {
 	/**  预约前获取关键信息 */
 	async detailForJoin(userId, meetId, timeMark) {
 
-		let fields = 'MEET_DAYS_SET,MEET_FORM_SET,MEET_TITLE,MEET_CANCEL_SET,MEET_COST_SET';
+		let fields = 'MEET_DAYS_SET,MEET_FORM_SET,MEET_TITLE,MEET_CANCEL_SET,MEET_COST_SET,MEET_INSTRUCTOR_ID,MEET_INSTRUCTOR_NAME,MEET_INSTRUCTOR_PIC,MEET_TYPE_ID,MEET_TYPE_NAME,MEET_COURSE_INFO,MEET_CONTENT,MEET_IS_SHOW_LIMIT';
 
 		let where = {
 			_id: meetId,
@@ -639,9 +694,12 @@ class MeetService extends BaseService {
 		let meet = await this.getMeetOneDay(meetId, day, where, fields);
 		if (!meet) return null;
 
-		let dayDesc = timeUtil.fmtDateCHN(this.getDaySetByTimeMark(meet, timeMark).day);
+		let daySet = this.getDaySetByTimeMark(meet, timeMark);
+		if (!daySet) this.AppError('预约日期数据不存在');
+		let dayDesc = timeUtil.fmtDateCHN(daySet.day);
 
 		let timeSet = this.getTimeSetByTimeMark(meet, timeMark);
+		if (!timeSet) this.AppError('预约时段不存在');
 		let timeDesc = timeSet.start + '～' + timeSet.end;
 		meet.dayDesc = dayDesc + ' ' + timeDesc;
 
@@ -1023,6 +1081,7 @@ class MeetService extends BaseService {
 		if (!meet) this.AppError('预约项目不存在或者已关闭');
 
 		let daySet = this.getDaySetByTimeMark(meet, join.JOIN_MEET_TIME_MARK);
+		if (!daySet) this.AppError('被取消的日期数据不存在');
 		let timeSet = this.getTimeSetByTimeMark(meet, join.JOIN_MEET_TIME_MARK);
 		if (!timeSet) this.AppError('被取消的时段不存在');
 

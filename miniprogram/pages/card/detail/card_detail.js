@@ -243,21 +243,22 @@ Page({
 
 	/**
 	 * 立即购买按钮 - 显示购买确认弹窗
+	 * 检查顺序：1. 登录 → 2. 用户条款 → 3. 卡项购买条款
 	 */
 	bindPurchaseTap: async function () {
-		// 最高优先级：检查用户条款
-		let userTermsStrictOk = await this._checkUserTermsStrict();
-		if (!userTermsStrictOk) return;
-
-		// 检查是否同意卡项条款
-		if (!this.data.agreedCardTerms) {
-			pageHelper.showModal('请先阅读并同意卡项购买条款');
+		// 1. 首先检查登录状态
+		if (!PassportBiz.isLoggedIn()) {
+			pageHelper.showModal('请先登录');
 			return;
 		}
 
-		// 检查登录状态
-		if (!PassportBiz.isLoggedIn()) {
-			pageHelper.showModal('请先登录');
+		// 2. 检查用户条款
+		let userTermsStrictOk = await this._checkUserTermsStrict();
+		if (!userTermsStrictOk) return;
+
+		// 3. 检查是否同意卡项购买条款
+		if (!this.data.agreedCardTerms) {
+			pageHelper.showModal('请先阅读并同意卡项购买条款');
 			return;
 		}
 

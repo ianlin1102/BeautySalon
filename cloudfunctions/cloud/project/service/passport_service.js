@@ -363,7 +363,7 @@ class PassportService extends BaseService {
 		let where = {
 			USER_MINI_OPENID: userId
 		}
-		let fields = 'USER_MOBILE,USER_NAME,USER_CITY,USER_TRADE,USER_WORK'
+		let fields = 'USER_MOBILE,USER_NAME,USER_CITY,USER_TRADE,USER_WORK,USER_AVATAR'
 		let user = await UserModel.getOne(where, fields);
 
 		// 如果找不到，再按 USER_ID 查询（Web 用户）
@@ -382,7 +382,8 @@ class PassportService extends BaseService {
 		name,
 		trade,
 		work,
-		city
+		city,
+		avatar
 	}) {
 		// 先按 USER_MINI_OPENID 查询（微信用户）
 		let where = {
@@ -415,6 +416,10 @@ class PassportService extends BaseService {
 			USER_WORK: work,
 			USER_TRADE: trade
 		};
+
+		if (avatar !== undefined) {
+			data.USER_AVATAR = avatar;
+		}
 
 		await UserModel.edit(where, data);
 	}

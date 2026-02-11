@@ -20,11 +20,14 @@ class AdminTermsAgreementService extends BaseService {
 			where.AGREE_VERSION = version;
 		}
 
-		// 搜索
+		// 搜索（支持姓名、用户标识、用户ID、记录ID）
 		if (search && search.trim()) {
+			let searchTerm = search.trim();
 			where['$or'] = [
-				{ AGREE_PRINTED_NAME: { $regex: '.*' + search, $options: 'i' } },
-				{ AGREE_UNIQUE_ID: { $regex: '.*' + search, $options: 'i' } }
+				{ AGREE_PRINTED_NAME: { $regex: searchTerm, $options: 'i' } },
+				{ AGREE_UNIQUE_ID: { $regex: searchTerm, $options: 'i' } },
+				{ AGREE_USER_ID: { $regex: searchTerm, $options: 'i' } },
+				{ _id: searchTerm }
 			];
 		}
 

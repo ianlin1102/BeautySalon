@@ -1,62 +1,77 @@
-<view wx:if="{{!isLoad}}" class="load loading text-l"></view>
+<view wx:if="{{!isLoad}}" class="load loading text-l load-project"></view>
 
-<view class="terms-page" wx:if="{{isLoad}}">
-	<!-- 标题 -->
-	<view class="terms-header">
-		<text class="terms-title">用户服务条款</text>
-		<text class="terms-version">版本 V{{version}}</text>
-	</view>
+<view class="neon-page" wx:if="{{isLoad}}">
+	<!-- 背景装饰光斑 -->
+	<view class="bg-glow bg-glow-1"></view>
+	<view class="bg-glow bg-glow-2"></view>
 
-	<!-- 条款内容（滚动区域） -->
-	<scroll-view
-		class="terms-content"
-		scroll-y
-		bindscroll="bindScroll"
-		bindscrolltolower="bindScrollToLower"
-		lower-threshold="50"
-	>
-		<block wx:for="{{sections}}" wx:key="index">
-			<view class="terms-section">
-				<view class="section-title">{{item.title}}</view>
-				<view class="section-content">{{item.content}}</view>
+	<view class="content-area padding-project">
+		<view class="glass-panel padding-project margin-top">
+			<view class="title text-neon-primary text-bold">用户服务条款</view>
+			<view class="text-neon-dim text-xs margin-bottom-s text-center">版本 V{{version}}</view>
+
+			<!-- Language Toggle -->
+			<view class="lang-toggle" bindtap="bindLanguageToggle">
+				<text class="lang-btn {{language === 'zh' ? 'active' : ''}}">中文</text>
+				<text class="lang-divider">|</text>
+				<text class="lang-btn {{language === 'en' ? 'active' : ''}}">EN</text>
 			</view>
-		</block>
 
-		<!-- 滚动提示 -->
-		<view class="scroll-hint" wx:if="{{!scrolledToBottom}}">
-			<text>请继续滚动阅读完整条款</text>
+			<scroll-view class="terms-content-scroll" scroll-y bindscrolltolower="bindScrollToLower" lower-threshold="50">
+				<view class="padding-top-s">
+					<!-- Header section -->
+					<view wx:if="{{sections.length > 0 && sections[0].isHeader}}" class="terms-header">
+						<view class="terms-main-title">{{language === 'zh' ? (sections[0].header_zh || sections[0].header_en) : (sections[0].header_en || sections[0].header_zh)}}</view>
+						<view class="terms-intro">{{language === 'zh' ? (sections[0].intro_zh || sections[0].intro_en) : (sections[0].intro_en || sections[0].intro_zh)}}</view>
+					</view>
+
+					<!-- Regular sections -->
+					<block wx:for="{{sections}}" wx:key="index">
+						<view class="margin-bottom-xl" wx:if="{{!item.isHeader}}">
+							<view class="text-neon-white text-bold text-m margin-bottom-s">{{language === 'zh' ? (item.title_zh || item.title) : (item.title_en || item.title_zh || item.title)}}</view>
+							<view class="text-neon-muted text-m content-line">{{language === 'zh' ? (item.content_zh || item.content) : (item.content_en || item.content_zh || item.content)}}</view>
+						</view>
+					</block>
+					<view wx:if="{{!scrolledToBottom}}" class="scroll-hint">
+						<text class="icon-down margin-right-xs"></text>请继续滚动阅读完整条款
+					</view>
+				</view>
+			</scroll-view>
 		</view>
-	</scroll-view>
 
-	<!-- 同意区域（滚动到底部后显示） -->
-	<view class="agree-section {{scrolledToBottom ? 'visible' : ''}}">
-		<view class="agree-checkbox">
-			<checkbox-group bindchange="bindCheckboxChange">
-				<label class="checkbox-label">
-					<checkbox value="agreed" color="#2499f2" checked="{{checkbox}}" />
-					<text>我已阅读并同意上述条款</text>
+		<view class="glass-panel padding-project margin-top {{scrolledToBottom ? '' : 'disabled-area'}}">
+			<block wx:if="{{!hasAgreed}}">
+				<view class="neon-form-group">
+					<view class="title must text-neon-white">姓名</view>
+					<input class="neon-input" placeholder="请输入您的法律姓名" placeholder-class="phc" value="{{printedName}}" bindinput="bindNameInput" maxlength="50"></input>
+				</view>
+
+				<label class="neon-form-group">
+					<view class="title text-neon-white">我已阅读并同意上述条款</view>
+					<checkbox-group bindchange="bindCheckboxChange">
+						<checkbox class="blue neon-checkbox" value="agreed" checked="{{checkbox}}"></checkbox>
+					</checkbox-group>
 				</label>
-			</checkbox-group>
+
+				<view class="padding-project">
+					<button class="neon-button margin-top-s" bindtap="bindSubmit" disabled="{{!scrolledToBottom || !checkbox || !printedName || submitting}}">
+						{{submitting ? '提交中...' : '确认同意'}}
+					</button>
+				</view>
+			</block>
+
+			<block wx:else>
+				<view class="padding-project text-center">
+					<view class="text-green text-bold text-xl margin-bottom-s">
+						<text class="icon-check"></text> 您已同意本条款
+					</view>
+					<button class="btn-project bg-green margin-top-s" style="opacity: 0.8;" disabled>已同意</button>
+				</view>
+			</block>
 		</view>
 
-		<view class="agree-name">
-			<text class="name-label">请输入您的法律姓名 (Printed Name)</text>
-			<input
-				class="name-input"
-				placeholder="如：张三 / John Smith"
-				placeholder-class="name-input-placeholder"
-				value="{{printedName}}"
-				bindinput="bindNameInput"
-				maxlength="50"
-			/>
+		<view class="text-center text-neon-dim text-xs margin-top-xl padding-bottom-xl">
+			提示：请确保您已阅读并理解所有条款内容
 		</view>
-
-		<button
-			class="agree-btn"
-			bindtap="bindSubmit"
-			disabled="{{!scrolledToBottom || !checkbox || !printedName || submitting}}"
-		>
-			{{submitting ? '提交中...' : '确认同意'}}
-		</button>
 	</view>
 </view>

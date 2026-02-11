@@ -3,7 +3,7 @@
 		"cmpt-comm-list": "/cmpts/public/list/comm_list_cmpt"
 	},
 	"navigationBarTitleText": "导师团队管理",
-	"navigationBarBackgroundColor": "#2499f2",
+	"navigationBarBackgroundColor": "#7C3AED",
 	"navigationBarTextStyle": "white",
 	"enablePullDownRefresh": false
 }

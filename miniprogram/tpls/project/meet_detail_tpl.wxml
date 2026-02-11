@@ -89,4 +89,28 @@
 	<button wx:if="{{topShow}}" class="btn-fixed bg-gray text-gray btn-top" bindtap="bindTopTap" style="bottom:60rpx"><text class="icon-top"></text></button>
 	<!-- top END. -->
 
+	<!-- 预约名单弹窗 -->
+	<view class="booked-modal-mask" wx:if="{{showBookedModal}}" catchtap="bindCloseBookedModal">
+		<view class="booked-modal-content" catchtap="">
+			<view class="booked-modal-header">
+				<text class="booked-modal-title">已预约名单 {{currentSlotTime}}</text>
+				<text class="booked-modal-close" catchtap="bindCloseBookedModal">×</text>
+			</view>
+			<view class="booked-modal-body">
+				<view wx:if="{{loadingNames}}" class="booked-loading">加载中...</view>
+				<view wx:elif="{{bookedNames.length === 0}}" class="booked-empty">暂无预约</view>
+				<view wx:else class="booked-list">
+					<view class="booked-item" wx:for="{{bookedNames}}" wx:key="index">
+						<text class="booked-index">{{index + 1}}.</text>
+						<text class="booked-name">{{item}}</text>
+					</view>
+				</view>
+			</view>
+			<view class="booked-modal-footer">
+				<button class="booked-btn-cancel" catchtap="bindCloseBookedModal">关闭</button>
+				<button class="booked-btn-confirm" catchtap="bindConfirmBooking">我要预约</button>
+			</view>
+		</view>
+	</view>
+
 </template>

@@ -3,7 +3,7 @@
 		"cmpt-img-upload": "/cmpts/public/img/img_upload_cmpt"
 	},
 	"navigationBarTitleText": "新增导师",
-	"navigationBarBackgroundColor": "#2499f2",
+	"navigationBarBackgroundColor": "#7C3AED",
 	"navigationBarTextStyle": "white",
 	"enablePullDownRefresh": false
 }
