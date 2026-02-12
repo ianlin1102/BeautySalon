@@ -1,5 +1,5 @@
 /**
- * 卡项使用记录页面
+ * 卡项使用记录页面（管理员查看）
  */
 
 const AdminCardBiz = require('../../../biz/admin_card_biz.js');
@@ -7,7 +7,8 @@ const AdminCardBiz = require('../../../biz/admin_card_biz.js');
 Page({
 	data: {
 		userId: '',
-		userCardId: '',
+		userCardId: '',  // 卡项 _id，用于查询记录
+		uniqueId: '',    // 卡项 UNIQUE_ID，用于查询详情
 		cardInfo: null,
 		records: [],
 		page: 1,
@@ -21,10 +22,10 @@ Page({
 		if (options.userId) {
 			this.setData({
 				userId: decodeURIComponent(options.userId),
-				userCardId: options.userCardId ? decodeURIComponent(options.userCardId) : ''
+				userCardId: options.userCardId ? decodeURIComponent(options.userCardId) : '',
+				uniqueId: options.uniqueId ? decodeURIComponent(options.uniqueId) : ''
 			});
 
-			// 加载卡项详情和记录
 			this._loadCardInfo();
 			this.loadRecords();
 		} else {
@@ -35,9 +36,9 @@ Page({
 		}
 	},
 
-	// 加载卡项详情
+	// 加载卡项详情（用 uniqueId 查）
 	async _loadCardInfo() {
-		let uniqueId = this.data.userCardId;
+		let uniqueId = this.data.uniqueId;
 		if (!uniqueId) return;
 
 		try {
@@ -50,7 +51,7 @@ Page({
 		}
 	},
 
-	// 加载记录
+	// 加载记录（用 userCardId = _id 查）
 	async loadRecords() {
 		if (this.data.loading) return;
 

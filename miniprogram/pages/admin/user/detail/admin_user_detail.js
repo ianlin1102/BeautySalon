@@ -102,10 +102,10 @@ Page({
 	// 查看卡项消费记录
 	bindCardTap: function(e) {
 		let card = e.currentTarget.dataset.card;
-		let cardId = card.USER_CARD_UNIQUE_ID || card._id;
 		let cardName = card.USER_CARD_CARD_NAME || '';
+		let uniqueId = card.USER_CARD_UNIQUE_ID || '';
 		wx.navigateTo({
-			url: '/pages/card/records/card_records?userId=' + encodeURIComponent(this.data.userId) + '&userCardId=' + encodeURIComponent(cardId) + '&cardName=' + encodeURIComponent(cardName) + '&uniqueId=' + encodeURIComponent(cardId)
+			url: '/pages/card/records/card_records?userId=' + encodeURIComponent(this.data.userId) + '&userCardId=' + encodeURIComponent(card._id) + '&cardName=' + encodeURIComponent(cardName) + '&uniqueId=' + encodeURIComponent(uniqueId)
 		});
 	},
 
