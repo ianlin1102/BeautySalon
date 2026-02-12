@@ -133,6 +133,11 @@
  					reject(res.result);
  					return;
  				} else if (res.result.code == CODE.ADMIN_ERROR) {
+ 					// mgr/ 路由的权限错误不跳转旧登录页
+ 					if (route.indexOf('mgr/') > -1) {
+ 						reject(res.result);
+ 						return;
+ 					}
  					// 后台登录错误
  					wx.reLaunch({
  						url: '/pages/admin/index/login/admin_login',

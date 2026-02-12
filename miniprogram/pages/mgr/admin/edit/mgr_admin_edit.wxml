@@ -1,0 +1,80 @@
+<view class="main-admin">
+
+	<view class="form-box shadow">
+		<!-- 姓名 -->
+		<view class="form-group">
+			<view class="title must">管理员姓名</view>
+			<input placeholder="请输入姓名" placeholder-class="phc" value="{{name}}"
+				bindinput="bindNameInput" maxlength="30" />
+		</view>
+
+		<!-- 角色 -->
+		<view class="form-group arrow">
+			<view class="title must">角色</view>
+			<picker mode="selector" range="{{roleList}}" range-key="ROLE_NAME"
+				value="{{roleIndex}}" bindchange="bindRoleChange" style="flex:1">
+				<view class="form-text {{roleList.length > 0 ? 'text-black' : 'text-grey'}}">
+					{{roleList.length > 0 ? (roleList[roleIndex].ROLE_NAME || '请选择角色') : '暂无角色，请先创建'}}
+				</view>
+			</picker>
+		</view>
+
+		<!-- 状态（仅编辑模式） -->
+		<view class="form-group" wx:if="{{isEdit}}">
+			<view class="title">状态</view>
+			<view class="status-switch">
+				<text class="status-text">{{status === 1 ? '启用' : '禁用'}}</text>
+				<switch checked="{{status === 1}}" bindchange="bindStatusChange" color="#7C3AED" />
+			</view>
+		</view>
+	</view>
+
+	<!-- 绑定用户 -->
+	<view class="section-label">绑定微信用户</view>
+
+	<!-- 已选中用户 -->
+	<view class="form-box shadow" wx:if="{{selectedUser}}">
+		<view class="selected-user">
+			<view class="selected-info">
+				<view class="selected-name" wx:if="{{selectedUser.name}}">{{selectedUser.name}}</view>
+				<view class="selected-phone" wx:if="{{selectedUser.phone}}">{{selectedUser.phone}}</view>
+				<view class="selected-openid">OpenID: {{selectedUser.openid}}</view>
+			</view>
+			<view class="selected-clear" bindtap="bindClearUser">
+				<text class="icon-close"></text>
+			</view>
+		</view>
+	</view>
+
+	<!-- 搜索用户 -->
+	<view wx:if="{{!selectedUser}}">
+		<view class="user-search-bar">
+			<input class="user-search-input" placeholder="输入姓名/手机号搜索用户" placeholder-class="phc"
+				value="{{userKeyword}}" bindinput="bindUserKeywordInput" bindconfirm="bindSearchUser" />
+			<view class="user-search-btn" bindtap="bindSearchUser">搜索</view>
+		</view>
+
+		<!-- 搜索结果 -->
+		<view class="form-box shadow" wx:if="{{showUserResults}}">
+			<view wx:if="{{searching}}" class="user-result-hint">搜索中...</view>
+			<view wx:elif="{{userResults.length === 0}}" class="user-result-hint">未找到匹配用户</view>
+			<block wx:else>
+				<view class="user-result-item" wx:for="{{userResults}}" wx:key="openid"
+					bindtap="bindSelectUser" data-idx="{{index}}">
+					<view class="user-result-main">
+						<view class="user-result-name">{{item.name || '未设置姓名'}}</view>
+						<view class="user-result-detail" wx:if="{{item.phone}}">{{item.phone}}</view>
+						<view class="user-result-detail" wx:if="{{item.email}}">{{item.email}}</view>
+					</view>
+					<text class="icon-right user-result-arrow"></text>
+				</view>
+			</block>
+		</view>
+
+		<view class="form-hint">搜索已注册的微信用户，选择后绑定为管理员</view>
+	</view>
+
+	<!-- 保存 -->
+	<button class="btn-admin margin-top-xs" bindtap="bindSave">保存</button>
+
+</view>

@@ -8,7 +8,6 @@ Page({
 	data: {
 		userId: '',
 		userCardId: '',
-		userInfo: null,
 		cardInfo: null,
 		records: [],
 		page: 1,
@@ -19,40 +18,35 @@ Page({
 	},
 
 	onLoad: function (options) {
-		// 从参数获取userId和可选的userCardId
 		if (options.userId) {
 			this.setData({
 				userId: decodeURIComponent(options.userId),
 				userCardId: options.userCardId ? decodeURIComponent(options.userCardId) : ''
 			});
 
-			// 如果有用户信息，直接设置
-			if (options.userName && options.userMobile) {
-				this.setData({
-					userInfo: {
-						USER_NAME: decodeURIComponent(options.userName || ''),
-						USER_MOBILE: decodeURIComponent(options.userMobile)
-					}
-				});
-			}
-
-			// 如果有卡项信息，直接设置
-			if (options.cardName && options.uniqueId) {
-				this.setData({
-					cardInfo: {
-						USER_CARD_CARD_NAME: decodeURIComponent(options.cardName),
-						USER_CARD_UNIQUE_ID: decodeURIComponent(options.uniqueId)
-					}
-				});
-			}
-
-			// 加载记录
+			// 加载卡项详情和记录
+			this._loadCardInfo();
 			this.loadRecords();
 		} else {
 			wx.showToast({
 				title: '参数错误',
 				icon: 'none'
 			});
+		}
+	},
+
+	// 加载卡项详情
+	async _loadCardInfo() {
+		let uniqueId = this.data.userCardId;
+		if (!uniqueId) return;
+
+		try {
+			let result = await AdminCardBiz.searchByUniqueId(uniqueId);
+			if (result && result.userCard) {
+				this.setData({ cardInfo: result.userCard });
+			}
+		} catch (e) {
+			console.error('加载卡项详情失败:', e);
 		}
 	},
 

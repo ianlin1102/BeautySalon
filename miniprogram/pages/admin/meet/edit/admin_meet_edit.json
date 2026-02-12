@@ -1,8 +1,7 @@
 {
-	"usingComponents": { 
+	"usingComponents": {
 		"cmpt-form-set": "../../../../cmpts/public/form/form_set/form_set_cmpt",
-		"cmpt-picker-time": "../../../../cmpts/public/picker_time/picker_time_cmpt",
-		"cmpt-picker-multi": "../../../../cmpts/public/picker_multi/picker_multi_cmpt"
+		"cmpt-picker-time": "../../../../cmpts/public/picker_time/picker_time_cmpt"
 	},
 	"navigationBarBackgroundColor": "#7C3AED",
 	"navigationBarTextStyle": "white",

@@ -1,5 +1,6 @@
 let behavior = require('../../../../behavior/my_index_bh.js');
 let PassortBiz = require('../../../../biz/passport_biz.js');
+let MgrBiz = require('../../../../biz/mgr_biz.js');
 let skin = require('../../skin/skin.js');
 
 Page({
@@ -12,7 +13,8 @@ Page({
 			courseCount: 0,
 			appointmentCount: 0
 		},
-		nextAppointment: null  // 最近一个预约
+		nextAppointment: null,  // 最近一个预约
+		isMgrAdmin: false  // 是否为MGR管理员
 	},
 
 	onReady: async function () {
@@ -73,8 +75,25 @@ Page({
 			await this.loadMyStats();
 			await this.loadNextAppointment();
 
+			// 4. 检查是否为MGR管理员（静默，不阻塞）
+			this._checkMgrAccess();
+
 		} catch (err) {
 			// 静默失败
+		}
+	},
+
+	// 检查MGR管理员权限
+	async _checkMgrAccess() {
+		if (!PassortBiz.isLoggedIn()) {
+			this.setData({ isMgrAdmin: false });
+			return;
+		}
+		try {
+			let mgrInfo = await MgrBiz.checkMgrAccess();
+			this.setData({ isMgrAdmin: !!mgrInfo });
+		} catch (e) {
+			this.setData({ isMgrAdmin: false });
 		}
 	},
 

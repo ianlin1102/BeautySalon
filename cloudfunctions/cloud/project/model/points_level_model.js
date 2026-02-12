@@ -7,8 +7,19 @@ class PointsLevelModel extends BaseModel {
   
     static CL = 'ax_points_level';
     static FIELD_PREFIX = 'LEVEL_';
-    static ADD_TIME = true;
-    static UPDATE_TIME = true;
+    static DB_STRUCTURE = {
+        _pid: 'string|true',
+        LEVEL_ID: 'string|true',
+        LEVEL_NAME: 'string|true|comment=等级名称',
+        LEVEL_MIN_POINTS: 'int|true|default=0',
+        LEVEL_MAX_POINTS: 'int|true|default=0',
+        LEVEL_COLOR: 'string|false',
+        LEVEL_SORT: 'int|true|default=0',
+        LEVEL_ADD_TIME: 'int|true',
+        LEVEL_EDIT_TIME: 'int|true',
+        LEVEL_ADD_IP: 'string|false',
+        LEVEL_EDIT_IP: 'string|false',
+    };
 
     // 默认等级配置 - 夜店风格渐变配色
     static DEFAULT_LEVELS = [

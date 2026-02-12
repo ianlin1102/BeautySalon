@@ -136,7 +136,7 @@ Page({
 			}
 		} catch (err) { }
 
-		let url = 'https://cloud1-6gnd02he13c1ff2e-1380655578.ap-shanghai.app.tcloudbase.com/#/terms/print/' + id + '?token=' + token;
+		let url = 'https://cloud1-6gnd02he13c1ff2e-1380655578.tcloudbaseapp.com/#/terms/print/' + id + '?token=' + token;
 
 		wx.setClipboardData({
 			data: url,

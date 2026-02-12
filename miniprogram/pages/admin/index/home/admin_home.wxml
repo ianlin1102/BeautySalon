@@ -49,6 +49,8 @@
 		</view>
 		<view class="item" bindtap="url" data-url="../../about/edit/admin_about_edit"> <text class="icon-infofill text-brown"></text> <text class="text-black">关于我们管理</text>
 		</view>
+		<view class="item" wx:if="{{admin.type==1}}" bindtap="url" data-url="/pages/mgr/admin/list/mgr_admin_list"> <text class="icon-rankfill text-red"></text> <text class="text-black">管理员管理</text>
+		</view>
 	</view>
 
 

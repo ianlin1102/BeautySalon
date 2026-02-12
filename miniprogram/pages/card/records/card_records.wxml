@@ -1,28 +1,58 @@
 <view class="container">
-	<view class="header">
-		<text class="title">使用记录</text>
-	</view>
 
-	<!-- 用户信息 -->
-	<view wx:if="{{userInfo}}" class="section user-info">
-		<view class="info-row">
-			<text class="label">用户</text>
-			<text class="value">{{userInfo.USER_NAME || '未设置'}} ({{userInfo.USER_MOBILE}})</text>
+	<!-- 卡项基本信息 -->
+	<view wx:if="{{cardInfo}}" class="section card-info-section">
+		<view class="card-info-header">
+			<view class="card-info-name">{{cardInfo.USER_CARD_CARD_NAME}}</view>
+			<view class="card-info-status status-{{cardInfo.USER_CARD_STATUS}}">{{cardInfo.USER_CARD_STATUS_DESC}}</view>
 		</view>
-		<view wx:if="{{cardInfo}}" class="info-row">
-			<text class="label">卡项</text>
-			<text class="value">{{cardInfo.USER_CARD_CARD_NAME}}</text>
+
+		<view class="card-info-id">{{cardInfo.USER_CARD_UNIQUE_ID}}</view>
+
+		<!-- 余额/次数 -->
+		<view class="card-info-balance" wx:if="{{cardInfo.USER_CARD_TYPE == 1}}">
+			<view class="balance-main">
+				<text class="balance-num">{{cardInfo.USER_CARD_REMAIN_TIMES}}</text>
+				<text class="balance-unit">次剩余</text>
+			</view>
+			<view class="balance-sub">
+				<text>总共 {{cardInfo.USER_CARD_TOTAL_TIMES}} 次 / 已用 {{cardInfo.USER_CARD_USED_TIMES}} 次</text>
+			</view>
 		</view>
-		<view wx:if="{{cardInfo}}" class="info-row">
-			<text class="label">识别码</text>
-			<text class="value">{{cardInfo.USER_CARD_UNIQUE_ID}}</text>
+		<view class="card-info-balance" wx:else>
+			<view class="balance-main">
+				<text class="balance-num">${{cardInfo.USER_CARD_REMAIN_AMOUNT}}</text>
+				<text class="balance-unit">剩余</text>
+			</view>
+			<view class="balance-sub">
+				<text>总共 ${{cardInfo.USER_CARD_TOTAL_AMOUNT}} / 已用 ${{cardInfo.USER_CARD_USED_AMOUNT}}</text>
+			</view>
+		</view>
+
+		<view class="card-info-meta">
+			<view class="meta-item">
+				<text class="meta-label">类型</text>
+				<text class="meta-value">{{cardInfo.USER_CARD_TYPE_DESC}}</text>
+			</view>
+			<view class="meta-item">
+				<text class="meta-label">创建时间</text>
+				<text class="meta-value">{{cardInfo.USER_CARD_ADD_TIME}}</text>
+			</view>
+			<view class="meta-item" wx:if="{{cardInfo.USER_CARD_EXPIRE_TIME}}">
+				<text class="meta-label">到期时间</text>
+				<text class="meta-value">{{cardInfo.USER_CARD_EXPIRE_TIME}}</text>
+			</view>
+			<view class="meta-item" wx:if="{{!cardInfo.USER_CARD_EXPIRE_TIME}}">
+				<text class="meta-label">到期时间</text>
+				<text class="meta-value">永久有效</text>
+			</view>
 		</view>
 	</view>
 
 	<!-- 记录列表 -->
 	<view class="section">
 		<view class="section-title">
-			📋 记录列表 (共{{total}}条)
+			使用记录 (共{{total}}条)
 		</view>
 
 		<view wx:if="{{records.length > 0}}" class="records-list">
@@ -56,7 +86,7 @@
 						</text>
 					</view>
 
-					<view class="record-reason">
+					<view class="record-reason" wx:if="{{item.RECORD_REASON}}">
 						<text class="reason-label">原因:</text>
 						<text class="reason-text">{{item.RECORD_REASON}}</text>
 					</view>
@@ -71,7 +101,6 @@
 
 		<!-- 空状态 -->
 		<view wx:if="{{records.length === 0 && !loading}}" class="empty-state">
-			<text class="empty-icon">📭</text>
 			<text class="empty-text">暂无使用记录</text>
 		</view>
 
@@ -88,10 +117,5 @@
 		<view wx:if="{{!hasMore && records.length > 0}}" class="no-more">
 			没有更多了
 		</view>
-	</view>
-
-	<!-- 返回按钮 -->
-	<view class="footer-nav">
-		<button class="btn-nav" bindtap="goBack">← 返回</button>
 	</view>
 </view>

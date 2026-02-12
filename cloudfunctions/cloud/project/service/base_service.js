@@ -8,7 +8,6 @@ const appCode = require('../../framework/core/app_code.js');
 const timeUtil = require('../../framework/utils/time_util.js');
 const dbUtil = require('../../framework/database/db_util.js');
 const SetupModel = require('../model/setup_model.js');
-const AdminModel = require('../model/admin_model.js');
 const NewsModel = require('../model/news_model.js');
 const config = require('../../config/config.js');
 
@@ -42,72 +41,58 @@ class BaseService {
 			return; // 已检查过，直接跳过
 		}
 
-		// 1. 先检查 ax_setup 是否有数据（快速判断是否已初始化）
-		if (await dbUtil.isExistCollection('ax_setup')) {
-			let setupCnt = await SetupModel.count({});
-			if (setupCnt > 0) {
-				// 已有数据，标记为已检查，跳过后续所有检查
-				global._collectionsChecked = true;
-				return;
-			}
-		}
-
-		// 2. 首次安装：检查并创建缺失的集合
-		console.log('### initSetup - 检查集合...');
+		// 1. 确保所有集合存在（每次冷启动检查一次）
 		let arr = config.COLLECTION_NAME.split('|');
+		let hasMissing = false;
 		for (let k in arr) {
 			let collectionName = arr[k];
 			if (!await dbUtil.isExistCollection(collectionName)) {
 				console.log('### Creating missing collection: ' + collectionName);
 				await dbUtil.createCollection(collectionName);
+				hasMissing = true;
 			}
 		}
 
-		console.log('### initSetup - 初始化默认数据...');
-
-		// 3. 初始化 ax_setup 默认数据
+		// 2. 检查是否需要初始化默认数据（仅首次安装）
+		let needInit = false;
 		if (await dbUtil.isExistCollection('ax_setup')) {
-			await SetupModel.del({});
+			let setupCnt = await SetupModel.count({});
+			if (setupCnt === 0) {
+				needInit = true;
+			}
+		}
 
+		if (needInit) {
+			console.log('### initSetup - 初始化默认数据...');
+
+			// 3. 初始化 ax_setup 默认数据
 			let data = {};
 			data.SETUP_ABOUT = '关于我们';
 			await SetupModel.insert(data);
-		}
 
-		// 4. 初始化 ax_admin 默认数据
-		if (await dbUtil.isExistCollection('ax_admin')) {
-			await AdminModel.del({});
+			// 4. 初始化 ax_news 默认数据
+			if (await dbUtil.isExistCollection('ax_news')) {
+				await NewsModel.del({});
 
-			let data = {};
-			data.ADMIN_NAME = '系统管理员';
-			data.ADMIN_PHONE = '13900000000';
-			data.ADMIN_TYPE = 1;
+				let newsArr = config.NEWS_CATE.split(',');
+				for (let j in newsArr) {
+					let title = newsArr[j].split('=')[1];
+					let cateId = newsArr[j].split('=')[0];
 
-			await AdminModel.insert(data);
-		}
+					let newsData = {};
+					newsData.NEWS_TITLE = title + '标题1';
+					newsData.NEWS_DESC = title + '简介1';
+					newsData.NEWS_CATE_ID = cateId;
+					newsData.NEWS_CATE_NAME = title;
+					newsData.NEWS_ADMIN_ID = '1';
+					newsData.NEWS_CONTENT = [{
+						type: 'text',
+						val: title + '内容1'
+					}];
+					newsData.NEWS_PIC = ['../../../../images/default_cover_pic.gif'];
 
-		// 5. 初始化 ax_news 默认数据
-		if (await dbUtil.isExistCollection('ax_news')) {
-			await NewsModel.del({});
-
-			let newsArr = config.NEWS_CATE.split(',');
-			for (let j in newsArr) {
-				let title = newsArr[j].split('=')[1];
-				let cateId = newsArr[j].split('=')[0];
-
-				let data = {};
-				data.NEWS_TITLE = title + '标题1';
-				data.NEWS_DESC = title + '简介1';
-				data.NEWS_CATE_ID = cateId;
-				data.NEWS_CATE_NAME = title;
-				data.NEWS_ADMIN_ID = '1';
-				data.NEWS_CONTENT = [{
-					type: 'text',
-					val: title + '内容1'
-				}];
-				data.NEWS_PIC = ['../../../../images/default_cover_pic.gif'];
-
-				await NewsModel.insert(data);
+					await NewsModel.insert(newsData);
+				}
 			}
 		}
 

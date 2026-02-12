@@ -351,7 +351,7 @@ module.exports = Behavior({
 		},
 
 		setTap: function (e, skin) {
-			let itemList = ['清除缓存', '退出登录', '后台管理'];
+			let itemList = ['清除缓存', '退出登录'];
 			wx.showActionSheet({
 				itemList,
 				success: async res => {
@@ -379,18 +379,6 @@ module.exports = Behavior({
 								}
 							}
 						});
-					}
-
-					if (idx == 2) {
-						pageHelper.setSkin(skin);
-						if (setting.IS_SUB) {
-							PassortBiz.adminLogin('admin', '123456', this);
-						} else {
-							wx.reLaunch({
-								url: '/pages/admin/index/login/admin_login',
-							});
-						}
-
 					}
 
 				},

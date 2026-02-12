@@ -1,0 +1,46 @@
+@import '../../../style/project/base/admin.wxss';
+
+.main-admin {
+	padding: 0;
+}
+
+.admin-info {
+	height: 200rpx;
+	width: 100%;
+	color: #fff;
+	display: flex;
+	justify-content: flex-start;
+	align-items: center;
+}
+
+.admin-info .pic {
+	width: 100rpx;
+	height: 100rpx;
+	font-size: 70rpx;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	margin-right: 20rpx;
+}
+
+.admin-info .right {
+	flex: 1;
+	display: flex;
+	flex-direction: column;
+}
+
+.admin-info .right .name {
+	font-size: 32rpx;
+	line-height: 1.8;
+}
+
+.admin-info .right .desc {
+	font-size: 24rpx;
+	line-height: 1.3;
+}
+
+.main-admin .comm-list,
+.main-admin .bar {
+	background-color: #fff;
+	width: 100%;
+}

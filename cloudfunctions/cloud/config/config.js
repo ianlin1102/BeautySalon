@@ -17,7 +17,7 @@ module.exports = {
 	TEST_MODE: false,  
 	TEST_TOKEN_ID: '',
 
-	COLLECTION_NAME: 'ax_admin|ax_cache|ax_card_item|ax_card_record|ax_day|ax_export|ax_join|ax_log|ax_meet|ax_news|ax_setup|ax_temp|ax_terms_agreement|ax_user|ax_user_card',
+	COLLECTION_NAME: 'ax_admin|ax_cache|ax_card_item|ax_card_record|ax_day|ax_export|ax_join|ax_log|ax_meet|ax_news|ax_setup|ax_temp|ax_terms_agreement|ax_user|ax_user_card|ax_mgr_role|ax_mgr_admin',
 
 	DATA_EXPORT_PATH: 'export/', //数据导出路径
 	MEET_TIMEMARK_QR_PATH: 'meet/usercheckin/', //用户签到码路径 
@@ -35,5 +35,8 @@ module.exports = {
 	MEET_LOG_LEVEL: 'debug',
 
 	// ### 后台业务相关
-	ADMIN_LOGIN_EXPIRE: 86400, //管理员token过期时间 (秒) 
+	ADMIN_LOGIN_EXPIRE: 86400, //管理员token过期时间 (秒)
+
+	// RBAC 超管引导 - 首次部署时填入超管 OpenID，创建完成后清空并重新部署
+	BOOTSTRAP_SUPER_OPENID: 'oi1Jt1yz9SQ8MzgMri3ifVTKnSNk',
 }

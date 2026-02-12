@@ -1,0 +1,26 @@
+@import '../../../../style/project/base/admin.wxss';
+
+page {
+	background-color: #f8f8f8;
+}
+
+.top-btns {
+	display: flex;
+	gap: 16rpx;
+	width: 100%;
+	margin-bottom: 20rpx;
+}
+
+.top-btns .btn {
+	white-space: nowrap;
+	font-size: 26rpx;
+	padding: 0 24rpx;
+	height: 64rpx;
+	line-height: 64rpx;
+}
+
+.openid-text {
+	font-size: 22rpx;
+	color: #999 !important;
+	word-break: break-all;
+}

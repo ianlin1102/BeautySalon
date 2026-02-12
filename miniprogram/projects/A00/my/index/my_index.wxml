@@ -1,2 +1,2 @@
 <import src="../../../../tpls/project/my_index_tpl.wxml" />
-<template is="myIndexTpl" data="{{user,skin,pointsInfo,myStats,nextAppointment,isLoggedIn}}" />
+<template is="myIndexTpl" data="{{user,skin,pointsInfo,myStats,nextAppointment,isLoggedIn,isMgrAdmin}}" />

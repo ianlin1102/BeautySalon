@@ -206,6 +206,18 @@
 						</view>
 						<text class="icon-right menu-arrow"></text>
 					</view>
+
+					<!-- 管理后台入口 -->
+					<block wx:if="{{isMgrAdmin}}">
+						<view class="menu-divider"></view>
+						<view class="menu-item" bindtap="url" data-url="/pages/mgr/index/mgr_index">
+							<view class="menu-item-left">
+								<text class="icon-rankfill menu-icon" style="color: #ff6b6b;"></text>
+								<text class="menu-label">管理后台 (Admin)</text>
+							</view>
+							<text class="icon-right menu-arrow"></text>
+						</view>
+					</block>
 				</view>
 			</block>
 

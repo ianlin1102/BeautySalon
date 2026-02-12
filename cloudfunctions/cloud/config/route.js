@@ -235,4 +235,16 @@ module.exports = {
 	'purchase/my_orders': 'purchase_controller@getMyOrders',           // 获取我的订单列表
 	'purchase/cancel': 'purchase_controller@cancelOrder',              // 取消订单（放弃上传凭证）
 
+	//***########### MGR (RBAC Admin) ################## */
+	'mgr/my_info': 'mgr/mgr_controller@getMyInfo',
+	'mgr/bridge_admin_token': 'mgr/mgr_controller@bridgeAdminToken',
+
+	'mgr/user_search': 'mgr/mgr_admin_controller@searchUser',
+	'mgr/admin_list': 'mgr/mgr_admin_controller@getAdminList',
+	'mgr/admin_add': 'mgr/mgr_admin_controller@addAdmin',
+	'mgr/admin_edit': 'mgr/mgr_admin_controller@editAdmin',
+	'mgr/role_list': 'mgr/mgr_admin_controller@getRoleList',
+	'mgr/role_add': 'mgr/mgr_admin_controller@addRole',
+	'mgr/role_edit': 'mgr/mgr_admin_controller@editRole',
+
 }

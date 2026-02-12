@@ -11,7 +11,6 @@ Page({
 		totalBalance: 0,
 		totalTimes: 0,
 		cards: [],
-		showActionModal: false,
 		userAddTime: '',
 		userLoginTime: ''
 	},
@@ -100,51 +99,13 @@ Page({
 		});
 	},
 
-	// 显示添加卡项Modal
-	bindShowActionModal: function() {
-		this.setData({ showActionModal: true });
-	},
-
-	// 关闭Modal
-	bindCloseModal: function() {
-		this.setData({ showActionModal: false });
-	},
-
-	// 从Modal复制ID
-	bindCopyIdFromModal: function() {
-		let id = this.data.userId;
-		if (!id) {
-			wx.showToast({ title: '无可复制内容', icon: 'none' });
-			return;
-		}
-		wx.setClipboardData({
-			data: id,
-			success: function() {
-				wx.showToast({ title: 'ID已复制', icon: 'success' });
-			}
-		});
-	},
-
-	// 前往卡项管理
-	bindGoToCardManage: function() {
-		this.setData({ showActionModal: false });
-		wx.navigateTo({
-			url: '/pages/admin/user_card/manage/admin_user_card_manage'
-		});
-	},
-
-	// 添加卡项（旧方法保留兼容）
-	bindAddCard: function() {
-		this.bindShowActionModal();
-	},
-
-	// 查看卡项详情/调整
+	// 查看卡项消费记录
 	bindCardTap: function(e) {
 		let card = e.currentTarget.dataset.card;
-		// 使用 USER_CARD_UNIQUE_ID 作为查询标识
 		let cardId = card.USER_CARD_UNIQUE_ID || card._id;
+		let cardName = card.USER_CARD_CARD_NAME || '';
 		wx.navigateTo({
-			url: '/pages/admin/user_card/adjust/admin_user_card_adjust?userCardId=' + encodeURIComponent(cardId) + '&userId=' + encodeURIComponent(this.data.userId)
+			url: '/pages/card/records/card_records?userId=' + encodeURIComponent(this.data.userId) + '&userCardId=' + encodeURIComponent(cardId) + '&cardName=' + encodeURIComponent(cardName) + '&uniqueId=' + encodeURIComponent(cardId)
 		});
 	},
 

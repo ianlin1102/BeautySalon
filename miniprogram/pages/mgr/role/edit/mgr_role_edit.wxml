@@ -1,0 +1,87 @@
+<view class="main-admin">
+
+	<!-- 角色列表模式 -->
+	<block wx:if="{{!showForm}}">
+
+		<view class="admin-comm-list" wx:if="{{isLoad}}">
+			<view wx:if="{{roleList.length}}" class="load text-grey">共有{{roleList.length}}个角色</view>
+
+			<view wx:if="{{roleList.length === 0}}" class="load text-grey" style="padding:80rpx 0;">暂无角色，请先创建</view>
+
+			<view class="item" wx:for="{{roleList}}" wx:key="_id">
+				<view class="header">
+					<view class="left text-cut">{{item.ROLE_NAME}}</view>
+					<view class="right">
+						<text wx:if="{{item.ROLE_PERMISSIONS.length === 1 && item.ROLE_PERMISSIONS[0] === '*'}}" class="text-red">全部权限</text>
+						<text wx:else class="text-black">{{item.ROLE_PERMISSIONS.length}} 项权限</text>
+					</view>
+				</view>
+
+				<view class="info">
+					<view class="info-item">
+						<view class="title">人数</view>
+						<view class="mao">：</view>
+						<view class="content">{{item.adminCount || 0}} 人</view>
+					</view>
+
+					<view class="oprt">
+						<view bindtap="bindEdit" data-id="{{item._id}}" class="btn margin-right-s">
+							<text class="icon-settings margin-right-xxs text-blue"></text>编辑
+						</view>
+					</view>
+				</view>
+			</view>
+		</view>
+
+		<button class="btn-admin margin-top" bindtap="bindAdd">
+			<text class="icon-roundadd margin-right-xxs"></text>新建角色
+		</button>
+	</block>
+
+	<!-- 编辑表单模式 -->
+	<block wx:if="{{showForm}}">
+
+		<view class="form-box shadow">
+			<view class="form-group">
+				<view class="title must">角色名称</view>
+				<input placeholder="如：老师、超级管理员" placeholder-class="phc" value="{{formName}}"
+					bindinput="bindNameInput" maxlength="30" />
+			</view>
+
+			<view class="form-group">
+				<view class="title">超级管理员</view>
+				<switch checked="{{isSuperRole}}" bindchange="bindSuperChange" color="#7C3AED" />
+			</view>
+		</view>
+
+		<!-- 预设按钮 -->
+		<view class="preset-bar">
+			<button class="btn radius" bindtap="bindPresetTeacher">
+				<text class="icon-cascades margin-right-xxs text-blue"></text>老师预设
+			</button>
+			<button class="btn radius bg-admin text-white" bindtap="bindPresetSuper">
+				<text class="icon-rankfill margin-right-xxs"></text>全部权限
+			</button>
+		</view>
+
+		<!-- 权限复选框 -->
+		<view class="form-box shadow" wx:if="{{!isSuperRole}}">
+			<view class="form-group" style="border-top:none;padding-bottom:0;">
+				<view class="title" style="font-weight:bold;">选择权限</view>
+			</view>
+			<checkbox-group bindchange="bindPermChange">
+				<view class="perm-item" wx:for="{{allPermissions}}" wx:key="key">
+					<checkbox value="{{item.key}}" checked="{{permMap[item.key]}}" color="#7C3AED" />
+					<text class="perm-label">{{item.label}}</text>
+					<text class="perm-key">{{item.key}}</text>
+				</view>
+			</checkbox-group>
+		</view>
+
+		<!-- 操作按钮 -->
+		<view class="btn-bottom-admin">
+			<view class="return" bindtap="bindCancel">取消</view>
+			<view class="save" bindtap="bindSave">保存</view>
+		</view>
+	</block>
+</view>

@@ -1,4 +1,5 @@
 const AdminBiz = require('../../../../biz/admin_biz.js');
+const MgrBiz = require('../../../../biz/mgr_biz.js');
 const pageHelper = require('../../../../helper/page_helper.js');
 const cloudHelper = require('../../../../helper/cloud_helper.js');
 
@@ -89,6 +90,7 @@ Page({
 
 		let callback = function () {
 			AdminBiz.clearAdminToken();
+			MgrBiz.clearMgrCache();
 			wx.reLaunch({
 				url: pageHelper.fmtURLByPID('/pages/my/index/my_index'),
 			});

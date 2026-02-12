@@ -1,0 +1,72 @@
+<view class="main-admin">
+
+	<!-- 搜索栏 -->
+	<view class="bar search bg-white" style="width:100%;">
+		<view class="search-form round">
+			<text class="icon-search text-l text-grey"></text>
+			<input type="text" maxlength="30" placeholder="搜索管理员姓名" value="{{search}}"
+				bindinput="bindSearchInput" bindconfirm="bindSearch" />
+		</view>
+	</view>
+
+	<!-- 操作按钮 -->
+	<view class="top-btns">
+		<button class="btn radius bg-admin text-white" bindtap="bindAdd">
+			<text class="icon-roundadd margin-right-xxs"></text>添加管理员
+		</button>
+		<button class="btn radius" bindtap="bindRoleManage">
+			<text class="icon-settings margin-right-xxs"></text>角色管理
+		</button>
+	</view>
+
+	<!-- 列表 -->
+	<view class="admin-comm-list" wx:if="{{isLoad}}">
+		<view wx:if="{{list.length}}" class="load text-grey">共有{{list.length}}位管理员</view>
+
+		<view wx:if="{{list.length === 0}}" class="load text-grey" style="padding:80rpx 0;">暂无管理员</view>
+
+		<view class="item" wx:for="{{list}}" wx:key="_id">
+			<view class="header">
+				<view class="left text-cut">{{item.ADMIN_NAME}}</view>
+				<view class="right">
+					<text wx:if="{{item.ADMIN_STATUS === 1}}" class="text-black">启用</text>
+					<text wx:else class="text-orange">禁用</text>
+				</view>
+			</view>
+
+			<view class="info">
+				<view class="info-item">
+					<view class="title">角色</view>
+					<view class="mao">：</view>
+					<view class="content">{{item.roleName || '未分配'}}</view>
+				</view>
+
+				<view class="info-item" wx:if="{{item.ADMIN_LOGIN_CNT}}">
+					<view class="title">登录</view>
+					<view class="mao">：</view>
+					<view class="content">{{item.ADMIN_LOGIN_CNT}}次</view>
+				</view>
+
+				<view class="info-item" wx:if="{{item.loginTimeStr}}">
+					<view class="title">最近登录</view>
+					<view class="mao">：</view>
+					<view class="content">{{item.loginTimeStr}}</view>
+				</view>
+
+				<view class="info-item" wx:if="{{item.ADMIN_OPENID}}">
+					<view class="title">OpenID</view>
+					<view class="mao">：</view>
+					<view class="content openid-text">{{item.ADMIN_OPENID}}</view>
+				</view>
+
+				<view class="oprt">
+					<view bindtap="bindEdit" data-id="{{item._id}}" class="btn margin-right-s">
+						<text class="icon-settings margin-right-xxs text-blue"></text>编辑
+					</view>
+				</view>
+			</view>
+		</view>
+	</view>
+
+	<view wx:if="{{!isLoad}}" class="load text-grey" style="padding:80rpx 0;">加载中...</view>
+</view>

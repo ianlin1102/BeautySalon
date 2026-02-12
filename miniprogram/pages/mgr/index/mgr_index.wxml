@@ -1,0 +1,33 @@
+<view class="main-admin">
+
+	<!-- 顶部信息栏 -->
+	<view class="admin-info bg-admin">
+		<view class="pic"><text class="icon-peoplefill"></text></view>
+		<view class="right">
+			<view class="name">
+				<text class="text-xl">{{adminName}}</text>
+				<text class="tag small bg-green radius margin-left-s">管理员</text>
+			</view>
+			<view class="desc text-s">权限受限模式</view>
+		</view>
+	</view>
+
+	<!-- 功能管理 -->
+	<view class="bar bg-white solid-bottom">
+		<view class="action">
+			<text class="icon-title"></text>功能管理
+		</view>
+	</view>
+
+	<view class="comm-list grid col-3">
+		<view class="item" wx:for="{{menuItems}}" wx:key="label"
+			bindtap="url" data-url="{{item.url}}">
+			<text class="{{item.icon}}" style="color: {{item.color}};"></text>
+			<text class="text-black">{{item.label}}</text>
+		</view>
+	</view>
+
+	<!-- 退出 -->
+	<button bindtap="bindLogout" class="btn-admin margin-top">退出管理</button>
+
+</view>

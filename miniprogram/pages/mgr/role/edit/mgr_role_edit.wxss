@@ -1,0 +1,46 @@
+@import '../../../../style/project/base/admin.wxss';
+
+page {
+	background-color: #f8f8f8;
+}
+
+/* 预设按钮行 */
+.preset-bar {
+	display: flex;
+	gap: 16rpx;
+	width: 100%;
+	margin: 20rpx 0;
+}
+
+.preset-bar .btn {
+	flex: 1;
+	font-size: 26rpx;
+	height: 64rpx;
+	line-height: 64rpx;
+	padding: 0 20rpx;
+}
+
+/* 权限项 */
+.perm-item {
+	display: flex;
+	align-items: center;
+	padding: 20rpx 30rpx;
+	border-bottom: 1rpx solid #f0f0f0;
+}
+
+.perm-item:last-child {
+	border-bottom: none;
+}
+
+.perm-label {
+	font-size: 28rpx;
+	color: #333;
+	margin-left: 12rpx;
+	flex: 1;
+}
+
+.perm-key {
+	font-size: 22rpx;
+	color: #bbb;
+	font-family: monospace;
+}
