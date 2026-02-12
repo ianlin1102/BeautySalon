@@ -83,7 +83,7 @@
 		<view class="item arrow" bindtap="url" data-url='../../terms/agreement/admin_terms_agreement'>
 			<view class="content">
 				<text class="icon-list text-blue"></text>
-				<text class="text-black">同意记录</text>
+				<text class="text-black">合同存档</text>
 			</view>
 		</view>
 

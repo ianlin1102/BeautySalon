@@ -18,6 +18,10 @@
 							</text>
 							<text class="course-card-count">{{item.count}}条预约</text>
 						</view>
+						<view class="course-card-days" wx:if="{{item.dayCount > 0}}">
+							<text class="icon-calendar margin-right-xxs"></text>
+							<text class="course-day-tag" wx:for="{{item.dayList}}" wx:key="*this" wx:for-item="day">{{day}}</text>
+						</view>
 					</view>
 					<text class="icon-right course-card-arrow"></text>
 				</view>

@@ -73,7 +73,7 @@ Page({
 		this.setData({ sortItems: [], sortMenus });
 	},
 
-	/** 从预约列表中提取课程卡片（去重+统计数量） */
+	/** 从预约列表中提取课程卡片（去重+统计数量+日期列表） */
 	_buildCourseCards: function (list) {
 		if (!list || !list.length) {
 			this.setData({ courseCards: [] });
@@ -89,13 +89,27 @@ Page({
 					meetId,
 					title: item.JOIN_MEET_TITLE || '未知课程',
 					instructorName: item.JOIN_INSTRUCTOR_NAME || '',
-					count: 0
+					count: 0,
+					days: {}
 				};
 			}
 			map[meetId].count++;
+			if (item.JOIN_MEET_DAY) {
+				map[meetId].days[item.JOIN_MEET_DAY] = true;
+			}
 		}
 
 		let courseCards = Object.values(map);
+		for (let card of courseCards) {
+			let dayList = Object.keys(card.days).sort();
+			// 简化日期显示：去掉年份前缀，只显示 MM-DD
+			card.dayList = dayList.map(d => {
+				let parts = d.split('-');
+				return parts.length === 3 ? parts[1] + '-' + parts[2] : d;
+			});
+			card.dayCount = dayList.length;
+			delete card.days;
+		}
 		courseCards.sort((a, b) => a.title.localeCompare(b.title));
 		this.setData({ courseCards });
 	},

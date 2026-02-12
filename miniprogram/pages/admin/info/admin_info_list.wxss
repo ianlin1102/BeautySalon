@@ -60,6 +60,24 @@
 	font-size: 22rpx;
 }
 
+.course-card-days {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: center;
+	margin-top: 10rpx;
+	font-size: 22rpx;
+	color: #999;
+	gap: 8rpx;
+}
+
+.course-day-tag {
+	background: #f0f0f0;
+	color: #666;
+	padding: 2rpx 12rpx;
+	border-radius: 6rpx;
+	font-size: 22rpx;
+}
+
 .course-card-arrow {
 	color: #ccc;
 	font-size: 28rpx;
