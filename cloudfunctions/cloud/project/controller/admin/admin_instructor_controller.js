@@ -85,8 +85,12 @@ class AdminInstructorController extends BaseAdminController {
 		// 数据校验
 		let rules = {
 			name: 'must|string|min:2|max:20|name=导师姓名',
+			nameEn: 'string|max:50|name=英文姓名',
 			pic: 'must|string|name=导师头像URL',
+			specialty: 'string|max:50|name=专长',
+			specialtyEn: 'string|max:50|name=专长(英文)',
 			desc: 'string|max:100|name=简介',
+			descEn: 'string|max:200|name=简介(英文)',
 			order: 'must|int|min:1|max:9999|name=排序号'
 		};
 
@@ -128,8 +132,12 @@ class AdminInstructorController extends BaseAdminController {
 		let rules = {
 			id: 'must|id',
 			name: 'must|string|min:2|max:20|name=导师姓名',
+			nameEn: 'string|max:50|name=英文姓名',
 			pic: 'must|string|name=导师头像URL',
+			specialty: 'string|max:50|name=专长',
+			specialtyEn: 'string|max:50|name=专长(英文)',
 			desc: 'string|max:100|name=简介',
+			descEn: 'string|max:200|name=简介(英文)',
 			order: 'must|int|min:1|max:9999|name=排序号'
 		};
 

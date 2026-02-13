@@ -439,7 +439,12 @@ module.exports = Behavior({
 		 * 生命周期函数--监听页面显示
 		 */
 		onShow: async function () {
-			// 计算当前周的周一和周日
+			// 从页面栈返回时，保留之前选择的周和课表，不刷新
+			if (this._weekInitialized) {
+				return;
+			}
+
+			// 首次进入：计算当前周的周一和周日
 			const today = new Date();
 			const currentDay = today.getDay();
 			const daysToMonday = currentDay === 0 ? -6 : 1 - currentDay;
@@ -459,9 +464,17 @@ module.exports = Behavior({
 				selectedEndDate: endDate
 			});
 
+			// 重置滚动组件到本周（同步高亮状态）
+			let scrollCmpt = this.selectComponent('#calendarScroll');
+			if (scrollCmpt && scrollCmpt.resetToCurrentWeek) {
+				scrollCmpt.resetToCurrentWeek();
+			}
+
 			await this._loadHasList();
 			// 加载本周的数据
 			await this._loadWeekData(startDate, endDate);
+
+			this._weekInitialized = true;
 		},
 
 		/**
@@ -554,18 +567,34 @@ module.exports = Behavior({
 		bindCardTap: function (e) {
 			let day = e.currentTarget.dataset.day;
 			let timeStart = e.currentTarget.dataset.timestart;
+			let timeEnd = e.currentTarget.dataset.timeend;
 
-			// 检查课程是否已开始
-			if (day && timeStart) {
+			if (day) {
 				let now = new Date();
 				let parts = day.split('-');
-				let timeParts = timeStart.split(':');
-				let classTime = new Date(
-					parseInt(parts[0]), parseInt(parts[1]) - 1, parseInt(parts[2]),
-					parseInt(timeParts[0]), parseInt(timeParts[1]) || 0
-				);
-				if (now >= classTime) {
-					return; // 课程已开始，不跳转
+
+				// 检查课程是否已结束
+				if (timeEnd) {
+					let endParts = timeEnd.split(':');
+					let endTime = new Date(
+						parseInt(parts[0]), parseInt(parts[1]) - 1, parseInt(parts[2]),
+						parseInt(endParts[0]), parseInt(endParts[1]) || 0
+					);
+					if (now >= endTime) {
+						return; // 课程已结束，不跳转
+					}
+				}
+
+				// 检查课程是否已开始
+				if (timeStart) {
+					let startParts = timeStart.split(':');
+					let startTime = new Date(
+						parseInt(parts[0]), parseInt(parts[1]) - 1, parseInt(parts[2]),
+						parseInt(startParts[0]), parseInt(startParts[1]) || 0
+					);
+					if (now >= startTime) {
+						return; // 课程进行中，不跳转
+					}
 				}
 			}
 

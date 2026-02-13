@@ -18,8 +18,12 @@ InstructorModel.DB_STRUCTURE = {
 	INSTRUCTOR_ADMIN_ID: 'string|true',
 
 	INSTRUCTOR_NAME: 'string|true|comment=导师姓名',
+	INSTRUCTOR_NAME_EN: 'string|false|comment=英文姓名',
 	INSTRUCTOR_PIC: 'string|true|comment=导师头像URL',
+	INSTRUCTOR_SPECIALTY: 'string|false|comment=专长',
+	INSTRUCTOR_SPECIALTY_EN: 'string|false|comment=专长(英文)',
 	INSTRUCTOR_DESC: 'string|false|comment=简介',
+	INSTRUCTOR_DESC_EN: 'string|false|comment=简介(英文)',
 	INSTRUCTOR_ORDER: 'int|true|default=9999|comment=排序号',
 	INSTRUCTOR_STATUS: 'int|true|default=1|comment=状态 0=禁用 1=启用',
 

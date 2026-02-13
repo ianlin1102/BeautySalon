@@ -12,16 +12,24 @@ class AdminInstructorService extends BaseAdminService {
 	/** 添加导师 */
 	async insertInstructor(adminId, {
 		name,
+		nameEn = '',
 		pic, // 头像URL
+		specialty = '',
+		specialtyEn = '',
 		desc = '', // 简介
+		descEn = '',
 		order
 	}) {
 		// 数据准备
 		let data = {
 			INSTRUCTOR_ADMIN_ID: adminId,
 			INSTRUCTOR_NAME: name,
+			INSTRUCTOR_NAME_EN: nameEn,
 			INSTRUCTOR_PIC: pic,
+			INSTRUCTOR_SPECIALTY: specialty,
+			INSTRUCTOR_SPECIALTY_EN: specialtyEn,
 			INSTRUCTOR_DESC: desc,
+			INSTRUCTOR_DESC_EN: descEn,
 			INSTRUCTOR_ORDER: order,
 			INSTRUCTOR_STATUS: InstructorModel.STATUS.ENABLED
 		};
@@ -55,15 +63,23 @@ class AdminInstructorService extends BaseAdminService {
 	async editInstructor({
 		id,
 		name,
+		nameEn = '',
 		pic,
+		specialty = '',
+		specialtyEn = '',
 		desc = '',
+		descEn = '',
 		order
 	}) {
 		// 更新数据
 		let data = {
 			INSTRUCTOR_NAME: name,
+			INSTRUCTOR_NAME_EN: nameEn,
 			INSTRUCTOR_PIC: pic,
+			INSTRUCTOR_SPECIALTY: specialty,
+			INSTRUCTOR_SPECIALTY_EN: specialtyEn,
 			INSTRUCTOR_DESC: desc,
+			INSTRUCTOR_DESC_EN: descEn,
 			INSTRUCTOR_ORDER: order
 		};
 

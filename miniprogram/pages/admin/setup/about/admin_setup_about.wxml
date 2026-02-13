@@ -1,25 +1,104 @@
 <view wx:if="{{!isLoad}}" class="margin-top load loading text-l text-grey"></view>
 
-<view class="main-admin" wx:if="{{isAdmin&&isLoad}}"> 
-		<view class="form-box shadow">
-			<view class="form-group">
-				<view class="action text-bold text-l">
-					关于我们
-				</view>
-				<view class="action">
-					{{formAbout.length}}/50000
-				</view>
-			</view>
+<view class="main-admin" wx:if="{{isAdmin&&isLoad}}">
 
-			<view class="form-group align-start">
-				<textarea name="content" placeholder-class="phc" placeholder="填写关于我们" style="min-height:500rpx" model:value="{{formAbout}}" maxlength="50000" focus="{{formAboutFocus}}" auto-height="true"></textarea>
-			</view>
-			<view wx:if="{{formAboutFocus}}" class="hint-desc error">{{formAboutFocus}}</view>
-
+	<!-- Section 1: 我们的故事 -->
+	<view class="form-box shadow">
+		<view class="form-group">
+			<view class="action text-bold text-l">我们的故事</view>
 		</view>
 
-		<view class="form-box shadow">
-			<cmpt-img-upload isShowSize="{{true}}" title="介绍图片 (选填)" imgMax="8" imgList="{{formAboutPic}}" isCheck="{{false}}" bind:upload="bindUploadCmpt" data-item="formAboutPic" />
-		</view> 
-		<button bindtap="bindFormSubmit" class="btn-admin margin-top-xl">提交</button>  
+		<view class="form-group align-start">
+			<view class="title">中文</view>
+			<textarea name="about" placeholder-class="phc" placeholder="填写关于我们的故事（中文）" style="min-height:200rpx" model:value="{{formAbout}}" maxlength="50000" auto-height="true"></textarea>
+		</view>
+
+		<view class="form-group align-start">
+			<view class="title">English</view>
+			<textarea name="aboutEn" placeholder-class="phc" placeholder="About us story (English)" style="min-height:200rpx" model:value="{{formAboutEn}}" maxlength="50000" auto-height="true"></textarea>
+		</view>
+	</view>
+
+	<!-- Section 2: 精选导师 -->
+	<view class="form-box shadow">
+		<view class="form-group">
+			<view class="action text-bold text-l">精选导师</view>
+			<view class="action text-grey">最多4位，显示在关于我们页面</view>
+		</view>
+
+		<!-- Selected instructors -->
+		<view wx:for="{{featuredInstructors}}" wx:key="_id" class="instructor-slot">
+			<view class="instructor-slot-info">
+				<image wx:if="{{item.INSTRUCTOR_PIC}}" src="{{item.INSTRUCTOR_PIC}}" class="instructor-slot-avatar" mode="aspectFill"></image>
+				<view class="instructor-slot-name">{{item.INSTRUCTOR_NAME}}</view>
+			</view>
+			<view class="instructor-slot-remove" bindtap="bindRemoveInstructor" data-index="{{index}}">×</view>
+		</view>
+
+		<!-- Add button -->
+		<view wx:if="{{featuredInstructors.length < 4}}" class="form-group">
+			<button class="btn round bg-admin text-white" bindtap="bindShowInstructorPicker">+ 添加导师</button>
+		</view>
+	</view>
+
+	<!-- Instructor Picker Modal -->
+	<view wx:if="{{showInstructorPicker}}" class="picker-mask" bindtap="bindHideInstructorPicker">
+		<view class="picker-content" catchtap="">
+			<view class="picker-header">
+				<view class="text-bold text-l">选择导师</view>
+				<view class="picker-close" bindtap="bindHideInstructorPicker">×</view>
+			</view>
+			<scroll-view scroll-y class="picker-list">
+				<view wx:for="{{allInstructors}}" wx:key="_id" class="picker-item {{item.selected ? 'picked' : ''}}" bindtap="bindPickInstructor" data-id="{{item._id}}" data-index="{{index}}">
+					<image wx:if="{{item.INSTRUCTOR_PIC}}" src="{{item.INSTRUCTOR_PIC}}" class="picker-avatar" mode="aspectFill"></image>
+					<view class="picker-name">{{item.INSTRUCTOR_NAME}}</view>
+					<view wx:if="{{item.selected}}" class="picker-check">✓</view>
+				</view>
+			</scroll-view>
+		</view>
+	</view>
+
+	<!-- Section 3: 联系方式 -->
+	<view class="form-box shadow">
+		<view class="form-group">
+			<view class="action text-bold text-l">联系方式</view>
+		</view>
+
+		<view class="form-group">
+			<view class="title">地址（中文）</view>
+			<input placeholder="填写地址" placeholder-class="phc" model:value="{{formAddress}}" maxlength="200"></input>
+		</view>
+		<view class="form-group">
+			<view class="title">Address (English)</view>
+			<input placeholder="Address in English" placeholder-class="phc" model:value="{{formAddressEn}}" maxlength="200"></input>
+		</view>
+		<view class="form-group">
+			<view class="title">电话</view>
+			<input placeholder="填写电话" placeholder-class="phc" model:value="{{formPhone}}" maxlength="50"></input>
+		</view>
+		<view class="form-group">
+			<view class="title">营业时间（中文）</view>
+			<input placeholder="如：10:00 - 22:00" placeholder-class="phc" model:value="{{formHours}}" maxlength="100"></input>
+		</view>
+		<view class="form-group">
+			<view class="title">Hours (English)</view>
+			<input placeholder="e.g. 10:00 AM - 10:00 PM" placeholder-class="phc" model:value="{{formHoursEn}}" maxlength="100"></input>
+		</view>
+		<view class="form-group">
+			<view class="title">微信号</view>
+			<input placeholder="填写微信号" placeholder-class="phc" model:value="{{formWechat}}" maxlength="50"></input>
+		</view>
+	</view>
+
+	<!-- Section 4: 关注我们 -->
+	<view class="form-box shadow">
+		<view class="form-group">
+			<view class="action text-bold text-l">关注我们</view>
+		</view>
+
+		<cmpt-img-upload title="客服二维码" imgMax="1" imgList="{{formServicePic}}" isCheck="{{false}}" bind:upload="bindUploadCmpt" data-item="formServicePic" />
+		<cmpt-img-upload title="公众号二维码" imgMax="1" imgList="{{formOfficePic}}" isCheck="{{false}}" bind:upload="bindUploadCmpt" data-item="formOfficePic" />
+	</view>
+
+	<button bindtap="bindFormSubmit" class="btn-admin margin-top-xl">保存</button>
 </view>

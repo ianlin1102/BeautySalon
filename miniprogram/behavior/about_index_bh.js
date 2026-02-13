@@ -3,90 +3,75 @@ const pageHelper = require('../helper/page_helper.js');
 
 module.exports = Behavior({
 
-	/**
-	 * 页面的初始数据
-	 */
 	data: {
 		isLoad: false
 	},
 
 	methods: {
-		/**
-		 * 生命周期函数--监听页面加载
-		 */
 		onLoad: async function (options) {
 			const accountInfo = wx.getAccountInfoSync();
-			this.setData({
-				accountInfo
-			});
-
+			this.setData({ accountInfo });
 			this._loadDetail();
 		},
 
 		_loadDetail: async function () {
-			let opts = {
-				title: 'bar'
-			}
-			let about = await cloudHelper.callCloudData('home/setup_all', {}, opts);
-			if (!about) {
-				this.setData({
-					isLoad: null
-				});
+			let opts = { title: 'bar' };
+			let aboutData = await cloudHelper.callCloudData('home/about_data', {}, opts);
+			if (!aboutData) {
+				this.setData({ isLoad: null });
 				return;
 			}
 
-			if (about) this.setData({
-				about,
+			// Determine instructor layout type based on count
+			let instructorCount = (aboutData.instructors || []).length;
+			let instructorLayout = 'none'; // 0
+			if (instructorCount === 1) instructorLayout = 'center';
+			else if (instructorCount === 2) instructorLayout = 'two';
+			else if (instructorCount === 3) instructorLayout = 'three';
+			else if (instructorCount >= 4) instructorLayout = 'scroll';
+
+			this.setData({
+				aboutData,
+				instructorLayout,
+				instructorCount,
 				isLoad: true
 			});
 		},
 
-		/**
-		 * 生命周期函数--监听页面初次渲染完成
-		 */
-		onReady: function () {
+		onReady: function () {},
 
-		},
-
-		/**
-		 * 生命周期函数--监听页面显示
-		 */
 		onShow: function () {
-
+			// 每次显示时重新加载，保证管理员修改后能看到最新数据
+			if (this.data.isLoad) {
+				this._loadDetail();
+			}
 		},
 
-		/**
-		 * 生命周期函数--监听页面隐藏
-		 */
-		onHide: function () {
-
-		},
-
-		/**
-		 * 生命周期函数--监听页面卸载
-		 */
-		onUnload: function () {
-
-		},
-
-		/**
-		 * 页面相关事件处理函数--监听用户下拉动作
-		 */
 		onPullDownRefresh: function () {
 			this._loadDetail();
 			wx.stopPullDownRefresh();
 		},
 
-
-		/**
-		 * 用户点击右上角分享
-		 */
-		onShareAppMessage: function () {
-
-		},
+		onShareAppMessage: function () {},
 
 		url: function (e) {
 			pageHelper.url(e, this);
+		},
+
+		bindInstructorTap: function (e) {
+			wx.navigateTo({
+				url: '/projects/A00/instructor/index/instructor_index'
+			});
+		},
+
+		bindPreviewQr: function (e) {
+			let src = e.currentTarget.dataset.src;
+			if (src) {
+				wx.previewImage({
+					current: src,
+					urls: [src]
+				});
+			}
 		}
 	}
 })

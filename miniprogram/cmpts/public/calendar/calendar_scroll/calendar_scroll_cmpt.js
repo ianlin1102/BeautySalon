@@ -370,6 +370,25 @@ Component({
 		},
 
 		/**
+		 * 外部调用：重置到当前周（不触发 click 事件）
+		 */
+		resetToCurrentWeek() {
+			if (this.data.mode !== 'week') return;
+
+			const today = new Date();
+			const todayFull = this._formatDate(today);
+			const currentWeek = this.data.scrollWeeks.find(week =>
+				week.startDate <= todayFull && week.endDate >= todayFull
+			);
+			if (currentWeek) {
+				this.setData({
+					selectedDayData: currentWeek.startDate
+				});
+				this._scrollToWeek(currentWeek.range);
+			}
+		},
+
+		/**
 		 * 完整日历点击
 		 */
 		bindFullCalendarClick(e) {

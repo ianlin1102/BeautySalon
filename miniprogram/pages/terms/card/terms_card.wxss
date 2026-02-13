@@ -1,45 +1,34 @@
-.terms-page {
+@import "../../../style/project/neon_theme.wxss";
+@import "../../../projects/A00/skin/skin.wxss";
+
+page {
+	background-color: #050511;
+}
+
+.content-area {
+	position: relative;
+	z-index: 1;
+	padding-top: 30rpx;
 	min-height: 100vh;
-	background: #f5f5f5;
+	display: flex;
+	flex-direction: column;
 }
 
-.terms-page-header {
-	padding: 30rpx;
-	background: #fff;
-	text-align: center;
-	border-bottom: 1rpx solid #eee;
+.terms-content-scroll {
+	height: 70vh;
+	width: 100%;
 }
 
-.terms-title {
-	font-size: 36rpx;
-	font-weight: bold;
-	color: #333;
-}
-
-.terms-content {
-	padding: 30rpx;
-	background: #fff;
-	margin: 20rpx;
-	border-radius: 10rpx;
-	min-height: 60vh;
-}
-
-.terms-section {
-	margin-bottom: 40rpx;
-}
-
-.section-title {
-	font-size: 32rpx;
-	font-weight: bold;
-	color: #333;
-	margin-bottom: 20rpx;
-}
-
-.section-content {
-	font-size: 28rpx;
-	color: #666;
+.content-line {
 	line-height: 1.8;
 	white-space: pre-wrap;
+}
+
+.glass-panel .title {
+	font-size: 34rpx;
+	font-weight: bold;
+	text-align: center;
+	padding: 30rpx 0;
 }
 
 /* 语言切换 */
@@ -48,12 +37,12 @@
 	justify-content: center;
 	align-items: center;
 	padding: 16rpx 0;
-	background: #fff;
+	margin-bottom: 20rpx;
 }
 
 .lang-btn {
 	font-size: 26rpx;
-	color: #999;
+	color: rgba(255,255,255,0.4);
 	padding: 8rpx 20rpx;
 }
 
@@ -63,12 +52,12 @@
 }
 
 .lang-divider {
-	color: #ddd;
+	color: rgba(255,255,255,0.2);
 	margin: 0 8rpx;
 }
 
-/* 条款头部区块 */
-.terms-header-block {
+/* 条款头部 */
+.terms-header {
 	margin-bottom: 30rpx;
 }
 
@@ -82,7 +71,7 @@
 
 .terms-intro {
 	font-size: 28rpx;
-	color: #666;
+	color: rgba(255,255,255,0.7);
 	line-height: 1.6;
 	white-space: pre-wrap;
 }
@@ -90,6 +79,6 @@
 .empty-hint {
 	text-align: center;
 	padding: 100rpx;
-	color: #999;
+	color: rgba(255,255,255,0.4);
 	font-size: 28rpx;
 }

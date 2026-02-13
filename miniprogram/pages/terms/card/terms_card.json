@@ -1,4 +1,6 @@
 {
 	"navigationBarTitleText": "卡项购买条款",
+	"navigationBarBackgroundColor": "#050511",
+	"navigationBarTextStyle": "white",
 	"usingComponents": {}
 }

@@ -28,7 +28,13 @@ SetupModel.DB_STRUCTURE = {
 	SETUP_OFFICE_PIC: 'array|false|default=[]|comment=官微图片cloudId',
 
 	SETUP_ADDRESS: 'string|false|comment=地址',
-	SETUP_PHONE: 'string|false|comment=电话', 
+	SETUP_ADDRESS_EN: 'string|false|comment=地址(英文)',
+	SETUP_PHONE: 'string|false|comment=电话',
+	SETUP_HOURS: 'string|false|comment=营业时间',
+	SETUP_HOURS_EN: 'string|false|comment=营业时间(英文)',
+	SETUP_WECHAT: 'string|false|comment=微信号',
+	SETUP_FEATURED_INSTRUCTORS: 'array|false|default=[]|comment=精选导师ID列表(最多4个)',
+	SETUP_ABOUT_EN: 'string|false|comment=关于我们(英文)',
 
 	SETUP_ADD_TIME: 'int|true',
 	SETUP_EDIT_TIME: 'int|true',

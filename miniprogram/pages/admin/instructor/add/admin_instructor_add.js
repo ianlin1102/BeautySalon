@@ -8,8 +8,12 @@ Page({
 
 	data: {
 		formName: '',
+		formNameEn: '',
 		formPic: '',
+		formSpecialty: '',
+		formSpecialtyEn: '',
 		formDesc: '',
+		formDescEn: '',
 		formOrder: 9999,
 		imgList: []
 	},
@@ -63,8 +67,12 @@ Page({
 
 			let params = {
 				name: data.formName,
+				nameEn: data.formNameEn || '',
 				pic: imgList[0],
+				specialty: data.formSpecialty || '',
+				specialtyEn: data.formSpecialtyEn || '',
 				desc: data.formDesc || '',
+				descEn: data.formDescEn || '',
 				order: data.formOrder
 			};
 

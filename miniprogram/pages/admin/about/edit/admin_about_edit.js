@@ -1,20 +1,21 @@
 const AdminBiz = require('../../../../biz/admin_biz.js');
 const pageHelper = require('../../../../helper/page_helper.js');
 const cloudHelper = require('../../../../helper/cloud_helper.js');
-const AdminCardBiz = require('../../../../biz/admin_card_biz.js');
+const setting = require('../../../../setting/setting.js');
 
 Page({
 
 	data: {
 		isLoad: false,
-		formTitle: '',
-		formContent: [],
-		contentDesc: '未填写'
+		showInstructorPicker: false,
+		allInstructors: [],       // All instructors for picker
+		featuredInstructors: [],  // Selected featured instructors (full objects)
+		featuredIds: [],          // Selected IDs only
 	},
 
 	onLoad: async function (options) {
 		if (!AdminBiz.isAdmin(this)) return;
-		this._loadDetail();
+		await this._loadDetail();
 	},
 
 	onPullDownRefresh: async function () {
@@ -22,137 +23,155 @@ Page({
 		wx.stopPullDownRefresh();
 	},
 
-	model: function (e) {
-		pageHelper.model(this, e);
-	},
-
 	_loadDetail: async function () {
 		if (!AdminBiz.isAdmin(this)) return;
 
-		let opt = {
-			title: 'bar'
-		};
-		let about = await cloudHelper.callCloudData('admin/about_detail', {}, opt);
+		let opts = { title: 'bar' };
+
+		// Load setup data
+		let setup = await cloudHelper.callCloudData('home/setup_all', {}, opts);
+		if (!setup) return;
+
+		// Load all instructors for picker
+		let instrResult = await cloudHelper.callCloudData('instructor/list', {}, opts);
+		let allInstructors = (instrResult && instrResult.list) || [];
+
+		// Match featured instructors
+		let featuredIds = setup.SETUP_FEATURED_INSTRUCTORS || [];
+		let featuredInstructors = [];
+		for (let id of featuredIds) {
+			let found = allInstructors.find(i => i._id === id);
+			if (found) featuredInstructors.push(found);
+		}
+
+		// Mark selected in allInstructors
+		allInstructors.forEach(i => {
+			i.selected = featuredIds.includes(i._id);
+		});
 
 		this.setData({
 			isLoad: true,
-			formTitle: about.ABOUT_TITLE || '',
-			formContent: about.ABOUT_CONTENT || []
-		}, () => {
-			this._setContentDesc();
+			formAbout: setup.SETUP_ABOUT || '',
+			formAboutEn: setup.SETUP_ABOUT_EN || '',
+			formAddress: setup.SETUP_ADDRESS || '',
+			formAddressEn: setup.SETUP_ADDRESS_EN || '',
+			formPhone: setup.SETUP_PHONE || '',
+			formHours: setup.SETUP_HOURS || '',
+			formHoursEn: setup.SETUP_HOURS_EN || '',
+			formWechat: setup.SETUP_WECHAT || '',
+			formServicePic: setup.SETUP_SERVICE_PIC || [],
+			formOfficePic: setup.SETUP_OFFICE_PIC || [],
+			allInstructors,
+			featuredInstructors,
+			featuredIds,
 		});
 	},
 
-	_setContentDesc: function () {
-		let contentDesc = '未填写';
-		let formContent = this.data.formContent;
-		if (formContent && formContent.length > 0) {
-			let hasContent = false;
-			for (let item of formContent) {
-				if (item.type === 'text' && item.val && item.val.trim()) {
-					hasContent = true;
-					break;
-				}
-				if (item.type === 'img' && item.val) {
-					hasContent = true;
-					break;
-				}
-			}
-			if (hasContent) {
-				contentDesc = '已填写';
-			}
-		}
-		this.setData({ contentDesc });
+	// Instructor picker
+	bindShowInstructorPicker: function () {
+		this.setData({ showInstructorPicker: true });
 	},
 
+	bindHideInstructorPicker: function () {
+		this.setData({ showInstructorPicker: false });
+	},
+
+	bindPickInstructor: function (e) {
+		let id = pageHelper.dataset(e, 'id');
+		let { featuredInstructors, featuredIds, allInstructors } = this.data;
+
+		if (featuredIds.includes(id)) {
+			// Already selected — remove
+			featuredIds = featuredIds.filter(fid => fid !== id);
+			featuredInstructors = featuredInstructors.filter(i => i._id !== id);
+		} else {
+			if (featuredIds.length >= 4) {
+				wx.showToast({ title: '最多选择4位', icon: 'none' });
+				return;
+			}
+			let instr = allInstructors.find(i => i._id === id);
+			if (instr) {
+				featuredIds.push(id);
+				featuredInstructors.push(instr);
+			}
+		}
+
+		// Update selected state
+		allInstructors.forEach(i => {
+			i.selected = featuredIds.includes(i._id);
+		});
+
+		this.setData({
+			featuredInstructors,
+			featuredIds,
+			allInstructors,
+		});
+	},
+
+	bindRemoveInstructor: function (e) {
+		let index = pageHelper.dataset(e, 'index');
+		let { featuredInstructors, featuredIds, allInstructors } = this.data;
+
+		let removedId = featuredInstructors[index]._id;
+		featuredInstructors.splice(index, 1);
+		featuredIds = featuredIds.filter(id => id !== removedId);
+
+		allInstructors.forEach(i => {
+			i.selected = featuredIds.includes(i._id);
+		});
+
+		this.setData({
+			featuredInstructors,
+			featuredIds,
+			allInstructors,
+		});
+	},
+
+	// Form submit
 	bindFormSubmit: async function () {
 		if (!AdminBiz.isAdmin(this)) return;
 
-		let data = this.data;
-
-		console.log('========== 开始提交 ==========');
-		console.log('原始 data.formTitle:', data.formTitle);
-		console.log('原始 data.formContent:', data.formContent);
-
 		try {
-			wx.showLoading({
-				title: '提交中...',
-				mask: true
-			});
+			// Upload QR images if needed
+			let servicePic = this.data.formServicePic;
+			let officePic = this.data.formOfficePic;
 
-			// 1. 清理 formContent 数据，确保只包含纯净的对象
-			let cleanContent = [];
-			if (data.formContent && data.formContent.length > 0) {
-				console.log('开始清理 formContent，原始长度:', data.formContent.length);
-				for (let i = 0; i < data.formContent.length; i++) {
-					let item = data.formContent[i];
-					console.log(`formContent[${i}]:`, item);
-					console.log(`  - type: ${item.type}`);
-					console.log(`  - val: ${item.val}`);
-					console.log(`  - 所有keys:`, Object.keys(item));
-
-					// 只保留 type 和 val 字段，移除其他可能的脏数据
-					cleanContent.push({
-						type: item.type,
-						val: item.val || ''
-					});
-				}
-				console.log('清理后的 cleanContent:', cleanContent);
+			if ((servicePic.length > 0 || officePic.length > 0)) {
+				wx.showLoading({ title: '图片上传中' });
 			}
 
-			// 2. 提取富文本中的图片并上传
-			let imgList = [];
-			for (let item of cleanContent) {
-				if (item.type == 'img' && item.val) {
-					imgList.push(item.val);
-				}
-			}
+			servicePic = await cloudHelper.transTempPics(servicePic, setting.SETUP_PIC_PATH, '');
+			officePic = await cloudHelper.transTempPics(officePic, setting.SETUP_PIC_PATH, '');
 
-			// 上传图片到云存储
-			if (imgList.length > 0) {
-				console.log('开始上传富文本中的图片，数量:', imgList.length);
-				let uploadedImgs = await cloudHelper.transTempPics(imgList, 'about/', 'about');
-				console.log('图片上传完成:', uploadedImgs);
-
-				// 更新富文本中的图片地址
-				let imgIdx = 0;
-				for (let item of cleanContent) {
-					if (item.type == 'img') {
-						item.val = uploadedImgs[imgIdx];
-						imgIdx++;
-					}
-				}
-			}
-
-			// 3. 保存数据（标题 + 富文本内容）
-			let params = {
-				title: data.formTitle || '',
-				content: cleanContent,
-				pic: [] // 不再使用单独的封面图片
+			let data = {
+				about: this.data.formAbout,
+				aboutEn: this.data.formAboutEn,
+				featuredInstructors: this.data.featuredIds,
+				address: this.data.formAddress,
+				addressEn: this.data.formAddressEn,
+				phone: this.data.formPhone,
+				hours: this.data.formHours,
+				hoursEn: this.data.formHoursEn,
+				wechat: this.data.formWechat,
+				servicePic,
+				officePic,
 			};
 
-			console.log('========== 提交参数 ==========');
-			console.log('params.title:', params.title);
-			console.log('params.content:', params.content);
-			console.log('完整 params JSON:', JSON.stringify(params));
-			console.log('========== 开始调用 API ==========');
-
-			let result = await cloudHelper.callCloudSumbit('admin/about_edit', params);
-			console.log('admin/about_edit 返回结果:', result);
-
-			// 更新本地数据
-			this.setData({
-				formContent: cleanContent
+			await cloudHelper.callCloudSumbit('admin/setup_about', data).then(res => {
+				pageHelper.showSuccToast('保存成功', 1500);
 			});
-
-			wx.hideLoading();
-			pageHelper.showSuccToast('保存成功', 2000);
-
 		} catch (err) {
-			wx.hideLoading();
-			console.error('提交失败:', err);
-			pageHelper.showModal('提交失败', err.msg || err.message || '未知错误');
+			console.log(err);
 		}
+	},
+
+	bindUploadCmpt: function (e) {
+		let item = pageHelper.dataset(e, 'item');
+		this.setData({ [item]: e.detail });
+	},
+
+	model: function (e) {
+		pageHelper.model(this, e);
 	},
 
 	url: function (e) {

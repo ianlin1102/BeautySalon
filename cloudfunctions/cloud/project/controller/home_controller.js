@@ -20,10 +20,19 @@ class HomeController extends BaseController {
 		let input = this.validateData(rules);
 
 		let service = new HomeService();
-		let result = await service.getSetup('SETUP_ABOUT,SETUP_ABOUT_PIC,SETUP_ADDRESS,SETUP_OFFICE_PIC,SETUP_PHONE,SETUP_SERVICE_PIC');
+		let result = await service.getSetup('SETUP_ABOUT,SETUP_ABOUT_EN,SETUP_ABOUT_PIC,SETUP_ADDRESS,SETUP_ADDRESS_EN,SETUP_OFFICE_PIC,SETUP_PHONE,SETUP_HOURS,SETUP_HOURS_EN,SETUP_WECHAT,SETUP_SERVICE_PIC,SETUP_FEATURED_INSTRUCTORS');
 
 		return result;
 
+	}
+
+	/** 获取 About 页面完整数据 */
+	async getAboutData() {
+		let rules = {};
+		let input = this.validateData(rules);
+
+		let service = new HomeService();
+		return await service.getAboutData();
 	}
 
 	/** 获取免责声明 (公开) */

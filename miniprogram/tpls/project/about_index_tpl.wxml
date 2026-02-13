@@ -2,25 +2,156 @@
 	<view wx:if="{{isLoad===null}}" class="margin-top load notexist text-l load-project"></view>
 	<view wx:if="{{isLoad===false}}" class="margin-top load loading text-l load-project"></view>
 
-	<view wx:if="{{isLoad}}" class="main padding-project">
-		<view class="main-content">
-			<view class="content card-project shadow-project">
-				<view class="title text-project">关于我们</view>
-				<view class="txt"><text user-select="true">{{about.SETUP_ABOUT}}</text></view>
+	<view wx:if="{{isLoad}}" class="about-page">
 
-				<view class="pics">
-					<image bindtap="url" data-url="{{item}}" data-type="img" wx:key="key" wx:for="{{about.SETUP_ABOUT_PIC}}" show-menu-by-longpress="{{true}}" class="loading" mode='aspectFit' lazy-load="true" src="{{item}}">
-					</image>
+		<view class="about-content">
+
+			<!-- Our Story -->
+			<view wx:if="{{aboutData.story.zh}}" class="about-section">
+				<view class="section-header">
+					<view class="section-indicator indicator-cyan"></view>
+					<text class="section-title title-cyan">我们的故事</text>
+				</view>
+				<view class="about-card">
+					<view class="story-text">{{aboutData.story.zh}}</view>
 				</view>
 			</view>
 
+			<!-- Instructors -->
+			<view wx:if="{{instructorCount > 0}}" class="about-section">
+				<view class="section-header">
+					<view class="section-indicator indicator-purple"></view>
+					<text class="section-title title-purple">导师团队</text>
+				</view>
+
+				<!-- 1 instructor: centered -->
+				<view wx:if="{{instructorLayout === 'center'}}" class="instructor-grid-center">
+					<view class="instructor-card" wx:for="{{aboutData.instructors}}" wx:key="name" bindtap="bindInstructorTap">
+						<view class="instructor-avatar-wrap">
+							<image wx:if="{{item.pic}}" src="{{item.pic}}" class="instructor-avatar" mode="aspectFill"></image>
+							<view class="instructor-avatar-placeholder" wx:else>{{item.name[0]}}</view>
+						</view>
+						<view class="instructor-meta">
+							<view class="instructor-name">{{item.name}}</view>
+							<view wx:if="{{item.specialty}}" class="instructor-specialty">{{item.specialty}}</view>
+							<view wx:if="{{item.desc}}" class="instructor-desc">{{item.desc}}</view>
+						</view>
+					</view>
+				</view>
+
+				<!-- 2 instructors: two columns -->
+				<view wx:elif="{{instructorLayout === 'two'}}" class="instructor-grid-two">
+					<view class="instructor-card" wx:for="{{aboutData.instructors}}" wx:key="name" bindtap="bindInstructorTap">
+						<view class="instructor-avatar-wrap">
+							<image wx:if="{{item.pic}}" src="{{item.pic}}" class="instructor-avatar" mode="aspectFill"></image>
+							<view class="instructor-avatar-placeholder" wx:else>{{item.name[0]}}</view>
+						</view>
+						<view class="instructor-meta">
+							<view class="instructor-name">{{item.name}}</view>
+							<view wx:if="{{item.specialty}}" class="instructor-specialty">{{item.specialty}}</view>
+							<view wx:if="{{item.desc}}" class="instructor-desc">{{item.desc}}</view>
+						</view>
+					</view>
+				</view>
+
+				<!-- 3 instructors: three columns -->
+				<view wx:elif="{{instructorLayout === 'three'}}" class="instructor-grid-three">
+					<view class="instructor-card" wx:for="{{aboutData.instructors}}" wx:key="name" bindtap="bindInstructorTap">
+						<view class="instructor-avatar-wrap">
+							<image wx:if="{{item.pic}}" src="{{item.pic}}" class="instructor-avatar" mode="aspectFill"></image>
+							<view class="instructor-avatar-placeholder" wx:else>{{item.name[0]}}</view>
+						</view>
+						<view class="instructor-meta">
+							<view class="instructor-name">{{item.name}}</view>
+							<view wx:if="{{item.specialty}}" class="instructor-specialty">{{item.specialty}}</view>
+							<view wx:if="{{item.desc}}" class="instructor-desc">{{item.desc}}</view>
+						</view>
+					</view>
+				</view>
+
+				<!-- 4+ instructors: horizontal scroll -->
+				<scroll-view wx:else scroll-x class="instructor-scroll">
+					<view class="instructor-scroll-inner">
+						<view class="instructor-card" wx:for="{{aboutData.instructors}}" wx:key="name" bindtap="bindInstructorTap">
+							<view class="instructor-avatar-wrap">
+								<image wx:if="{{item.pic}}" src="{{item.pic}}" class="instructor-avatar" mode="aspectFill"></image>
+								<view class="instructor-avatar-placeholder" wx:else>{{item.name[0]}}</view>
+							</view>
+							<view class="instructor-meta">
+								<view class="instructor-name">{{item.name}}</view>
+								<view wx:if="{{item.specialty}}" class="instructor-specialty">{{item.specialty}}</view>
+								<view wx:if="{{item.desc}}" class="instructor-desc">{{item.desc}}</view>
+							</view>
+						</view>
+					</view>
+				</scroll-view>
+			</view>
+
+			<!-- Contact -->
+			<view wx:if="{{aboutData.contact.address || aboutData.contact.phone || aboutData.contact.hours || aboutData.contact.wechat}}" class="about-section">
+				<view class="section-header">
+					<view class="section-indicator indicator-teal"></view>
+					<text class="section-title title-teal">联系方式</text>
+				</view>
+
+				<view class="contact-list">
+					<view wx:if="{{aboutData.contact.address}}" class="contact-card">
+						<view class="contact-card-accent accent-cyan"></view>
+						<view class="contact-card-body">
+							<view class="contact-label">地址</view>
+							<view class="contact-value">{{aboutData.contact.address}}</view>
+						</view>
+					</view>
+
+					<view wx:if="{{aboutData.contact.phone}}" class="contact-card">
+						<view class="contact-card-accent accent-purple"></view>
+						<view class="contact-card-body">
+							<view class="contact-label">电话</view>
+							<view class="contact-value">{{aboutData.contact.phone}}</view>
+						</view>
+					</view>
+
+					<view wx:if="{{aboutData.contact.hours}}" class="contact-card">
+						<view class="contact-card-accent accent-teal"></view>
+						<view class="contact-card-body">
+							<view class="contact-label">营业时间</view>
+							<view class="contact-value">{{aboutData.contact.hours}}</view>
+						</view>
+					</view>
+
+					<view wx:if="{{aboutData.contact.wechat}}" class="contact-card">
+						<view class="contact-card-accent accent-amber"></view>
+						<view class="contact-card-body">
+							<view class="contact-label">微信</view>
+							<view class="contact-value">{{aboutData.contact.wechat}}</view>
+						</view>
+					</view>
+				</view>
+			</view>
+
+			<!-- Follow Us / QR Codes -->
+			<view wx:if="{{aboutData.qr.servicePic || aboutData.qr.officePic}}" class="about-section">
+				<view class="section-header">
+					<view class="section-indicator indicator-amber"></view>
+					<text class="section-title title-amber">关注我们</text>
+				</view>
+				<view class="qr-grid">
+					<view wx:if="{{aboutData.qr.servicePic}}" class="qr-card" bindtap="bindPreviewQr" data-src="{{aboutData.qr.servicePic}}">
+						<image src="{{aboutData.qr.servicePic}}" class="qr-image" mode="aspectFit"></image>
+						<view class="qr-label">客服微信</view>
+					</view>
+					<view wx:if="{{aboutData.qr.officePic}}" class="qr-card" bindtap="bindPreviewQr" data-src="{{aboutData.qr.officePic}}">
+						<image src="{{aboutData.qr.officePic}}" class="qr-image" mode="aspectFit"></image>
+						<view class="qr-label">官方公众号</view>
+					</view>
+				</view>
+			</view>
+
+			<!-- Version -->
+			<view class="version-info">
+				v{{accountInfo.miniProgram.version}} {{accountInfo.miniProgram.envVersion}}
+			</view>
 
 		</view>
-
-		<view class='text-center text-xs text-grey margin-top'>
-			v{{accountInfo.miniProgram.version}} {{accountInfo.miniProgram.envVersion}}
-		</view>
-
 	</view>
-
 </template>

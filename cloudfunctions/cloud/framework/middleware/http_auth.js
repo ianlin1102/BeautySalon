@@ -99,6 +99,7 @@ function requiresAuth(route) {
     'passport/google_auth',       // Google OAuth (旧)
     'passport/google_auth_token', // Google OAuth (ID Token)
     'home/setup_all',
+    'home/about_data',
     'card/list',
     'card/home_list',
     'card/view',

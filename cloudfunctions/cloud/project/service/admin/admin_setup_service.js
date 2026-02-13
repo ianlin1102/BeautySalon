@@ -14,24 +14,67 @@ const config = require('../../../config/config.js');
 class AdminSetupService extends BaseAdminService {
 
 
-	/** 关于我们 */
+	/** 关于我们 (含联系方式+导师+QR) */
 	async setupAbout({
 		about,
-		aboutPic
+		aboutEn,
+		featuredInstructors,
+		address,
+		addressEn,
+		phone,
+		hours,
+		hoursEn,
+		wechat,
+		servicePic,
+		officePic,
 	}) {
+		// Limit featured instructors to 4
+		if (featuredInstructors && featuredInstructors.length > 4) {
+			featuredInstructors = featuredInstructors.slice(0, 4);
+		}
 
-		this.AppError('此功能暂不开放，如有需要请加作者微信：cclinux0730');
+		let data = {
+			SETUP_ABOUT: about || '',
+			SETUP_ABOUT_EN: aboutEn || '',
+			SETUP_FEATURED_INSTRUCTORS: featuredInstructors || [],
+			SETUP_ADDRESS: address || '',
+			SETUP_ADDRESS_EN: addressEn || '',
+			SETUP_PHONE: phone || '',
+			SETUP_HOURS: hours || '',
+			SETUP_HOURS_EN: hoursEn || '',
+			SETUP_WECHAT: wechat || '',
+			SETUP_SERVICE_PIC: servicePic || [],
+			SETUP_OFFICE_PIC: officePic || [],
+		};
+
+		let setup = await SetupModel.getOne({});
+		if (setup) {
+			await SetupModel.edit({}, data);
+		} else {
+			await SetupModel.insert(data);
+		}
 	}
 
-	/** 联系我们设置 */
+	/** 联系我们设置 (保留兼容) */
 	async setupContact({
 		address,
 		phone,
 		officePic,
 		servicePic,
 	}) {
+		let data = {
+			SETUP_ADDRESS: address || '',
+			SETUP_PHONE: phone || '',
+			SETUP_SERVICE_PIC: servicePic || [],
+			SETUP_OFFICE_PIC: officePic || [],
+		};
 
-		this.AppError('此功能暂不开放，如有需要请加作者微信：cclinux0730');
+		let setup = await SetupModel.getOne({});
+		if (setup) {
+			await SetupModel.edit({}, data);
+		} else {
+			await SetupModel.insert(data);
+		}
 	}
 
 	/** 小程序码 */

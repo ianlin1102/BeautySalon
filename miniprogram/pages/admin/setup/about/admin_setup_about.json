@@ -4,6 +4,6 @@
 	},
 	"navigationBarBackgroundColor": "#7C3AED",
 	"navigationBarTextStyle": "white",
-	"enablePullDownRefresh": true, 
+	"enablePullDownRefresh": true,
 	"navigationBarTitleText": "编辑关于我们"
 }

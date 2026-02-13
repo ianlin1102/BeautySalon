@@ -1,6 +1,7 @@
 {
-	"usingComponents": { 
-	  },
+	"usingComponents": {},
 	"enablePullDownRefresh": true,
-	"navigationBarTitleText": "关于我们"
-  }
+	"navigationBarTitleText": "关于我们",
+	"navigationBarBackgroundColor": "#050511",
+	"navigationBarTextStyle": "white"
+}

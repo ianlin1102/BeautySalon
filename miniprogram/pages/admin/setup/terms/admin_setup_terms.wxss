@@ -144,7 +144,7 @@
 	padding: 8rpx 16rpx;
 	font-size: 26rpx;
 	width: 100%;
-	min-height: 40rpx;
+	height: 150rpx;
 	box-sizing: border-box;
 }
 

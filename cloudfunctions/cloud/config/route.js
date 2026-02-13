@@ -6,6 +6,7 @@
 
 module.exports = {
 	'home/setup_all': 'home_controller@getSetupAll', //获取全局配置(所有)
+	'home/about_data': 'home_controller@getAboutData', //获取About页面完整数据(公开)
 	'setup/disclaimer_get': 'home_controller@getDisclaimer', //获取免责声明(公开)
 
 	// 条款模块 (用户端)

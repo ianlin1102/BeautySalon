@@ -8,6 +8,11 @@
 		</view>
 
 		<view class="form-group">
+			<view class="title">English Name<text class="text-grey text-normal margin-left-xs">(可选)</text></view>
+			<input placeholder="Instructor name in English" placeholder-class="phc" value="{{formNameEn}}" bindinput="model" data-item="formNameEn" maxlength="50"></input>
+		</view>
+
+		<view class="form-group">
 			<view class="title must">导师头像</view>
 		</view>
 
@@ -15,9 +20,24 @@
 			<cmpt-img-upload imgMax="{{1}}" title="头像上传" isCheck="{{false}}" imgUploadSize="{{10}}" imgList="{{imgList}}" bind:upload="bindImgUploadCmpt" />
 		</view>
 
+		<view class="form-group">
+			<view class="title">专长<text class="text-grey text-normal margin-left-xs">(可选)</text></view>
+			<input placeholder="如：Hip-Hop" placeholder-class="phc" value="{{formSpecialty}}" bindinput="model" data-item="formSpecialty" maxlength="50"></input>
+		</view>
+
+		<view class="form-group">
+			<view class="title">Specialty (English)<text class="text-grey text-normal margin-left-xs">(可选)</text></view>
+			<input placeholder="e.g. Hip-Hop" placeholder-class="phc" value="{{formSpecialtyEn}}" bindinput="model" data-item="formSpecialtyEn" maxlength="50"></input>
+		</view>
+
 		<view class="form-group align-start">
 			<view class="title">简介<text class="text-grey text-normal margin-left-xs">(可选)</text></view>
 			<textarea placeholder="请输入简介" placeholder-class="phc" value="{{formDesc}}" bindinput="model" data-item="formDesc" maxlength="100" style="min-height:120rpx" auto-height="true"></textarea>
+		</view>
+
+		<view class="form-group align-start">
+			<view class="title">Bio (English)<text class="text-grey text-normal margin-left-xs">(可选)</text></view>
+			<textarea placeholder="Short bio in English" placeholder-class="phc" value="{{formDescEn}}" bindinput="model" data-item="formDescEn" maxlength="200" style="min-height:120rpx" auto-height="true"></textarea>
 		</view>
 
 		<view class="form-group">

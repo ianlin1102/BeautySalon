@@ -17,12 +17,15 @@ page {
 .main {
 	padding: 0 0 20rpx;
 	min-height: calc(100vh - 200rpx);
+	justify-content: flex-start;
+	align-items: stretch;
 }
 
 .main .list {
 	width: 100%;
 	display: block;
 	padding: 0 20rpx 30rpx;
+	margin-top: 0;
 }
 
 /* ========== 旧样式保留（可选） ========== */
@@ -764,16 +767,15 @@ page {
 	word-break: break-word;
 }
 
-/* ========== 课程已开始状态 ========== */
+/* ========== 课程进行中状态 ========== */
 .meet-card-horizontal.card-started {
-	opacity: 0.5;
-	filter: grayscale(0.6);
+	opacity: 0.7;
 	pointer-events: none;
 }
 
 .meet-card-horizontal.card-started::before {
-	background: #6b7280;
-	box-shadow: none;
+	background: #f59e0b;
+	box-shadow: 4rpx 0 16rpx rgba(245, 158, 11, 0.3);
 }
 
 .meet-card-horizontal.card-started:active {
@@ -781,12 +783,39 @@ page {
 	background: rgba(20, 20, 30, 0.6);
 }
 
-/* 已开始状态的按钮 */
+/* 进行中状态的按钮 */
 .card-right-section .book-button.button-started {
-	background: #4b5563;
+	background: linear-gradient(135deg, #f59e0b, #d97706);
+	box-shadow: 0 0 12rpx rgba(245, 158, 11, 0.4);
+	animation: none;
+	color: #fff;
+	pointer-events: none;
+	font-size: 22rpx;
+}
+
+/* ========== 课程已结束状态 ========== */
+.meet-card-horizontal.card-ended {
+	opacity: 0.4;
+	filter: grayscale(0.7);
+	pointer-events: none;
+}
+
+.meet-card-horizontal.card-ended::before {
+	background: #6b7280;
+	box-shadow: none;
+}
+
+.meet-card-horizontal.card-ended:active {
+	transform: none;
+	background: rgba(20, 20, 30, 0.6);
+}
+
+/* 已结束状态的按钮 */
+.card-right-section .book-button.button-ended {
+	background: #374151;
 	box-shadow: none;
 	animation: none;
-	color: rgba(255, 255, 255, 0.6);
+	color: rgba(255, 255, 255, 0.4);
 	pointer-events: none;
 	font-size: 22rpx;
 }

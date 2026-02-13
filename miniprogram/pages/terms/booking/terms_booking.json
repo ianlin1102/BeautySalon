@@ -1,4 +1,6 @@
 {
 	"navigationBarTitleText": "预约须知条款",
+	"navigationBarBackgroundColor": "#050511",
+	"navigationBarTextStyle": "white",
 	"usingComponents": {}
 }

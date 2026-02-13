@@ -72,7 +72,7 @@
 	width: 100%;
 	line-height: 1.2em;
 	flex: 1;
-	font-size: 30rpx;
+	font-size: 32rpx;
 	padding: 0;
 	text-align: left;
 	line-height: 1.8;

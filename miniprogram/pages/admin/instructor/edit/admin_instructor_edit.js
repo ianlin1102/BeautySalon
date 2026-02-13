@@ -9,8 +9,12 @@ Page({
 	data: {
 		isLoad: false,
 		formName: '',
+		formNameEn: '',
 		formPic: '',
+		formSpecialty: '',
+		formSpecialtyEn: '',
 		formDesc: '',
+		formDescEn: '',
 		formOrder: 9999,
 		imgList: []
 	},
@@ -57,8 +61,12 @@ Page({
 			isLoad: true,
 			imgList: imgList,
 			formName: instructor.INSTRUCTOR_NAME,
+			formNameEn: instructor.INSTRUCTOR_NAME_EN || '',
 			formPic: instructor.INSTRUCTOR_PIC,
+			formSpecialty: instructor.INSTRUCTOR_SPECIALTY || '',
+			formSpecialtyEn: instructor.INSTRUCTOR_SPECIALTY_EN || '',
 			formDesc: instructor.INSTRUCTOR_DESC || '',
+			formDescEn: instructor.INSTRUCTOR_DESC_EN || '',
 			formOrder: instructor.INSTRUCTOR_ORDER
 		});
 	},
@@ -101,8 +109,12 @@ Page({
 			let params = {
 				id: this.data.id,
 				name: data.formName,
+				nameEn: data.formNameEn || '',
 				pic: imgList[0],
+				specialty: data.formSpecialty || '',
+				specialtyEn: data.formSpecialtyEn || '',
 				desc: data.formDesc || '',
+				descEn: data.formDescEn || '',
 				order: data.formOrder
 			};
 
