@@ -30,6 +30,11 @@ class CardController extends BaseController {
 			node.CARD_PIC = list[k].CARD_PIC || []; // 返回完整图片数组
 			node.CARD_HOME = list[k].CARD_HOME || 0;
 
+			// 支付信息
+			node.CARD_PAYMENT_ZELLE = list[k].CARD_PAYMENT_ZELLE || '';
+			node.CARD_PAYMENT_QR = list[k].CARD_PAYMENT_QR || '';
+			node.CARD_PAYMENT_INSTRUCTIONS = list[k].CARD_PAYMENT_INSTRUCTIONS || '';
+
 			// 小程序使用的字段名（兼容）
 			node.cardType = list[k].CARD_TYPE;
 			node.title = list[k].CARD_NAME;

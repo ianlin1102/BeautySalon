@@ -25,17 +25,17 @@
 					</view>
 				</view>
 
-				<view bindtap="url" data-url="../../../../pages/card/store/card_store" class="menu-item">
+				<view bindtap="url" data-url="/pages/card/store/card_store" data-type="switch" class="menu-item">
 					<view class="menu-item-inner">
 						<view class="menu-icon"><image src="../../skin/images/menu_icon/卡项-removebg-preview.png" /></view>
 						<view class="menu-title">卡项</view>
 					</view>
 				</view>
 
-				<view bindtap="showComingSoon" class="menu-item">
+				<view bindtap="goToMyCards" class="menu-item">
 					<view class="menu-item-inner">
 						<view class="menu-icon"><image src="../../skin/images/menu_icon/课程-removebg-preview.png" /></view>
-						<view class="menu-title">课程</view>
+						<view class="menu-title">卡包</view>
 					</view>
 				</view>
 
@@ -50,7 +50,7 @@
 
 		<!-- 核销排行榜 - 领奖台样式 -->
 		<view class="rank-section-wrapper">
-			<cmpt-rank-list id="rankList" type="all" limit="{{3}}" />
+			<cmpt-rank-list id="rankList" type="all" limit="{{10}}" userId="{{userId}}" />
 		</view>
 
 		<!-- 海报区域 - 占位，待添加 -->

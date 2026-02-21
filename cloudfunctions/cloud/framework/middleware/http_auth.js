@@ -106,6 +106,10 @@ function requiresAuth(route) {
     'instructor/list',
     'instructor/detail',
     'checkin/rank_list',
+    'checkin/user_stats',
+    'checkin/clear_cache',
+    'checkin/gen_test_data',
+    'checkin/clear_test_data',
     // meet 预约相关（Web 日历页面需要）
     'meet/list',
     'meet/list_by_day',

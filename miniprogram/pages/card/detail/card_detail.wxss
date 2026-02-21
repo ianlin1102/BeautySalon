@@ -99,7 +99,7 @@ page {
 }
 
 .tag.blue {
-	background: transparent;
+	background: transparent !important;
 	color: #00f2ff !important;
 	border: 1rpx solid rgba(0, 242, 255, 0.3);
 }

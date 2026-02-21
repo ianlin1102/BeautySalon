@@ -25,6 +25,7 @@
 	width: 500rpx;
 	height: 500rpx;
 	opacity: 0.5;
+	background: radial-gradient(circle, #00f2ff 0%, transparent 70%);
 	animation: pulse-glow 6s infinite alternate;
 }
 
@@ -66,7 +67,7 @@
 	flex-shrink: 0;
 }
 
-/* 头像光环 - 渐变边框 + 霓虹阴影 */
+/* 头像光环 - 按角色显示不同颜色 */
 .avatar-ring {
 	width: 140rpx;
 	height: 140rpx;
@@ -74,10 +75,29 @@
 	padding: 6rpx;
 	position: relative;
 	overflow: hidden;
-	/* 默认渐变边框（会被JS动态覆盖） */
-	background: linear-gradient(135deg, #bdc3c7, #7f8c8d);
-	box-shadow: 0 0 30rpx rgba(149, 165, 166, 0.5);
+	background: linear-gradient(135deg, #00c8d6, #00f2ff);
+	box-shadow: 0 0 30rpx rgba(0, 242, 255, 0.4);
 	animation: breathe-avatar 3s infinite ease-in-out;
+}
+
+.avatar-ring--student {
+	background: linear-gradient(135deg, #00c8d6, #00f2ff);
+	box-shadow: 0 0 30rpx rgba(0, 242, 255, 0.4);
+}
+
+.avatar-ring--instructor {
+	background: linear-gradient(135deg, #9b00d6, #bd00ff);
+	box-shadow: 0 0 30rpx rgba(189, 0, 255, 0.4);
+}
+
+.avatar-ring--staff {
+	background: linear-gradient(135deg, #e67e22, #f0c040);
+	box-shadow: 0 0 30rpx rgba(240, 192, 64, 0.4);
+}
+
+.avatar-ring--admin {
+	background: linear-gradient(135deg, #d63031, #ff6b6b);
+	box-shadow: 0 0 30rpx rgba(255, 107, 107, 0.4);
 }
 
 @keyframes breathe-avatar {
@@ -103,101 +123,67 @@
 	background: #222;
 }
 
-/* 等级徽章容器 */
-.level-wrapper {
-	display: flex;
-	align-items: center;
-	gap: 16rpx;
-}
-
-/* 等级菱形徽章 */
-.level-icon {
-	width: 36rpx;
-	height: 36rpx;
-	border-radius: 8rpx;
-	transform: rotate(45deg);
-	display: flex;
-	align-items: center;
-	justify-content: center;
-	box-shadow: 0 0 16rpx currentColor;
-}
-
-.level-icon::after {
-	content: '';
-	width: 16rpx;
-	height: 16rpx;
-	background: #050511;
-	border-radius: 50%;
-}
-
-.level-progress-area {
+/* ========== 角色信息区域 ========== */
+.role-info-area {
 	flex: 1;
-	padding: 10rpx;
-	border-radius: 16rpx;
-	transition: all 0.2s;
-}
-
-.level-progress-area:active {
-	background: rgba(255, 255, 255, 0.05);
-	transform: scale(0.98);
-}
-
-.level-header {
 	display: flex;
-	justify-content: space-between;
-	align-items: center;
-	margin-bottom: 16rpx;
+	flex-direction: column;
+	gap: 12rpx;
 }
 
-.level-name {
+.role-username {
 	font-size: 36rpx;
 	font-weight: 800;
-	text-shadow: 0 0 16rpx currentColor;
+	color: #fff;
 }
 
-.level-points {
+/* 角色徽章 */
+.role-badge {
+	display: inline-flex;
+	align-items: center;
+	gap: 8rpx;
+	padding: 6rpx 20rpx;
+	border-radius: 20rpx;
+	width: fit-content;
 	font-size: 24rpx;
-	color: rgba(255, 255, 255, 0.6);
-	font-family: 'Courier New', monospace;
 }
 
-/* 进度条轨道 */
-.progress-track {
-	height: 12rpx;
-	width: 100%;
-	background: rgba(255, 255, 255, 0.1);
-	border-radius: 6rpx;
-	overflow: hidden;
-	border: 1rpx solid rgba(255, 255, 255, 0.1);
-	position: relative;
+.role-badge-icon {
+	font-size: 20rpx;
 }
 
-/* 进度条填充 + 扫光特效 */
-.progress-fill {
-	height: 100%;
-	border-radius: 6rpx;
-	transition: all 1s ease-out;
-	position: relative;
-	overflow: hidden;
+.role-badge-text {
+	font-size: 24rpx;
+	font-weight: 600;
+	letter-spacing: 2rpx;
 }
 
-.progress-fill::after {
-	content: '';
-	position: absolute;
-	top: 0;
-	left: 0;
-	bottom: 0;
-	width: 100%;
-	background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.4), transparent);
-	transform: translateX(-100%);
-	animation: shimmer 2s infinite;
+/* 学员 - 青色 */
+.role-badge--student {
+	background: rgba(0, 242, 255, 0.15);
+	border: 1rpx solid rgba(0, 242, 255, 0.4);
+	color: #00f2ff;
 }
 
-.progress-hint {
-	margin-top: 12rpx;
-	font-size: 22rpx;
-	color: rgba(255, 255, 255, 0.5);
-	text-align: right;
+/* 员工 - 琥珀金 */
+.role-badge--staff {
+	background: rgba(240, 192, 64, 0.15);
+	border: 1rpx solid rgba(240, 192, 64, 0.4);
+	color: #f0c040;
+}
+
+/* 老师 - 紫色 */
+.role-badge--instructor {
+	background: rgba(189, 0, 255, 0.15);
+	border: 1rpx solid rgba(189, 0, 255, 0.4);
+	color: #bd00ff;
+}
+
+/* 管理员 - 红色 */
+.role-badge--admin {
+	background: rgba(255, 107, 107, 0.15);
+	border: 1rpx solid rgba(255, 107, 107, 0.4);
+	color: #ff6b6b;
 }
 
 /* ========== 预约入口 - 赛博青主题 ========== */
@@ -554,4 +540,55 @@
 .menu-item.disabled {
 	opacity: 0.6;
 	pointer-events: none;
+}
+
+/* ========== 未登录 - 紧凑横向布局 ========== */
+.login-section--compact {
+	flex-direction: row;
+	align-items: center;
+	justify-content: space-between;
+	padding: 30rpx;
+	gap: 20rpx;
+}
+
+.login-compact-left {
+	display: flex;
+	align-items: center;
+	gap: 20rpx;
+	flex: 1;
+	min-width: 0;
+}
+
+.login-avatar-ring--sm {
+	width: 80rpx;
+	height: 80rpx;
+	flex-shrink: 0;
+}
+
+.login-info--inline {
+	display: flex;
+	flex-direction: column;
+	gap: 4rpx;
+	min-width: 0;
+}
+
+.login-title--sm {
+	display: block;
+	font-size: 30rpx;
+	font-weight: bold;
+	color: #fff;
+}
+
+.login-section--compact .login-desc {
+	font-size: 22rpx;
+}
+
+.login-btn--sm {
+	width: auto !important;
+	min-width: 160rpx;
+	height: 68rpx;
+	font-size: 28rpx;
+	border-radius: 34rpx;
+	padding: 0 30rpx;
+	flex-shrink: 0;
 }

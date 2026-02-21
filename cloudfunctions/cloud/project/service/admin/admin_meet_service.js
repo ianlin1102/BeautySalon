@@ -74,8 +74,13 @@ class AdminMeetService extends BaseAdminService {
 		let data = {
 			JOIN_IS_CHECKIN: flag
 		};
-		
+
 		await JoinModel.edit(joinId, data);
+
+		// 清除排行榜缓存，使核销变更立即反映到排行榜
+		const CheckinService = require('../checkin_service.js');
+		let checkinService = new CheckinService();
+		await checkinService.clearRankCache();
 	}
 
 	/** 管理员扫码核销 */
@@ -366,10 +371,10 @@ class AdminMeetService extends BaseAdminService {
 		await this._editDays(id, nowDay, daysSet);
 	}
 
-	/** 清理三个月前的预约记录（懒删除） */
+	/** 清理六个月前的预约记录（懒删除） */
 	async cleanupOldJoins() {
 		const now = new Date();
-		now.setMonth(now.getMonth() - 3);
+		now.setMonth(now.getMonth() - 6);
 		const year = now.getFullYear();
 		const month = String(now.getMonth() + 1).padStart(2, '0');
 		const day = String(now.getDate()).padStart(2, '0');
@@ -386,7 +391,7 @@ class AdminMeetService extends BaseAdminService {
 		} while (removed > 0);
 
 		if (totalRemoved > 0) {
-			console.log(`[cleanupOldJoins] 清理了 ${totalRemoved} 条三个月前的预约记录 (cutoff: ${cutoffDate})`);
+			console.log(`[cleanupOldJoins] 清理了 ${totalRemoved} 条六个月前的预约记录 (cutoff: ${cutoffDate})`);
 		}
 	}
 
@@ -689,6 +694,7 @@ class AdminMeetService extends BaseAdminService {
 			JOIN_USER_MOBILE: user.USER_MOBILE || '',
 
 			JOIN_STATUS: JoinModel.STATUS.SUCC,
+			JOIN_IS_CHECKIN: 1,  // 补签即已到场，直接标记签到
 			JOIN_CODE: dataUtil.genRandomIntString(15),
 
 			JOIN_EDIT_ADMIN_ID: adminId,

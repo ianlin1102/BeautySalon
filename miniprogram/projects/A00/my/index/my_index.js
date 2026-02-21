@@ -7,14 +7,15 @@ Page({
 	behaviors: [behavior],
 
 	data: {
-		pointsInfo: null,  // 积分信息
 		myStats: {  // 统计数据
 			cardCount: 0,
 			courseCount: 0,
 			appointmentCount: 0
 		},
 		nextAppointment: null,  // 最近一个预约
-		isMgrAdmin: false  // 是否为MGR管理员
+		isMgrAdmin: false,  // 是否为MGR管理员
+		userRole: 'student',  // student | instructor | admin
+		userRoleLabel: '学员'
 	},
 
 	onReady: async function () {
@@ -32,18 +33,15 @@ Page({
 				await this._loadUser();
 			}
 
-			// 2. 并行加载预约和积分信息
-			const promises = [];
+			// 2. 检查角色（需要在用户信息加载后）
+			await this._checkMgrAccess();
 
+			// 3. 加载预约列表
 			if (this._loadTodayList) {
-				promises.push(this._loadTodayList());
+				await this._loadTodayList();
 			}
 
-			promises.push(this.getPointsInfo());
-
-			await Promise.all(promises);
-
-			// 3. 加载统计数据和最近预约
+			// 4. 加载统计数据和最近预约
 			await this.loadMyStats();
 			await this.loadNextAppointment();
 
@@ -60,40 +58,60 @@ Page({
 				await this._loadUser();
 			}
 
-			// 2. 并行加载今日预约和积分信息
-			const promises = [];
-
+			// 2. 加载预约列表
 			if (this._loadTodayList) {
-				promises.push(this._loadTodayList());
+				await this._loadTodayList();
 			}
-
-			promises.push(this.getPointsInfo());
-
-			await Promise.all(promises);
 
 			// 3. 加载统计数据和最近预约
 			await this.loadMyStats();
 			await this.loadNextAppointment();
 
-			// 4. 检查是否为MGR管理员（静默，不阻塞）
-			this._checkMgrAccess();
+			// 4. 检查角色
+			await this._checkMgrAccess();
 
 		} catch (err) {
 			// 静默失败
 		}
 	},
 
-	// 检查MGR管理员权限
+	// 检查MGR管理员权限并设置角色
 	async _checkMgrAccess() {
 		if (!PassortBiz.isLoggedIn()) {
-			this.setData({ isMgrAdmin: false });
+			this.setData({
+				isMgrAdmin: false,
+				userRole: 'student',
+				userRoleLabel: '学员'
+			});
 			return;
 		}
 		try {
 			let mgrInfo = await MgrBiz.checkMgrAccess();
-			this.setData({ isMgrAdmin: !!mgrInfo });
+			let isMgr = !!mgrInfo;
+			let isSuperAdmin = isMgr && mgrInfo.permissions && mgrInfo.permissions.includes('*');
+
+			let userRole = 'student';
+			let userRoleLabel = '学员';
+			if (isSuperAdmin) {
+				userRole = 'admin';
+				userRoleLabel = '管理员';
+			} else if (isMgr) {
+				userRole = 'staff';
+				userRoleLabel = '员工';
+			}
+
+			console.log('角色检查结果:', userRoleLabel, mgrInfo);
+			this.setData({
+				isMgrAdmin: isMgr,
+				userRole,
+				userRoleLabel
+			});
 		} catch (e) {
-			this.setData({ isMgrAdmin: false });
+			this.setData({
+				isMgrAdmin: false,
+				userRole: 'student',
+				userRoleLabel: '学员'
+			});
 		}
 	},
 
@@ -249,55 +267,6 @@ Page({
 		}
 	},
 
-	// 新增：获取积分信息方法
-	async getPointsInfo() {
-		// 未登录时使用默认值
-		if (!PassortBiz.isLoggedIn()) {
-			this.setData({
-				pointsInfo: {
-					totalPoints: 0,
-					currentLevel: {
-						name: '新手会员',
-						color: '#95a5a6',
-						gradientStart: '#bdc3c7',
-						gradientEnd: '#7f8c8d',
-						shadowColor: 'rgba(149, 165, 166, 0.4)',
-						maxPoints: 99
-					},
-					needPoints: 100,
-					progressPercent: 0,
-					recentHistory: []
-				}
-			});
-			return;
-		}
-
-		try {
-			let pointsInfo = await PassortBiz.getPointsInfo();
-			this.setData({
-				pointsInfo: pointsInfo
-			});
-		} catch (e) {
-			// 设置默认积分信息，避免页面显示异常
-			this.setData({
-				pointsInfo: {
-					totalPoints: 0,
-					currentLevel: {
-						name: '新手会员',
-						color: '#95a5a6',
-						gradientStart: '#bdc3c7',
-						gradientEnd: '#7f8c8d',
-						shadowColor: 'rgba(149, 165, 166, 0.4)',
-						maxPoints: 99
-					},
-					needPoints: 100,
-					progressPercent: 0,
-					recentHistory: []
-				}
-			});
-		}
-	},
-
 	bindSetTap: function (e) {
 		this.setTap(e, skin);
 	},
@@ -315,49 +284,9 @@ Page({
 		// 重新加载数据
 		await this._loadTodayList();
 		await this._loadUser();
-		await this.getPointsInfo();
 		await this.loadMyStats();
 		await this.loadNextAppointment();
 
 		wx.stopPullDownRefresh();
-	},
-
-	// 临时测试方法
-	async testPointsAPI() {
-		const cloudHelper = require('../../../../helper/cloud_helper.js');
-		
-		try {
-			console.log('正在测试积分API...');
-			wx.showLoading({ title: '正在初始化...' });
-			
-			// 1. 测试基本连接
-			let testResult = await cloudHelper.callCloudSumbit('points/test', {});
-			console.log('points/test 结果:', testResult);
-			
-			// 2. 初始化积分系统（创建数据库集合和测试数据）
-			let initResult = await cloudHelper.callCloudSumbit('points/init', {});
-			console.log('points/init 结果:', initResult);
-			
-			// 3. 获取积分信息
-			let infoResult = await cloudHelper.callCloudSumbit('points/my_info', {});
-			console.log('points/my_info 结果:', infoResult);
-			
-			wx.hideLoading();
-			wx.showToast({
-				title: '初始化完成！',
-				icon: 'success'
-			});
-			
-			// 刷新积分信息
-			this.getPointsInfo();
-			
-		} catch (e) {
-			wx.hideLoading();
-			console.error('测试失败:', e);
-			wx.showToast({
-				title: '初始化失败',
-				icon: 'error'
-			});
-		}
 	}
 })

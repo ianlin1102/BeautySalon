@@ -59,7 +59,10 @@ module.exports = {
 
 	// 核销排行榜路由
 	'checkin/rank_list': 'checkin_controller@getRankList',            // 获取核销排行榜
+	'checkin/user_stats': 'checkin_controller@getUserStats',          // 获取用户签到统计
 	'checkin/clear_cache': 'checkin_controller@clearRankCache',       // 清除排行榜缓存
+	'checkin/gen_test_data': 'checkin_controller@genTestData',        // 生成排行榜测试数据
+	'checkin/clear_test_data': 'checkin_controller@clearTestData',    // 清除排行榜测试数据
 
 	// 调试路由
 	'debug/check_checkin': 'debug_controller@checkCheckinData',       // 检查签到数据

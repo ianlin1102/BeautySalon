@@ -9,6 +9,7 @@ const JoinModel = require('../model/join_model.js');
 const UserModel = require('../model/user_model.js');
 const timeUtil = require('../../framework/utils/time_util.js');
 const cacheUtil = require('../../framework/utils/cache_util.js');
+const cloudUtil = require('../../framework/cloud/cloud_util.js');
 const config = require('../../config/config.js');
 
 class CheckinService extends BaseService {
@@ -19,7 +20,7 @@ class CheckinService extends BaseService {
 
 	/**
 	 * 获取核销排行榜
-	 * @param {string} type - 榜单类型：'all'=总榜, 'month'=月榜(最近30天)
+	 * @param {string} type - 榜单类型：'all'=总榜(近6个月), 'month'=月榜(最近30天)
 	 * @param {number} limit - 返回数量限制，默认10
 	 * @returns {object} 排行榜数据
 	 */
@@ -80,11 +81,18 @@ class CheckinService extends BaseService {
 				JOIN_STATUS: JoinModel.STATUS.SUCC  // 预约成功状态
 			};
 
-			// 2. 月榜添加时间过滤（最近30天）
+			// 2. 时间过滤（JOIN_ADD_TIME 存储为毫秒时间戳，用数字比较）
 			if (type === 'month') {
-				const thirtyDaysAgo = timeUtil.time('Y-M-D h:m:s', timeUtil.time() - 30 * 24 * 60 * 60 * 1000);
+				// 月榜：最近30天
+				const thirtyDaysAgo = Date.now() - 30 * 24 * 60 * 60 * 1000;
 				where.JOIN_ADD_TIME = {
 					$gte: thirtyDaysAgo
+				};
+			} else if (type === 'all') {
+				// 总榜：最近6个月
+				const sixMonthsAgo = Date.now() - 6 * 30 * 24 * 60 * 60 * 1000;
+				where.JOIN_ADD_TIME = {
+					$gte: sixMonthsAgo
 				};
 			}
 
@@ -105,10 +113,47 @@ class CheckinService extends BaseService {
 					total: 0
 				};
 			}
+
+			// 5. 转换为数组格式并排序
+			let rankArray = [];
+			for (let key in groupResult) {
+				// key格式: 'JOIN_USER_ID_xxxx'
+				let userId = key.replace('JOIN_USER_ID_', '');
+				let count = groupResult[key];
+
+				// 只统计核销次数大于0的用户
+				if (count > 0) {
+					rankArray.push({
+						userId: userId,
+						checkinCount: count
+					});
+				}
+			}
+
+			// 6. 按核销次数降序排序
+			rankArray.sort((a, b) => b.checkinCount - a.checkinCount);
+
+			// 7. 限制数量（前10名或所有非0）
+			let limitedArray = rankArray.slice(0, Math.min(limit, rankArray.length));
+
+			// 8. 获取用户详细信息
+			let rankList = await this._fillUserInfo(limitedArray);
+
+			// 9. 添加排名
+			for (let i = 0; i < rankList.length; i++) {
+				rankList[i].rank = i + 1;
+			}
+
+			// 10. 返回数据
+			return {
+				type: type,
+				updateTime: timeUtil.time(),
+				list: rankList,
+				total: rankList.length
+			};
 		} catch (error) {
 			console.error('【排行榜】查询异常:', error.message);
 			console.error('【排行榜】错误堆栈:', error.stack);
-			// 异常时返回空列表，避免500错误
 			return {
 				type: type,
 				updateTime: timeUtil.time(),
@@ -116,44 +161,6 @@ class CheckinService extends BaseService {
 				total: 0
 			};
 		}
-
-		// 5. 转换为数组格式并排序
-		let rankArray = [];
-		for (let key in groupResult) {
-			// key格式: 'JOIN_USER_ID_xxxx'
-			let userId = key.replace('JOIN_USER_ID_', '');
-			let count = groupResult[key];
-
-			// 只统计核销次数大于0的用户
-			if (count > 0) {
-				rankArray.push({
-					userId: userId,
-					checkinCount: count
-				});
-			}
-		}
-
-		// 5. 按核销次数降序排序
-		rankArray.sort((a, b) => b.checkinCount - a.checkinCount);
-
-		// 6. 限制数量（前10名或所有非0）
-		let limitedArray = rankArray.slice(0, Math.min(limit, rankArray.length));
-
-		// 7. 获取用户详细信息
-		let rankList = await this._fillUserInfo(limitedArray);
-
-		// 8. 添加排名
-		for (let i = 0; i < rankList.length; i++) {
-			rankList[i].rank = i + 1;
-		}
-
-		// 9. 返回数据
-		return {
-			type: type,
-			updateTime: timeUtil.time(),
-			list: rankList,
-			total: rankList.length
-		};
 	}
 
 	/**
@@ -170,21 +177,30 @@ class CheckinService extends BaseService {
 				// 查询用户信息 - 先尝试USER_MINI_OPENID（微信openid）
 				let user = await UserModel.getOne(
 					{ USER_MINI_OPENID: item.userId },
-					'USER_NAME,USER_ID,USER_MINI_OPENID'
+					'USER_NAME,USER_ID,USER_MINI_OPENID,USER_AVATAR'
 				);
 
 				// 如果没找到，再尝试USER_ID
 				if (!user) {
 					user = await UserModel.getOne(
 						{ USER_ID: item.userId },
-						'USER_NAME,USER_ID,USER_MINI_OPENID'
+						'USER_NAME,USER_ID,USER_MINI_OPENID,USER_AVATAR'
 					);
 				}
 
 				if (user) {
+					// 转换 cloud:// 头像为临时 HTTPS URL
+					let avatar = user.USER_AVATAR || '';
+					if (avatar && avatar.startsWith('cloud://')) {
+						try {
+							let tempUrl = await cloudUtil.getTempFileURLOne(avatar);
+							if (tempUrl) avatar = tempUrl;
+						} catch (e) { }
+					}
 					result.push({
 						userId: item.userId,
 						userName: user.USER_NAME || '未设置姓名',
+						userAvatar: avatar,
 						checkinCount: item.checkinCount,
 						rank: 0 // 在外层添加
 					});
@@ -198,6 +214,58 @@ class CheckinService extends BaseService {
 
 		console.log('【排行榜】用户信息填充完成，成功数量:', result.length);
 		return result;
+	}
+
+	/**
+	 * 获取用户签到统计
+	 * @param {string} userId - 用户ID
+	 * @returns {object} { monthCount, totalCount }
+	 */
+	async getUserCheckinStats(userId) {
+		try {
+			// 30天签到次数（JOIN_ADD_TIME 存储为毫秒时间戳，用数字比较）
+			const thirtyDaysAgo = Date.now() - 30 * 24 * 60 * 60 * 1000;
+			let where30 = {
+				JOIN_USER_ID: userId,
+				JOIN_IS_CHECKIN: 1,
+				JOIN_STATUS: JoinModel.STATUS.SUCC,
+				JOIN_ADD_TIME: { $gte: thirtyDaysAgo }
+			};
+			let count30 = await JoinModel.count(where30);
+
+			// 6个月（总榜范围）签到次数
+			const sixMonthsAgo = Date.now() - 6 * 30 * 24 * 60 * 60 * 1000;
+			let whereAll = {
+				JOIN_USER_ID: userId,
+				JOIN_IS_CHECKIN: 1,
+				JOIN_STATUS: JoinModel.STATUS.SUCC,
+				JOIN_ADD_TIME: { $gte: sixMonthsAgo }
+			};
+			let countAll = await JoinModel.count(whereAll);
+
+			// 获取用户信息（用于"我的排名"行显示）
+			let user = await UserModel.getOne({ USER_MINI_OPENID: userId }, 'USER_NAME,USER_AVATAR');
+			if (!user) user = await UserModel.getOne({ USER_ID: userId }, 'USER_NAME,USER_AVATAR');
+
+			// 转换 cloud:// 头像为临时 HTTPS URL
+			let avatar = user ? (user.USER_AVATAR || '') : '';
+			if (avatar && avatar.startsWith('cloud://')) {
+				try {
+					let tempUrl = await cloudUtil.getTempFileURLOne(avatar);
+					if (tempUrl) avatar = tempUrl;
+				} catch (e) { }
+			}
+
+			return {
+				monthCount: count30,
+				totalCount: countAll,
+				userName: user ? (user.USER_NAME || '') : '',
+				userAvatar: avatar
+			};
+		} catch (error) {
+			console.error('【排行榜】getUserCheckinStats 异常:', error.message);
+			return { monthCount: 0, totalCount: 0, userName: '', userAvatar: '' };
+		}
 	}
 
 	/**

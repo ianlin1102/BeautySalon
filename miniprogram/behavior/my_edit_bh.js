@@ -184,18 +184,25 @@ module.exports = Behavior({
 
 
 		bindChooseAvatar: async function (e) {
-			let avatarUrl = e.detail.avatarUrl;
-			if (!avatarUrl) return;
+			if (this._choosingAvatar) return;
+			this._choosingAvatar = true;
 
 			try {
-				let res = await wx.compressImage({
-					src: avatarUrl,
-					quality: 30
-				});
-				this.setData({ formAvatar: res.tempFilePath });
-			} catch (err) {
-				// 压缩失败就用原图（微信头像本身已经不大）
-				this.setData({ formAvatar: avatarUrl });
+				let avatarUrl = e.detail.avatarUrl;
+				if (!avatarUrl) return;
+
+				try {
+					let res = await wx.compressImage({
+						src: avatarUrl,
+						quality: 30
+					});
+					this.setData({ formAvatar: res.tempFilePath });
+				} catch (err) {
+					// 压缩失败就用原图（微信头像本身已经不大）
+					this.setData({ formAvatar: avatarUrl });
+				}
+			} finally {
+				this._choosingAvatar = false;
 			}
 		},
 

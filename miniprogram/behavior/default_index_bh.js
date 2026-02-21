@@ -2,6 +2,7 @@ const pageHelper = require('../helper/page_helper.js');
 const cloudHelper = require('../helper/cloud_helper.js');
 const cacheHelper = require('../helper/cache_helper.js');
 const setting = require('../setting/setting.js');
+const PassportBiz = require('../biz/passport_biz.js');
 
 module.exports = Behavior({
 
@@ -12,7 +13,8 @@ module.exports = Behavior({
 		isLoading: false,
 		carouselList: [],
 		instructorList: [],
-		currentCarouselIndex: 0
+		currentCarouselIndex: 0,
+		userId: ''
 	},
 
 	methods: {
@@ -159,7 +161,12 @@ module.exports = Behavior({
 		 * 生命周期函数--监听页面显示
 		 */
 		onShow: async function () {
-			await this._loadList(); 
+			// 设置当前用户ID用于排行榜组件
+			let token = PassportBiz.getToken();
+			if (token && token !== this.data.userId) {
+				this.setData({ userId: token });
+			}
+			await this._loadList();
 		},
 
 		onPullDownRefresh: async function () {
@@ -169,6 +176,13 @@ module.exports = Behavior({
 			cacheHelper.remove('INSTRUCTOR_LIST_V2');
 			cacheHelper.remove('INSTRUCTOR_LIST_TIMESTAMP');
 			await this._loadList();
+
+			// 刷新排行榜组件
+			let rankList = this.selectComponent('#rankList');
+			if (rankList && rankList.onRefresh) {
+				rankList.onRefresh();
+			}
+
 			wx.stopPullDownRefresh();
 		},
 
@@ -269,12 +283,12 @@ module.exports = Behavior({
 			}
 		},
 
-		showComingSoon: function () {
-			wx.showToast({
-				title: '敬请期待',
-				icon: 'none',
-				duration: 2000
-			});
+		goToMyCards: function () {
+			if (PassportBiz.isLoggedIn()) {
+				wx.navigateTo({ url: '../../card/my_cards/my_cards' });
+			} else {
+				wx.switchTab({ url: '../../my/index/my_index' });
+			}
 		},
 
 		onInstructorTap: function (e) {

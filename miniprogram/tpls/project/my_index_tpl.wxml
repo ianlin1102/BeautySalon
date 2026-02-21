@@ -2,7 +2,7 @@
 	<view class="neon-page {{skin.IS_SUB?'sub-margin-bottom':''}}">
 
 		<!-- 背景装饰光斑 -->
-		<view class="bg-glow bg-glow-1" style="background: radial-gradient(circle, {{pointsInfo.currentLevel.color || '#95a5a6'}} 0%, transparent 70%);"></view>
+		<view class="bg-glow bg-glow-1"></view>
 		<view class="bg-glow bg-glow-2"></view>
 
 		<!-- 主内容区域 -->
@@ -10,18 +10,18 @@
 
 			<!-- 未登录状态 -->
 			<block wx:if="{{!isLoggedIn}}">
-				<view class="login-section">
-					<view class="login-avatar-container">
-						<view class="login-avatar-ring">
-							<image class="avatar-img" mode="aspectFill" src="../../skin/images/tabbar/my_cur.png" />
+				<view class="login-section login-section--compact">
+					<view class="login-compact-left">
+						<view class="login-avatar-ring login-avatar-ring--sm">
+							<image class="avatar-img" mode="aspectFill" src="../../skin/images/tabbar_icon/profile_cur.png" />
+						</view>
+						<view class="login-info--inline">
+							<text class="login-title--sm">请先登录</text>
+							<text class="login-desc">登录后可预约课程、购买卡项</text>
 						</view>
 					</view>
-					<view class="login-info">
-						<text class="login-title">请先登录</text>
-						<text class="login-desc">登录后可预约课程、购买卡项</text>
-					</view>
-					<button class="login-btn" bindtap="bindLogin">
-						<text class="icon-wechat margin-right-xs"></text>微信登录
+					<button class="login-btn login-btn--sm" bindtap="bindLogin">
+						<text class="icon-wechat margin-right-xs"></text>登录
 					</button>
 				</view>
 
@@ -79,33 +79,24 @@
 
 			<!-- 已登录状态 -->
 			<block wx:else>
-				<!-- 用户头像与等级进度条 -->
+				<!-- 用户头像与角色信息 -->
 				<view class="user-section">
-					<!-- 头像 - 渐变边框效果 -->
+					<!-- 头像 -->
 					<view class="avatar-container" bindtap="url" data-url="../edit/my_edit">
-						<view class="avatar-ring" style="background: linear-gradient(135deg, {{pointsInfo.currentLevel.gradientStart || '#bdc3c7'}}, {{pointsInfo.currentLevel.gradientEnd || '#7f8c8d'}}); box-shadow: 0 0 30rpx {{pointsInfo.currentLevel.shadowColor || 'rgba(149, 165, 166, 0.5)'}};">
-							<image class="avatar-img" mode="aspectFill" src="{{user.USER_AVATAR || '../../skin/images/tabbar/my_cur.png'}}" />
+						<view class="avatar-ring avatar-ring--{{userRole || 'student'}}">
+							<image class="avatar-img" mode="aspectFill" src="{{user.USER_AVATAR || '../../skin/images/tabbar_icon/profile_cur.png'}}" />
 						</view>
 					</view>
 
-					<!-- 积分条区域 -->
-					<view class="level-progress-area" bindtap="url" data-url="../points/my_points">
-						<view class="level-header">
-							<view class="level-wrapper">
-								<!-- 等级菱形徽章 -->
-								<view class="level-icon" style="background: linear-gradient(135deg, {{pointsInfo.currentLevel.gradientStart || '#bdc3c7'}}, {{pointsInfo.currentLevel.gradientEnd || '#7f8c8d'}}); color: {{pointsInfo.currentLevel.color || '#95a5a6'}};"></view>
-								<text class="level-name" style="color: {{pointsInfo.currentLevel.color || '#95a5a6'}};">
-									{{pointsInfo.currentLevel.name || '新手会员'}}
-								</text>
-							</view>
-							<text class="level-points">{{pointsInfo.totalPoints || 0}} / {{pointsInfo.currentLevel.maxPoints || 100}}</text>
-						</view>
-						<!-- 进度条 -->
-						<view class="progress-track">
-							<view class="progress-fill" style="width: {{pointsInfo.progressPercent || 0}}%; background: linear-gradient(90deg, {{pointsInfo.currentLevel.gradientStart || '#bdc3c7'}}, {{pointsInfo.currentLevel.gradientEnd || '#7f8c8d'}}); box-shadow: 0 0 20rpx {{pointsInfo.currentLevel.shadowColor || 'rgba(149, 165, 166, 0.4)'}};"></view>
-						</view>
-						<view class="progress-hint">
-							{{pointsInfo.nextLevel ? '再获得 ' + pointsInfo.needPoints + ' 分升级' : '已达最高等级'}}
+					<!-- 角色信息区域 -->
+					<view class="role-info-area">
+						<text class="role-username">{{user.USER_NAME || '用户'}}</text>
+						<view class="role-badge role-badge--{{userRole || 'student'}}">
+							<text class="role-badge-icon" wx:if="{{userRole === 'admin'}}">★</text>
+							<text class="role-badge-icon" wx:elif="{{userRole === 'staff'}}">◆</text>
+							<text class="role-badge-icon" wx:elif="{{userRole === 'instructor'}}">♦</text>
+							<text class="role-badge-icon" wx:else>●</text>
+							<text class="role-badge-text">{{userRoleLabel || '学员'}}</text>
 						</view>
 					</view>
 				</view>

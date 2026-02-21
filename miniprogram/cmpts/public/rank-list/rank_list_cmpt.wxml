@@ -1,4 +1,4 @@
-<!-- 上课排行榜组件 - 霓虹风格领奖台 -->
+<!-- 上课排行榜组件 - 霓虹风格领奖台 + 4-10名列表 -->
 <view class="rank-list-container">
 	<!-- 榜单标题和切换 -->
 	<view class="rank-header">
@@ -13,19 +13,19 @@
 		</view>
 	</view>
 
-	<!-- 领奖台 - 霓虹风格，高度按比例 -->
+	<!-- 领奖台 - 霓虹风格，高度按比例（前3名） -->
 	<view class="podium-container" wx:if="{{rankList && rankList.length > 0}}">
 		<view class="podium">
 			<!-- 第二名（左侧，青蓝色） -->
 			<view class="podium-item rank-2" wx:if="{{rankList[1]}}">
 				<view class="podium-avatar">
-					<text class="avatar-text">{{rankList[1].userName.substring(0, 2)}}</text>
+					<image class="avatar-img" src="{{rankList[1].userAvatar || '/projects/A00/skin/images/default_avatar.png'}}" mode="aspectFill" />
 				</view>
 				<view class="podium-bar" style="height: {{rankList[1].barHeight}}rpx;">
 					<text class="bar-rank">2</text>
 				</view>
 				<view class="podium-info">
-					<view class="podium-name">{{rankList[1].userName}}</view>
+					<view class="podium-name">{{rankList[1].userName}}<text wx:if="{{userId && rankList[1].userId === userId}}" class="is-me-tag">(我)</text></view>
 					<view class="podium-count">{{rankList[1].checkinCount}}次</view>
 				</view>
 			</view>
@@ -34,13 +34,13 @@
 			<view class="podium-item rank-1" wx:if="{{rankList[0]}}">
 				<view class="crown-icon">👑</view>
 				<view class="podium-avatar">
-					<text class="avatar-text">{{rankList[0].userName.substring(0, 2)}}</text>
+					<image class="avatar-img" src="{{rankList[0].userAvatar || '/projects/A00/skin/images/default_avatar.png'}}" mode="aspectFill" />
 				</view>
 				<view class="podium-bar" style="height: {{rankList[0].barHeight}}rpx;">
 					<text class="bar-rank">1</text>
 				</view>
 				<view class="podium-info">
-					<view class="podium-name">{{rankList[0].userName}}</view>
+					<view class="podium-name">{{rankList[0].userName}}<text wx:if="{{userId && rankList[0].userId === userId}}" class="is-me-tag">(我)</text></view>
 					<view class="podium-count">{{rankList[0].checkinCount}}次</view>
 				</view>
 			</view>
@@ -48,16 +48,41 @@
 			<!-- 第三名（右侧，电紫色） -->
 			<view class="podium-item rank-3" wx:if="{{rankList[2]}}">
 				<view class="podium-avatar">
-					<text class="avatar-text">{{rankList[2].userName.substring(0, 2)}}</text>
+					<image class="avatar-img" src="{{rankList[2].userAvatar || '/projects/A00/skin/images/default_avatar.png'}}" mode="aspectFill" />
 				</view>
 				<view class="podium-bar" style="height: {{rankList[2].barHeight}}rpx;">
 					<text class="bar-rank">3</text>
 				</view>
 				<view class="podium-info">
-					<view class="podium-name">{{rankList[2].userName}}</view>
+					<view class="podium-name">{{rankList[2].userName}}<text wx:if="{{userId && rankList[2].userId === userId}}" class="is-me-tag">(我)</text></view>
 					<view class="podium-count">{{rankList[2].checkinCount}}次</view>
 				</view>
 			</view>
+		</view>
+	</view>
+
+	<!-- 4-10名列表 -->
+	<view class="rank-list-section" wx:if="{{rankList.length > 3}}">
+		<view class="rank-list-item" wx:for="{{rankList}}" wx:if="{{index >= 3}}" wx:key="userId">
+			<text class="list-rank">{{index + 1}}</text>
+			<view class="list-avatar">
+				<image class="list-avatar-img" src="{{item.userAvatar || '/projects/A00/skin/images/default_avatar.png'}}" mode="aspectFill" />
+			</view>
+			<text class="list-name">{{item.userName}}<text wx:if="{{userId && item.userId === userId}}" class="is-me-tag">(我)</text></text>
+			<text class="list-count">{{item.checkinCount}}次</text>
+		</view>
+	</view>
+
+	<!-- 我的排名 (10+1 的 +1) -->
+	<view class="my-rank-section" wx:if="{{myRankInfo}}">
+		<view class="rank-list-item my-rank-row">
+			<text class="list-rank" wx:if="{{myRankInfo.inTop10}}">{{myRankInfo.rank}}</text>
+			<text class="list-rank unranked" wx:else>未上榜</text>
+			<view class="list-avatar">
+				<image class="list-avatar-img" src="{{myRankInfo.userAvatar || '/projects/A00/skin/images/default_avatar.png'}}" mode="aspectFill" />
+			</view>
+			<text class="list-name">{{myRankInfo.userName}}<text class="is-me-tag">(我)</text></text>
+			<text class="list-count">{{myRankInfo.checkinCount}}次</text>
 		</view>
 	</view>
 

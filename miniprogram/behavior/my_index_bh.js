@@ -291,17 +291,15 @@ module.exports = Behavior({
 
 				// 异步加载其他数据（不阻塞登录状态更新）
 				try {
+					// 0. 重新加载用户详情（获取 USER_AVATAR 等数据库字段）
+					this._loadUser();
+
 					// 1. 加载预约列表
 					if (this._loadTodayList) {
 						this._loadTodayList();
 					}
 
-					// 2. 加载积分信息（页面级方法）
-					if (this.getPointsInfo) {
-						this.getPointsInfo();
-					}
-
-					// 3. 加载统计数据（页面级方法）
+					// 2. 加载统计数据（页面级方法）
 					if (this.loadMyStats) {
 						this.loadMyStats();
 					}

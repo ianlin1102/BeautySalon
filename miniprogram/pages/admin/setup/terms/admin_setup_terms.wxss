@@ -105,7 +105,7 @@
 
 /* 双语字段 */
 .field-group {
-	margin-bottom: 16rpx;
+	margin-bottom: 28rpx;
 }
 
 .field-label {
@@ -131,8 +131,10 @@
 	background: #f8f9fa;
 	border: 1rpx solid #eee;
 	border-radius: 8rpx;
-	padding: 8rpx 16rpx;
+	padding: 0 16rpx;
 	font-size: 28rpx;
+	height: 76rpx;
+	line-height: 76rpx;
 	width: 100%;
 	box-sizing: border-box;
 }
@@ -141,7 +143,7 @@
 	background: #f8f9fa;
 	border: 1rpx solid #eee;
 	border-radius: 8rpx;
-	padding: 8rpx 16rpx;
+	padding: 20rpx 16rpx;
 	font-size: 26rpx;
 	width: 100%;
 	height: 150rpx;
